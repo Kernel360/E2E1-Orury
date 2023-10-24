@@ -1,6 +1,6 @@
-# frontend
+# orury
 
-A new Flutter project.
+kernel360 Orury! project
 
 ## Getting Started
 

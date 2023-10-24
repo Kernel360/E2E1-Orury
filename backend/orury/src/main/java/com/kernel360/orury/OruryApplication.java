@@ -1,4 +1,4 @@
-package com.kernel.orury;
+package com.kernel360.orury;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

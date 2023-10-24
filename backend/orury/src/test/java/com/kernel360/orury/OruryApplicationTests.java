@@ -1,4 +1,4 @@
-package com.kernel.orury;
+package com.kernel360.orury;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

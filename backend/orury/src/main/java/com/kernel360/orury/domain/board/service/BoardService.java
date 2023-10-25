@@ -6,7 +6,10 @@ import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.persistence.PreUpdate;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,5 +43,25 @@ public class BoardService {
         return boardEntityList.stream()
             .map(boardConverter::toDto)
             .collect(Collectors.toList());
+    }
+
+    public BoardDto updateBoard(
+        BoardRequest boardRequest
+    ){
+        var entity = boardRepository.findById(boardRequest.getId()).get();
+
+        entity.setBoardTitle(boardRequest.getBoardTitle());
+        entity.setUpdatedBy("admin"); // 임의로 "admin" 넣음
+        entity.setUpdatedAt(LocalDateTime.now());
+
+//        var buildEntity = entity.builder()
+//                .boardTitle(boardRequest.getBoardTitle())
+//                .updatedBy("admin") // 임의로 "admin" 넣음
+//                .updatedAt(LocalDateTime.now())
+//                .build();
+
+        var saveEntity = boardRepository.save(entity);
+
+        return boardConverter.toDto(saveEntity);
     }
 }

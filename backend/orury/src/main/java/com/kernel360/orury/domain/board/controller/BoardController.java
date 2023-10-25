@@ -1,13 +1,11 @@
 package com.kernel360.orury.domain.board.controller;
 
+import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
 import com.kernel360.orury.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,6 +24,11 @@ public class BoardController {
             BoardRequest boardRequest
     ){
         return boardService.create(boardRequest);
+    }
+
+    @GetMapping("")
+    public List<BoardDto> getBoard() {
+        return boardService.getBoard();
     }
 
 }

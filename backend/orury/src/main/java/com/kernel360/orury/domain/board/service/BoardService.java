@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +33,12 @@ public class BoardService {
         var saveEntity = boardRepository.save(entity);
 
         return boardConverter.toDto(saveEntity);
+    }
+
+    public List<BoardDto> getBoard() {
+        List<BoardEntity> boardEntityList = boardRepository.findAll();
+        return boardEntityList.stream()
+            .map(boardConverter::toDto)
+            .collect(Collectors.toList());
     }
 }

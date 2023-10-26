@@ -38,4 +38,12 @@ public class BoardController {
     ){
         return boardService.updateBoard(boardRequest);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteBoard(
+        @PathVariable
+        Long id
+    ) {
+        boardService.deleteBoard(id);
+    }
 }

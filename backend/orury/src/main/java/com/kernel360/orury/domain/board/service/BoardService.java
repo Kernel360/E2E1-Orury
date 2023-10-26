@@ -58,4 +58,9 @@ public class BoardService {
 
         return boardConverter.toDto(saveEntity);
     }
+
+    public void deleteBoard(Long id) {
+
+        boardRepository.deleteById(id);
+    }
 }

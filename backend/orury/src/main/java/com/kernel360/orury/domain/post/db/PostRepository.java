@@ -1,6 +1,4 @@
-package com.kernel360.orury.domain.post.repository;
-
-import com.kernel360.orury.domain.post.db.PostEntity;
+package com.kernel360.orury.domain.post.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

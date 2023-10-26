@@ -1,15 +1,14 @@
 package com.kernel360.orury.domain.post.service;
 
-import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
-import com.kernel360.orury.domain.board.model.BoardRequest;
 import com.kernel360.orury.domain.post.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
-import com.kernel360.orury.domain.post.dto.PostDto;
+import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
-import com.kernel360.orury.domain.post.repository.PostRepository;
+import com.kernel360.orury.domain.post.db.PostRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
@@ -17,32 +16,39 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PostService {
 	private final PostRepository postRepository;
-	//    private final CommentRepository commentRepository;
+
 	private final BoardRepository boardRepository;
 	private final PostConverter postConverter;
 
+	private static final String ADMIN = "admin"; //
+
 	public PostDto createPost(
-		PostRequest postRequest,
-		Long userId,
-		Long boardId
+		PostRequest postRequest
 	) {
+
+		var boardEntity = boardRepository.findById(postRequest.getBoardId())
+			.orElseThrow(() -> new RuntimeException("해당 게시판이 없습니다"));
+		log.info("find board Entity");
 
 		var entity = PostEntity.builder()
 			.postTitle(postRequest.getPostTitle())
 			.postContent(postRequest.getPostContent())
 			.userNickname(postRequest.getUserNickname())
-			.userId(userId)
-			.boardId(boardId)
-			.createdBy("admin")    // 문찬욱 : 임시로 "admin" 설정
+			.userId(postRequest.getUserId())
+			.board(boardEntity)
+			.createdBy(ADMIN)    // 문찬욱 : 임시로 "admin" 설정
 			.createdAt(LocalDateTime.now())
-			.updatedBy("admin")
+			.updatedBy(ADMIN)
 			.updatedAt(LocalDateTime.now())
 			.build();
+		log.info("after build post entity");
 		var saveEntity = postRepository.save(entity);
+		log.info("after save post entity in database ");
 		return postConverter.toDto(saveEntity);
 	}
 
@@ -50,6 +56,9 @@ public class PostService {
 		Long postId = postViewRequest.getId();
 		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
 		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
+
+		//Todo 게시글에 달린 댓글 목록 추가 루틴 작성 필요
+
 		return postConverter.toDto(post);
 	}
 
@@ -62,7 +71,7 @@ public class PostService {
 		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());
 		dto.setPostContent(postRequest.getPostContent());
-		dto.setUpdatedBy("admin");       // 문찬욱 : 임의로 "admin" 설정
+		dto.setUpdatedBy(ADMIN);       // 문찬욱 : 임의로 "admin" 설정
 		dto.setUpdatedAt(LocalDateTime.now());
 		var saveEntity = postConverter.toEntity(dto);
 		postRepository.save(saveEntity);
@@ -75,7 +84,10 @@ public class PostService {
 		postRepository.deleteById(postId);
 	}
 
-	public List<PostEntity> all() {
-		return postRepository.findAll();
+	public List<PostDto> all() {
+		return postRepository.findAll()
+			.stream()
+			.map(postConverter::toDto)
+			.toList();
 	}
 }

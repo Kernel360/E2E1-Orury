@@ -5,17 +5,18 @@ import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.global.domain.BaseEntity;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 
-import java.time.LocalDateTime;
-
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder
+@SuperBuilder
 @Entity(name = "post")
 
 public class PostEntity extends BaseEntity {
@@ -23,7 +24,10 @@ public class PostEntity extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long boardId;
+	@ManyToOne
+	@JsonIgnore
+	@ToString.Exclude
+	private BoardEntity board;
 
 	private String postTitle;
 	@Column(columnDefinition = "TEXT")
@@ -34,8 +38,11 @@ public class PostEntity extends BaseEntity {
 	// @Column(columnDefinition = "BIT")
 	private boolean isDelete;
 	private Long userId;
-	private String createdBy;
-	private LocalDateTime createdAt;
-	private String updatedBy;
-	private LocalDateTime updatedAt;
+
+	/*
+	todo : 댓글이 생성되면 아래 형식 필요
+	@Transient
+	private List<CommentEntry> commentList = new ArrayList<>();
+
+	 */
 }

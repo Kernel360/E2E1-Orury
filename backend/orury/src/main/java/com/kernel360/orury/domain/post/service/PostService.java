@@ -1,16 +1,13 @@
 package com.kernel360.orury.domain.post.service;
 
-import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
-import com.kernel360.orury.domain.board.model.BoardRequest;
+import com.kernel360.orury.domain.comment.service.CommentService;
 import com.kernel360.orury.domain.post.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
+import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.dto.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
-import com.kernel360.orury.domain.post.repository.PostRepository;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,9 +18,9 @@ import java.util.Optional;
 @Service
 public class PostService {
 	private final PostRepository postRepository;
-	//    private final CommentRepository commentRepository;
 	private final BoardRepository boardRepository;
 	private final PostConverter postConverter;
+	private final CommentService commentService;
 
 	public PostDto createPost(
 		PostRequest postRequest,
@@ -50,7 +47,10 @@ public class PostService {
 		Long postId = postViewRequest.getId();
 		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
 		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
-		return postConverter.toDto(post);
+		PostDto postDto = postConverter.toDto(post);
+		postDto.setCommentList(commentService.findAllByPostId(postViewRequest.getId()));
+
+		return postDto;
 	}
 
 	public PostDto updatePost(

@@ -37,7 +37,7 @@ public abstract class BaseEntity {
 
     @CreatedBy
     @Column(nullable = false, length = 100, updatable = false)
-    public String createdBy;
+    protected String createdBy;
 
     @LastModifiedBy
     protected String updatedBy;

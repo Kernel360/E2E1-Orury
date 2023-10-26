@@ -1,14 +1,12 @@
 package com.kernel360.orury.domain.post.dto;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.kernel360.orury.domain.board.db.BoardEntity;
-
+import com.kernel360.orury.domain.comment.model.CommentDto;
 import lombok.*;
 
-import javax.persistence.Column;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,4 +31,5 @@ public class PostDto {
 	private LocalDateTime createdAt;
 	private String updatedBy;
 	private LocalDateTime updatedAt;
+	private List<CommentDto> commentList = List.of();
 }

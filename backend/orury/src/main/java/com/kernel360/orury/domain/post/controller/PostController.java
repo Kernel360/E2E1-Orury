@@ -23,9 +23,7 @@ public class PostController {
 	public PostDto create(
 		@Valid
 		@RequestBody
-		PostRequest postRequest,
-		@PathVariable
-		Long userId
+		PostRequest postRequest
 	) {
 		return postService.createPost(postRequest);
 	}

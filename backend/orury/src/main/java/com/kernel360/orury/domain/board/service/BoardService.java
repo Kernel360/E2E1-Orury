@@ -54,12 +54,6 @@ public class BoardService {
         entity.setUpdatedBy("admin"); // 임의로 "admin" 넣음
         entity.setUpdatedAt(LocalDateTime.now());
 
-//        var buildEntity = entity.builder()
-//                .boardTitle(boardRequest.getBoardTitle())
-//                .updatedBy("admin") // 임의로 "admin" 넣음
-//                .updatedAt(LocalDateTime.now())
-//                .build();
-
         var saveEntity = boardRepository.save(entity);
 
         return boardConverter.toDto(saveEntity);

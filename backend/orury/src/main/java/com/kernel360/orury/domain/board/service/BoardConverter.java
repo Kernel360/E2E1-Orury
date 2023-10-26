@@ -19,4 +19,15 @@ public class BoardConverter {
                 .updatedAt(boardEntity.getUpdatedAt())
                 .build();
     }
+
+    public BoardEntity toEntity(BoardDto boardDto) {
+        return BoardEntity.builder()
+                .id(boardDto.getId())
+                .boardTitle(boardDto.getBoardTitle())
+                .createdAt(boardDto.getCreatedAt())
+                .createdBy(boardDto.getCreatedBy())
+                .updatedAt(boardDto.getUpdatedAt())
+                .updatedBy(boardDto.getUpdatedBy())
+                .build();
+    }
 }

@@ -1,13 +1,16 @@
 package com.kernel360.orury.domain.board.db;
 
 import com.kernel360.orury.global.domain.BaseEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 /**
  * author : hyungjoon cho
@@ -15,19 +18,14 @@ import java.time.LocalDateTime;
  * description : 게시판 엔티티
  */
 @ToString
+@Entity(name = "board")
 @Getter
-@Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Entity(name = "board")
 public class BoardEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String boardTitle;
-    private String createdBy;
-    private LocalDateTime createdAt;
-    private String updatedBy;
-    private LocalDateTime updatedAt;
 }

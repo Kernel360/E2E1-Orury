@@ -5,9 +5,11 @@ import com.kernel360.orury.domain.comment.service.CommentService;
 import com.kernel360.orury.domain.post.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
-import com.kernel360.orury.domain.post.dto.PostDto;
+import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,21 +24,24 @@ public class PostService {
 	private final PostConverter postConverter;
 	private final CommentService commentService;
 
+	private static final String ADMIN = "admin"; //
+
 	public PostDto createPost(
-		PostRequest postRequest,
-		Long userId,
-		Long boardId
+		PostRequest postRequest
 	) {
+
+		var boardEntity = boardRepository.findById(postRequest.getBoardId())
+			.orElseThrow(() -> new RuntimeException("해당 게시판이 없습니다"));
 
 		var entity = PostEntity.builder()
 			.postTitle(postRequest.getPostTitle())
 			.postContent(postRequest.getPostContent())
 			.userNickname(postRequest.getUserNickname())
-			.userId(userId)
-			.boardId(boardId)
-			.createdBy("admin")    // 문찬욱 : 임시로 "admin" 설정
+			.userId(postRequest.getUserId())
+			.board(boardEntity)
+			.createdBy(ADMIN)    // 문찬욱 : 임시로 "admin" 설정
 			.createdAt(LocalDateTime.now())
-			.updatedBy("admin")
+			.updatedBy(ADMIN)
 			.updatedAt(LocalDateTime.now())
 			.build();
 		var saveEntity = postRepository.save(entity);
@@ -62,7 +67,7 @@ public class PostService {
 		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());
 		dto.setPostContent(postRequest.getPostContent());
-		dto.setUpdatedBy("admin");       // 문찬욱 : 임의로 "admin" 설정
+		dto.setUpdatedBy(ADMIN);       // 문찬욱 : 임의로 "admin" 설정
 		dto.setUpdatedAt(LocalDateTime.now());
 		var saveEntity = postConverter.toEntity(dto);
 		postRepository.save(saveEntity);
@@ -75,7 +80,10 @@ public class PostService {
 		postRepository.deleteById(postId);
 	}
 
-	public List<PostEntity> all() {
-		return postRepository.findAll();
+	public List<PostDto> all() {
+		return postRepository.findAll()
+			.stream()
+			.map(postConverter::toDto)
+			.toList();
 	}
 }

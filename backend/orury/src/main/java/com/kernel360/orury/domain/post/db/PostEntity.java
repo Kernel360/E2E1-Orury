@@ -1,10 +1,15 @@
 package com.kernel360.orury.domain.post.db;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.global.domain.BaseEntity;
+
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder
+@SuperBuilder
 @Entity(name = "post")
 
 public class PostEntity extends BaseEntity {
@@ -20,7 +25,10 @@ public class PostEntity extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long boardId;
+	@ManyToOne
+	@JsonIgnore
+	@ToString.Exclude
+	private BoardEntity board;
 
 	private String postTitle;
 	@Column(columnDefinition = "TEXT")

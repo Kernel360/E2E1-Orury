@@ -10,19 +10,19 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
 
 
     @PostMapping("")
-    public BoardDto create(
+    public BoardDto createBoard(
             @Valid
             @RequestBody
             BoardRequest boardRequest
     ){
-        return boardService.create(boardRequest);
+        return boardService.createBoard(boardRequest);
     }
 
     @GetMapping("")

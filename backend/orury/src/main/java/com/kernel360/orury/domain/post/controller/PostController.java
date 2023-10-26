@@ -5,53 +5,67 @@ import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.dto.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
 @RequiredArgsConstructor
 public class PostController {
-    private final PostService postService;
+	private final PostService postService;
 
-    @PostMapping("/{boardId}/{userId}")      // 문찬욱 : 임시 url
-    public PostDto create(
-            @Valid
-            @RequestBody
-            PostRequest postRequest,
-            @PathVariable
-            Long userId,
-            @PathVariable
-            Long boardId
-    ) {
-        return postService.createPost(postRequest, userId, boardId);
-    }
+	@PostMapping("create/{boardId}/{userId}")      // 문찬욱 : 임시 url
+	public PostDto create(
+		@Valid
+		@RequestBody
+		PostRequest postRequest,
+		@PathVariable
+		Long userId,
+		@PathVariable
+		Long boardId
+	) {
+		return postService.createPost(postRequest, userId, boardId);
+	}
 
-    @PostMapping("/view")
-    public PostEntity view(
-            @Valid
-            @RequestBody PostViewRequest postViewRequest
-    ) {
-        return postService.view(postViewRequest);
-    }
+	// 게시글 아이돌 게시글 조회. 주석 이따 지울게요
 
-    @GetMapping("/all")
-    public List<PostEntity> list(
+	@PostMapping("/view")
+	public PostDto view(
+		@Valid
+		@RequestBody PostViewRequest postViewRequest
+	) {
+		return postService.getPost(postViewRequest);
+	}
 
-    ) {
-        return postService.all();
-    }
+	@GetMapping("/all")             // 문찬욱 : baordId에 따른 결과가 나오게 리팩토링 필요
+	public List<PostEntity> list(
 
-    @DeleteMapping("/{postId}")     // 문찬욱 : 임시 url
-    public void delete(
-            @PathVariable
-            Long postId
-    ) {
-        postService.deletePost(postId);
-    }
+	) {
+		return postService.all();
+	}
+
+	@PatchMapping("")                // 문찬욱 : 임시 url, 리팩토링 필요
+	public PostDto updatePost(
+		@Valid
+		@RequestBody
+		PostRequest postRequest
+	) {
+		return postService.updatePost(postRequest);
+	}
+
+	@DeleteMapping("/{postId}")     // 문찬욱 : 임시 url
+	public void delete(
+		@PathVariable
+		Long postId
+	) {
+		postService.deletePost(postId);
+	}
 
     /*
     // 작업내용 주석처리

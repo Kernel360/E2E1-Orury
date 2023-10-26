@@ -2,6 +2,7 @@ package com.kernel360.orury.domain.post.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -15,12 +16,14 @@ import javax.validation.constraints.NotBlank;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostRequest {
 
-    private Long boardId;
+	private Long id;
 
-    @NotBlank
-    private String postTitle;
-    @NotBlank
-    private String userNickname;
-    @NotBlank
-    private String postContent;
+	private Long boardId;
+
+	@NotBlank
+	private String postTitle;
+	@NotBlank
+	private String userNickname;
+	@NotBlank
+	private String postContent;
 }

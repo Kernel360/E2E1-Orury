@@ -1,50 +1,81 @@
 package com.kernel360.orury.domain.post.service;
+
+import com.kernel360.orury.domain.board.db.BoardEntity;
+import com.kernel360.orury.domain.board.db.BoardRepository;
+import com.kernel360.orury.domain.board.model.BoardRequest;
 import com.kernel360.orury.domain.post.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.dto.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.repository.PostRepository;
-import com.kernel360.orury.domain.reply.db.CommentRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class PostService {
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
-    private final PostConverter postConverter;
-    public PostDto createPost (
-            PostRequest postRequest,
-            Long userId,
-            Long boardId
-    ){
-        var entity = PostEntity.builder()
-                .postTitle(postRequest.getPostTitle())
-                .postContent(postRequest.getPostContent())
-                .userNickname(postRequest.getUserNickname())
-                .userId(userId)
-                .boardId(boardId)
-                .build();
-        var saveEntity = postRepository.save(entity);
-        return postConverter.toDto(saveEntity);
-    }
-    public postDTo getPost (PostViewRequest postViewRequest){
-        Long postId = postViewRequest.getId();
-        Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(postId, 0);
-        PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
-        return postConverter.toDto(post);
-    }
-    public void updatePost (
-    ){
-    }
-    public void deletePost (
-            Long postId
-    ){
-        postRepository.deleteById(postId);
-    }
-    public List<PostEntity> all() {
-        return postRepository.findAll();
-    }
+	private final PostRepository postRepository;
+	//    private final CommentRepository commentRepository;
+	private final BoardRepository boardRepository;
+	private final PostConverter postConverter;
+
+	public PostDto createPost(
+		PostRequest postRequest,
+		Long userId,
+		Long boardId
+	) {
+
+		var entity = PostEntity.builder()
+			.postTitle(postRequest.getPostTitle())
+			.postContent(postRequest.getPostContent())
+			.userNickname(postRequest.getUserNickname())
+			.userId(userId)
+			.boardId(boardId)
+			.createdBy("admin")    // 문찬욱 : 임시로 "admin" 설정
+			.createdAt(LocalDateTime.now())
+			.updatedBy("admin")
+			.updatedAt(LocalDateTime.now())
+			.build();
+		var saveEntity = postRepository.save(entity);
+		return postConverter.toDto(saveEntity);
+	}
+
+	public PostDto getPost(PostViewRequest postViewRequest) {
+		Long postId = postViewRequest.getId();
+		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
+		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
+		return postConverter.toDto(post);
+	}
+
+	public PostDto updatePost(
+		PostRequest postRequest
+	) {
+		Long postId = postRequest.getId();
+		var postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
+		var entity = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
+		var dto = postConverter.toDto(entity);
+		dto.setPostTitle(postRequest.getPostTitle());
+		dto.setPostContent(postRequest.getPostContent());
+		dto.setUpdatedBy("admin");       // 문찬욱 : 임의로 "admin" 설정
+		dto.setUpdatedAt(LocalDateTime.now());
+		var saveEntity = postConverter.toEntity(dto);
+		postRepository.save(saveEntity);
+		return dto;
+	}
+
+	public void deletePost(
+		Long postId
+	) {
+		postRepository.deleteById(postId);
+	}
+
+	public List<PostEntity> all() {
+		return postRepository.findAll();
+	}
 }

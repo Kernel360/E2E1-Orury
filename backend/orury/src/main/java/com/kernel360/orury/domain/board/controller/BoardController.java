@@ -29,4 +29,13 @@ public class BoardController {
     public List<BoardDto> getBoard() {
         return boardService.getBoard();
     }
+
+    @PatchMapping("")
+    public BoardDto updateBoard(
+            @Valid
+            @RequestBody
+            BoardRequest boardRequest
+    ){
+        return boardService.updateBoard(boardRequest);
+    }
 }

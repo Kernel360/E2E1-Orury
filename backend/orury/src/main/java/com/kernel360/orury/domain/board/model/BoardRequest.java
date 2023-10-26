@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BoardRequest {
 
+    private Long id;
+
     @NotBlank
     private String boardTitle;
 

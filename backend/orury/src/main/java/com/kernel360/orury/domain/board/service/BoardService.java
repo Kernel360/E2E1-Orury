@@ -6,10 +6,7 @@ import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.persistence.PreUpdate;
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +19,7 @@ public class BoardService {
 
     public final BoardConverter boardConverter;
 
-    public BoardDto create(
+    public BoardDto createBoard(
             BoardRequest boardRequest
     ) {
         var entity = BoardEntity.builder()
@@ -38,6 +35,7 @@ public class BoardService {
         return boardConverter.toDto(saveEntity);
     }
 
+    // 게시판 조회
     public List<BoardDto> getBoard() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         return boardEntityList.stream()
@@ -45,18 +43,20 @@ public class BoardService {
             .collect(Collectors.toList());
     }
 
+    // 게시판 업데이트
     public BoardDto updateBoard(
         BoardRequest boardRequest
     ){
-        var entity = boardRepository.findById(boardRequest.getId()).get();
+        BoardEntity entity = boardRepository.findById(boardRequest.getId()).orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + boardRequest.getId()));
 
-        entity.setBoardTitle(boardRequest.getBoardTitle());
-        entity.setUpdatedBy("admin"); // 임의로 "admin" 넣음
-        entity.setUpdatedAt(LocalDateTime.now());
+        BoardDto updatedDto = boardConverter.toDto(entity);
+        updatedDto.setBoardTitle(boardRequest.getBoardTitle());
+        updatedDto.setUpdatedBy("admin"); // 임의로 "admin" 넣음
+        updatedDto.setUpdatedAt(LocalDateTime.now());
 
-        var saveEntity = boardRepository.save(entity);
+        boardRepository.save(boardConverter.toEntity(updatedDto));
 
-        return boardConverter.toDto(saveEntity);
+        return updatedDto;
     }
 
     public void deleteBoard(Long id) {

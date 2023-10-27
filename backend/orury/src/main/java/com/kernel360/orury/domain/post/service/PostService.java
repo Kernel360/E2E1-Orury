@@ -10,12 +10,14 @@ import com.kernel360.orury.domain.post.model.PostRequest;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PostService {
@@ -74,6 +76,7 @@ public class PostService {
 		Long id
 	) {
 		postRepository.deleteById(id);
+		log.info("게시글이 삭제되었습니다. : {}", id);
 	}
 
 	public List<PostDto> getPostList() {

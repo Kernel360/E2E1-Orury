@@ -8,14 +8,18 @@ import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 
+import com.kernel360.orury.global.domain.Api;
+import com.kernel360.orury.global.domain.Pagination;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -79,11 +83,28 @@ public class PostService {
 		log.info("게시글이 삭제되었습니다. : {}", id);
 	}
 
-	public List<PostDto> getPostList() {
-		return postRepository.findAll()
-			.stream()
+	public Api<List<PostDto>> getPostList(Pageable pageable) {
+
+		var entityList =  postRepository.findAll(pageable);
+
+		var pagination = Pagination.builder()
+			.page(entityList.getNumber())
+			.currentElements(entityList.getNumberOfElements())
+			.size(entityList.getSize())
+			.totalElements(entityList.getTotalElements())
+			.totalPage(entityList.getTotalPages())
+			.build()
+			;
+
+		var dtoList = entityList.stream()
 			.map(postConverter::toDto)
 			.toList();
+
+		return  Api.<List<PostDto>>builder()
+			.body(dtoList)
+			.pagination(pagination)
+			.build()
+			;
 	}
 
 }

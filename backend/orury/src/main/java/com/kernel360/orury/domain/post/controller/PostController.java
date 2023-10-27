@@ -1,6 +1,6 @@
 package com.kernel360.orury.domain.post.controller;
 
-import com.kernel360.orury.domain.post.PostViewRequest;
+import com.kernel360.orury.domain.post.model.PostViewRequest;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
@@ -28,7 +28,7 @@ public class PostController {
 		return postService.createPost(postRequest);
 	}
 
-	// 게시글 아이돌 게시글 조회. 주석 이따 지울게요
+
 
 	@PostMapping("/view")
 	public PostDto view(

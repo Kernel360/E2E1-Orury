@@ -19,7 +19,7 @@ import java.util.List;
 public class PostController {
 	private final PostService postService;
 
-	@PostMapping("")      // 문찬욱 : 임시 url
+	@PostMapping("")
 	public PostDto create(
 		@Valid
 		@RequestBody
@@ -36,14 +36,14 @@ public class PostController {
 		return postService.getPost(postViewRequest);
 	}
 
-	@GetMapping("/all")             // 문찬욱 : baordId에 따른 결과가 나오게 리팩토링 필요
+	@GetMapping("/all")
 	public List<PostDto> list(
 
 	) {
 		return postService.all();
 	}
 
-	@PatchMapping("")                // 문찬욱 : 임시 url, 리팩토링 필요
+	@PatchMapping("")
 	public PostDto updatePost(
 		@Valid
 		@RequestBody
@@ -52,7 +52,7 @@ public class PostController {
 		return postService.updatePost(postRequest);
 	}
 
-	@DeleteMapping("/{postId}")     // 문찬욱 : 임시 url
+	@DeleteMapping("/{postId}")
 	public void delete(
 		@PathVariable
 		Long postId

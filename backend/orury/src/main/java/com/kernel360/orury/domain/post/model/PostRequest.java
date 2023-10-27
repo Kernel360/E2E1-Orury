@@ -18,7 +18,7 @@ public class PostRequest {
 
 	private Long id;
 	private Long userId;
-	private Long boardId; //강의에선 1L을 임의로 할당
+	private Long boardId;
 	@NotBlank
 	private String postTitle;
 	@NotBlank

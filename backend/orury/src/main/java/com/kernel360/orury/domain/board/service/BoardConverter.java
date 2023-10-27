@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class  BoardConverter {
+public class BoardConverter {
 
 	private final PostConverter postConverter;
 

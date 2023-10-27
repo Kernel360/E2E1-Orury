@@ -67,7 +67,6 @@ public class BoardService {
 	public BoardDto view(Long id) {
 		var entity = boardRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다.: " + id));
-		//
 
 		return boardConverter.toDto(entity);
 	}

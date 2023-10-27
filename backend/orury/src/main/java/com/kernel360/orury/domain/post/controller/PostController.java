@@ -28,8 +28,6 @@ public class PostController {
 		return postService.createPost(postRequest);
 	}
 
-
-
 	@PostMapping("/view")
 	public PostDto view(
 		@Valid

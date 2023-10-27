@@ -4,8 +4,12 @@ import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
 
+import com.kernel360.orury.global.domain.Api;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -38,8 +42,11 @@ public class PostController {
 
 	// 게시글 모두 조회
 	@GetMapping("/all")
-	public List<PostDto> getPostList() {
-		return postService.getPostList();
+	public Api<List<PostDto>> getPostList(
+			@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
+			Pageable pageable
+	) {
+		return postService.getPostList(pageable);
 	}
 
 	// 게시글 수정

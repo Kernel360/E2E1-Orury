@@ -52,10 +52,7 @@ public class PostService {
 		Long postId = postViewRequest.getId();
 		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
 		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
-		PostDto postDto = postConverter.toDto(post);
-		postDto.setCommentList(commentService.findAllByPostId(postViewRequest.getId()));
-
-		return postDto;
+		return postConverter.toDto(post);
 	}
 
 	public PostDto updatePost(

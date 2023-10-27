@@ -29,5 +29,5 @@ public class PostDto {
 	private LocalDateTime createdAt;
 	private String updatedBy;
 	private LocalDateTime updatedAt;
-	private List<CommentDto> commentList = List.of();
+	private List<CommentDto> commentDtoList = List.of();
 }

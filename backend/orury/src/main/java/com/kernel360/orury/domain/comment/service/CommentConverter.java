@@ -2,14 +2,20 @@ package com.kernel360.orury.domain.comment.service;
 
 import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.domain.comment.model.CommentDto;
+import com.kernel360.orury.domain.post.db.PostEntity;
+import com.kernel360.orury.domain.post.db.PostRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CommentConverter {
+
+    private final PostRepository postRepository;
     public CommentDto toDto(CommentEntity commentEntity) {
         return CommentDto.builder()
                 .id(commentEntity.getId())
-                .postId(commentEntity.getPostId())
+                .postId(commentEntity.getPost().getId())
                 .userId(commentEntity.getUserId())
                 .commentContent(commentEntity.getCommentContent())
                 .userNickname(commentEntity.getUserNickname())
@@ -24,9 +30,13 @@ public class CommentConverter {
     }
 
     public CommentEntity toEntity(CommentDto commentdto) {
+        PostEntity postEntity = postRepository.findById(commentdto.getPostId())
+                .orElseThrow(
+                        () -> new RuntimeException("해당 게시글이 없습니다: " + commentdto.getPostId())
+                );
         return CommentEntity.builder()
                 .id(commentdto.getId())
-                .postId(commentdto.getPostId())
+                .post(postEntity)
                 .userId(commentdto.getUserId())
                 .commentContent(commentdto.getCommentContent())
                 .userNickname(commentdto.getUserNickname())

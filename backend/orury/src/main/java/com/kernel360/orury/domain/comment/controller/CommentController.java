@@ -15,6 +15,7 @@ import javax.validation.Valid;
 public class CommentController {
     private final CommentService commentService;
 
+    // 댓글 생성
     @PostMapping("")
     public CommentDto createComment(
             @Valid
@@ -24,6 +25,7 @@ public class CommentController {
         return commentService.createComment(commentRequest);
     }
 
+    // 댓글 수정
     @PatchMapping("")
     public CommentDto updateComment(
             @Valid
@@ -33,6 +35,7 @@ public class CommentController {
         return commentService.updateComment(commentRequest);
     }
 
+    // 댓글 삭제
     @DeleteMapping("")
     public void deleteComment(
             @Valid

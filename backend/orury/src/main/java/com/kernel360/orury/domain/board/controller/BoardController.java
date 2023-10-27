@@ -18,6 +18,7 @@ import java.util.List;
 public class BoardController {
 	private final BoardService boardService;
 
+	// 게시판 생성
 	@PostMapping("")
 	public BoardDto createBoard(
 		@Valid
@@ -27,11 +28,13 @@ public class BoardController {
 		return boardService.createBoard(boardRequest);
 	}
 
+	// 모든 게시판 조회
 	@GetMapping("")
-	public List<BoardDto> getBoard() {
-		return boardService.getBoard();
+	public List<BoardDto> getBoardList() {
+		return boardService.getBoardList();
 	}
 
+	// 게시판 업데이트
 	@PatchMapping("")
 	public BoardDto updateBoard(
 		@Valid
@@ -41,13 +44,15 @@ public class BoardController {
 		return boardService.updateBoard(boardRequest);
 	}
 
+	// 특정 게시판 조회
 	@GetMapping("/{id}")
-	public BoardDto view(
+	public BoardDto getBoard(
 		@PathVariable Long id
 	) {
-		return boardService.view(id);
+		return boardService.getBoard(id);
 	}
 
+	// 게시판 삭제
 	@DeleteMapping("/{id}")
 	public void deleteBoard(
 		@PathVariable

@@ -1,6 +1,6 @@
 package com.kernel360.orury.domain.post.controller;
 
-import com.kernel360.orury.domain.post.PostViewRequest;
+import com.kernel360.orury.domain.post.model.PostViewRequest;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;

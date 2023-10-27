@@ -48,10 +48,9 @@ public class PostService {
 		return postConverter.toDto(saveEntity);
 	}
 
-	public PostDto getPost(PostViewRequest postViewRequest) {
-		Long postId = postViewRequest.getId();
-		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
-		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
+	public PostDto getPost(Long id) {
+		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(id, false);
+		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + id));
 		return postConverter.toDto(post);
 	}
 
@@ -72,12 +71,12 @@ public class PostService {
 	}
 
 	public void deletePost(
-		Long postId
+		Long id
 	) {
-		postRepository.deleteById(postId);
+		postRepository.deleteById(id);
 	}
 
-	public List<PostDto> all() {
+	public List<PostDto> getPostList() {
 		return postRepository.findAll()
 			.stream()
 			.map(postConverter::toDto)

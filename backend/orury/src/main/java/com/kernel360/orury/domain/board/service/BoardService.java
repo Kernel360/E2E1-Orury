@@ -36,7 +36,7 @@ public class BoardService {
 	}
 
 	// 게시판 조회
-	public List<BoardDto> getBoard() {
+	public List<BoardDto> getBoardList() {
 		List<BoardEntity> boardEntityList = boardRepository.findAll();
 		return boardEntityList.stream()
 			.map(boardConverter::toDto)
@@ -64,7 +64,7 @@ public class BoardService {
 		boardRepository.deleteById(id);
 	}
 
-	public BoardDto view(Long id) {
+	public BoardDto getBoard(Long id) {
 		var entity = boardRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다.: " + id));
 

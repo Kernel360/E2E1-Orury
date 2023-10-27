@@ -1,6 +1,5 @@
 package com.kernel360.orury.domain.post.controller;
 
-import com.kernel360.orury.domain.post.model.PostViewRequest;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
@@ -19,8 +18,9 @@ import java.util.List;
 public class PostController {
 	private final PostService postService;
 
+	// 게시글 생성
 	@PostMapping("")
-	public PostDto create(
+	public PostDto createPost(
 		@Valid
 		@RequestBody
 		PostRequest postRequest
@@ -28,21 +28,21 @@ public class PostController {
 		return postService.createPost(postRequest);
 	}
 
-	@PostMapping("/view")
-	public PostDto view(
-		@Valid
-		@RequestBody PostViewRequest postViewRequest
+	// 특정 게시글 조회
+	@GetMapping("/{id}")
+	public PostDto getPost(
+		@PathVariable Long id
 	) {
-		return postService.getPost(postViewRequest);
+		return postService.getPost(id);
 	}
 
+	// 게시글 모두 조회
 	@GetMapping("/all")
-	public List<PostDto> list(
-
-	) {
-		return postService.all();
+	public List<PostDto> getPostList() {
+		return postService.getPostList();
 	}
 
+	// 게시글 수정
 	@PatchMapping("")
 	public PostDto updatePost(
 		@Valid
@@ -52,11 +52,9 @@ public class PostController {
 		return postService.updatePost(postRequest);
 	}
 
-	@DeleteMapping("/{postId}")
-	public void delete(
-		@PathVariable
-		Long postId
-	) {
-		postService.deletePost(postId);
+	// 게시글 삭제
+	@DeleteMapping("/{id}")
+	public void deletePost(@PathVariable Long id) {
+		postService.deletePost(id);
 	}
 }

@@ -40,7 +40,7 @@ public class BoardEntity extends BaseEntity {
 
 	@OneToMany(mappedBy = "board")
 	@Builder.Default
-	@Where(clause = "isDeleted = false")
+	@Where(clause = "is_delete = false")
 	@OrderBy(clause = "id desc")
 	private List<PostEntity> postList = List.of();
 }

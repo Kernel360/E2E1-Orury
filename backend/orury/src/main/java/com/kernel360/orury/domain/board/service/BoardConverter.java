@@ -1,7 +1,5 @@
 package com.kernel360.orury.domain.board.service;
 
-import java.util.stream.Collectors;
-
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.post.service.PostConverter;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BoardConverter {
+public class  BoardConverter {
 
 	private final PostConverter postConverter;
 
@@ -20,7 +18,7 @@ public class BoardConverter {
 		var postList = boardEntity.getPostList()
 			.stream()
 			.map(postConverter::toDto)
-			.collect(Collectors.toList());
+			.toList();
 
 		return BoardDto.builder()
 			.id(boardEntity.getId())

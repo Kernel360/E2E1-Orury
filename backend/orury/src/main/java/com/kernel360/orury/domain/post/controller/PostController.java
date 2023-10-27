@@ -28,7 +28,7 @@ public class PostController {
 		return postService.createPost(postRequest);
 	}
 
-	// 게시글 아이돌 게시글 조회. 주석 이따 지울게요
+
 
 	@PostMapping("/view")
 	public PostDto view(

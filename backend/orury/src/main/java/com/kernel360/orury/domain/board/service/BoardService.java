@@ -48,7 +48,7 @@ public class BoardService {
 		BoardRequest boardRequest
 	) {
 		BoardEntity entity = boardRepository.findById(boardRequest.getId())
-			.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + boardRequest.getId()));
+			.orElseThrow(() -> new RuntimeException("해당 게시판이 존재하지 않습니다: " + boardRequest.getId()));
 
 		BoardDto updatedDto = boardConverter.toDto(entity);
 		updatedDto.setBoardTitle(boardRequest.getBoardTitle());

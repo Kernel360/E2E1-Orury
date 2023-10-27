@@ -5,13 +5,14 @@ import com.kernel360.orury.domain.comment.db.CommentRepository;
 import com.kernel360.orury.domain.comment.model.CommentDelRequest;
 import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
+import com.kernel360.orury.domain.post.db.PostEntity;
+import com.kernel360.orury.domain.post.db.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * author : hyungjoon cho
@@ -23,18 +24,19 @@ import java.util.stream.Collectors;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
+    private final PostRepository postRepository;
 
-    public CommentDto createComment(
-            CommentRequest commentRequest
-    ) {
+    public CommentDto createComment(CommentRequest commentRequest) {
+        PostEntity postEntity = postRepository.findById(commentRequest.getPostId()).get();
+
         CommentEntity commentEntity = CommentEntity.builder()
                 .userId(commentRequest.getUserId())
-                .postId(commentRequest.getPostId())
+                .post(postEntity)
                 .commentContent(commentRequest.getCommentContent())
                 .userNickname(commentRequest.getUserNickname())
                 // 대댓글과 본댓글 판별
                 .pId(commentRequest.getId() == null ? null : commentRequest.getId())
-                .createdBy("admin")    // 문찬욱 : 임시로 "admin" 설정
+                .createdBy("admin")
                 .createdAt(LocalDateTime.now())
                 .updatedBy("admin")
                 .updatedAt(LocalDateTime.now())
@@ -53,7 +55,7 @@ public class CommentService {
         CommentEntity updateEntity = entity.orElseThrow(() -> new RuntimeException("해당 댓글이 없습니다." + id));
         CommentDto updateDto = commentConverter.toDto(updateEntity);
         updateDto.setCommentContent(commentRequest.getCommentContent());
-        updateDto.setUpdatedBy("admin");       // 문찬욱 : 임의로 "admin" 설정
+        updateDto.setUpdatedBy("admin");
         updateDto.setUpdatedAt(LocalDateTime.now());
         CommentEntity saveEntity = commentConverter.toEntity(updateDto);
         commentRepository.save(saveEntity);
@@ -69,10 +71,9 @@ public class CommentService {
 
     public List<CommentDto> findAllByPostId(Long postId) {
         List<CommentEntity> commentEntityList = commentRepository.findAllByPostIdAndIsDeleteOrderByIdDesc(postId, false);
-        List<CommentDto> commentDtoList = commentEntityList.stream()
+        return commentEntityList.stream()
                 .map(commentConverter::toDto)
-                .collect(Collectors.toList());
-        return commentDtoList;
+                .toList();
     }
 
 }

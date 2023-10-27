@@ -1,25 +1,14 @@
 package com.kernel360.orury.domain.board.db;
 
-import java.util.List;
-
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.global.domain.BaseEntity;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Where;
+
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * author : hyungjoon cho

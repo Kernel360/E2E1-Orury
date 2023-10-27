@@ -1,7 +1,9 @@
 package com.kernel360.orury.domain.comment.db;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.global.domain.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +31,10 @@ public class CommentEntity extends BaseEntity {
     private Long id;
 
     private Long userId;
-    private Long postId;
+    @ManyToOne
+    @JsonIgnore
+    @ToString.Exclude
+    private PostEntity post;
 
     @Column(columnDefinition = "TEXT")
     private String commentContent;

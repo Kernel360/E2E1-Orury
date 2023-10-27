@@ -23,9 +23,7 @@ public class CommentRequest {
      * 1. 수정/삭제는 id의 고유한 값에 대고 수정하는 것이기 때문에 분기처리가 필요없음
      */
     private Long id;
-//    @NotNull      문찬욱 : 업데이트에 쓰기위해 주석 처리 이부분은 이야기 해볼 것
     private Long postId;
-//    @NotNull      문찬욱 : 업데이트에 쓰기위해 주석 처리 이부분은 이야기 해볼 것
     private Long userId;
 
     @NotBlank

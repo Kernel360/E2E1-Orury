@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -18,10 +16,9 @@ import javax.validation.constraints.Size;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostRequest {
 
-	@NotBlank
 	private Long id;
 	private Long userId;
-	private Long boardId; //강의에선 1L을 임의로 할당
+	private Long boardId;
 	@NotBlank
 	private String postTitle;
 	@NotBlank

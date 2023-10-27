@@ -24,7 +24,7 @@ public class PostService {
 	private final PostConverter postConverter;
 	private final CommentService commentService;
 
-	private static final String ADMIN = "admin"; //
+	private static final String ADMIN = "admin";
 
 	public PostDto createPost(
 		PostRequest postRequest
@@ -39,7 +39,7 @@ public class PostService {
 			.userNickname(postRequest.getUserNickname())
 			.userId(postRequest.getUserId())
 			.board(boardEntity)
-			.createdBy(ADMIN)    // 문찬욱 : 임시로 "admin" 설정
+			.createdBy(ADMIN)
 			.createdAt(LocalDateTime.now())
 			.updatedBy(ADMIN)
 			.updatedAt(LocalDateTime.now())
@@ -67,7 +67,7 @@ public class PostService {
 		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());
 		dto.setPostContent(postRequest.getPostContent());
-		dto.setUpdatedBy(ADMIN);       // 문찬욱 : 임의로 "admin" 설정
+		dto.setUpdatedBy(ADMIN);
 		dto.setUpdatedAt(LocalDateTime.now());
 		var saveEntity = postConverter.toEntity(dto);
 		postRepository.save(saveEntity);
@@ -86,4 +86,5 @@ public class PostService {
 			.map(postConverter::toDto)
 			.toList();
 	}
+
 }

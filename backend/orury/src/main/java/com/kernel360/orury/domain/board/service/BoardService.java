@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class BoardService {
 		List<BoardEntity> boardEntityList = boardRepository.findAll();
 		return boardEntityList.stream()
 			.map(boardConverter::toDto)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	// 게시판 업데이트
@@ -62,7 +61,6 @@ public class BoardService {
 	}
 
 	public void deleteBoard(Long id) {
-
 		boardRepository.deleteById(id);
 	}
 

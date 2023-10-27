@@ -2,7 +2,7 @@ package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.service.CommentService;
-import com.kernel360.orury.domain.post.PostViewRequest;
+import com.kernel360.orury.domain.post.model.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.model.PostDto;

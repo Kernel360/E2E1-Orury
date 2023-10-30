@@ -5,38 +5,41 @@ import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/presentation/routes/route_path.dart';
 import 'package:http/http.dart' as http;
 
-import '../Board/Board.dart';
+import '../Board/board.dart';
 import '../Board/post.dart';
 import '../Board/post_detail.dart';
 import '../routes/routes.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
 
   Future<List<Post>> fetchPosts() async {
     final response = await http.get(
-      Uri.http('127.0.0.1:8080', '/api/board/2'),
+      Uri.http(dotenv.env['API_URL']!, '/api/board/4'),
       headers: {
         "Content-Type": "application/json",
-        // "X-CSRF-TOKEN": csrfToken,
       },
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      List<Post> posts = data.map((item) {
-        return Post(
-          item['id'],
-          item['boardId'],
-          item['postTitle'],
-          item['postContent'],
-          item['userNickname'],
-          item['viewCnt'],
-          item['likeCnt'],
-          item['userId'],
-        );
-      }).toList();
-      return posts;
+      // final List<dynamic> data = json.decode(response.body);
+      // List<Post> posts = data.map((item) {
+      //   return Post(
+      //     item['id'],
+      //     item['boardId'],
+      //     item['postTitle'],
+      //     item['postContent'],
+      //     item['userNickname'],
+      //     item['viewCnt'],
+      //     item['likeCnt'],
+      //     item['userId'],
+      //   );
+      // }).toList();
+      // return posts;
+      final jsonData = json.decode(response.body);
+      final board = Board.fromJson(jsonData);
+      return board.postDtoList;
     } else {
       throw Exception('Failed to load posts');
     }

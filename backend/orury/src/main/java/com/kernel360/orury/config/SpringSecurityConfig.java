@@ -1,4 +1,4 @@
-package com.kernel360.orury.security;
+package com.kernel360.orury.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -31,10 +31,10 @@ public class SpringSecurityConfig {
 		http.csrf();
 		// '/', '/home', '/signup'
 		http.authorizeRequests()
-			.antMatchers("/", "/home", "signup").permitAll()
+			.antMatchers("/", "/home", "/signup", "/login").permitAll()
 			.antMatchers("/board/**").hasRole("USER")
 			.antMatchers("/admin/**").hasRole("ADMIN")
-			.anyRequest().authenticated();
+			.anyRequest().permitAll();
 
 		http.formLogin()
 			.loginPage("/login")
@@ -54,12 +54,12 @@ public class SpringSecurityConfig {
 		return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
 	}
 
-	@
+	@Bean
 	public UserDetailsService userDetailsService() {
-		return username -> {
-			UserEntity user = userService.findByUsername(username);
+		return userNickname -> {
+			UserEntity user = userService.findByUsername(userNickname);
 			if (user == null) {
-				throw new UsernameNotFoundException(username);
+				throw new UsernameNotFoundException(userNickname);
 			}
 			return user;
 		};

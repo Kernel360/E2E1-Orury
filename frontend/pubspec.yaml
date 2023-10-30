@@ -96,6 +96,7 @@ flutter:
     - assets/
     - assets/svg/orury_splash.png
     - assets/png/
+    - lib/global/config/.env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

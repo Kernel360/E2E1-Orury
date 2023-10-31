@@ -4,16 +4,12 @@ import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
-
 import lombok.RequiredArgsConstructor;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -64,7 +60,6 @@ public class BoardService {
 
 	public void deleteBoard(Long id) {
 		boardRepository.deleteById(id);
-		log.info("게시판이 삭제되었습니다. : {}", id);
 	}
 
 	public BoardDto getBoard(Long id) {

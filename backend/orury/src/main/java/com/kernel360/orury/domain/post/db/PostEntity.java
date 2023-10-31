@@ -7,7 +7,6 @@ import com.kernel360.orury.global.domain.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OrderBy;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
@@ -34,12 +33,16 @@ public class PostEntity extends BaseEntity {
 	private String userNickname;
 	private int viewCnt;
 	private int likeCnt;
-	private boolean isDelete;
 	private Long userId;
 
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	@Builder.Default
-	@Where(clause = "is_delete = false")
 	@OrderBy(clause = "id desc")
 	private List<CommentEntity> commentList = List.of();
+	// 사진 url list
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@Builder.Default
+	@OrderBy(clause = "id asc")
+	private List<PostImageEntity> imageList = List.of();
+	private String thumbnailUrl;
 }

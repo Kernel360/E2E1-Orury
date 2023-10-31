@@ -23,6 +23,5 @@ public class BoardDto {
 	private LocalDateTime createdAt;
 	private String updatedBy;
 	private LocalDateTime updatedAt;
-
-	private List<PostDto> postDtoList = List.of();
+	private List<PostDto> postList = List.of();
 }

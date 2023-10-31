@@ -27,9 +27,8 @@ public class BoardEntity extends BaseEntity {
 	private Long id;
 	private String boardTitle;
 
-	@OneToMany(mappedBy = "board")
+	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
 	@Builder.Default
-	@Where(clause = "is_delete = false")
 	@OrderBy(clause = "id desc")
 	private List<PostEntity> postList = List.of();
 }

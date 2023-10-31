@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,4 +25,5 @@ public class PostRequest {
 	private String userNickname;
 	@NotBlank
 	private String postContent;
+	private List<String> postImageList;
 }

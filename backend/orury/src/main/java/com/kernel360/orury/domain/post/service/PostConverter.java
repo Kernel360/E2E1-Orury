@@ -30,13 +30,14 @@ public class PostConverter {
                 .userNickname(postEntity.getUserNickname())
                 .viewCnt(postEntity.getViewCnt())
                 .likeCnt(postEntity.getLikeCnt())
-                .isDelete(postEntity.isDelete())
                 .userId(postEntity.getUserId())
+                .thumbnailUrl(postEntity.getThumbnailUrl())
+                .imageList(postEntity.getImageList())
+                .commentList(commentList)
                 .createdBy(postEntity.getCreatedBy())
                 .createdAt(postEntity.getCreatedAt())
                 .updatedBy(postEntity.getUpdatedBy())
                 .updatedAt(postEntity.getUpdatedAt())
-                .commentDtoList(commentList)
                 .build();
     }
 
@@ -54,9 +55,8 @@ public class PostConverter {
                 .userNickname(postDto.getUserNickname())
                 .viewCnt(postDto.getViewCnt())
                 .likeCnt(postDto.getLikeCnt())
-                .isDelete(postDto.isDelete())
                 .userId(postDto.getUserId())
-
+                .thumbnailUrl(postDto.getThumbnailUrl())
                 .createdBy(postDto.getCreatedBy())
                 .createdAt(postDto.getCreatedAt())
                 .updatedBy(postDto.getUpdatedBy())

@@ -24,7 +24,6 @@ public class CommentDto {
 
     // 부모 댓글 id, pId == null ? 본댓글 : 대댓글
     private Long pId;
-    private boolean isDelete;
 
     private String createdBy;
     private LocalDateTime createdAt;

@@ -73,7 +73,7 @@ public class CommentService {
     }
 
     public List<CommentDto> findAllByPostId(Long postId) {
-        List<CommentEntity> commentEntityList = commentRepository.findAllByPostIdAndIsDeleteOrderByIdDesc(postId, false);
+        List<CommentEntity> commentEntityList = commentRepository.findAllByPostIdOrderByIdDesc(postId);
         return commentEntityList.stream()
                 .map(commentConverter::toDto)
                 .toList();

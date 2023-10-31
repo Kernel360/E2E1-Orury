@@ -2,6 +2,8 @@ package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.service.CommentService;
+import com.kernel360.orury.domain.post.db.PostImageEntity;
+import com.kernel360.orury.domain.post.db.PostImageRepository;
 import com.kernel360.orury.domain.post.model.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
@@ -29,6 +31,7 @@ public class PostService {
 	private final BoardRepository boardRepository;
 	private final PostConverter postConverter;
 	private final CommentService commentService;
+	private final PostImageRepository postImageRepository;
 
 	private static final String ADMIN = "admin";
 
@@ -45,17 +48,41 @@ public class PostService {
 			.userNickname(postRequest.getUserNickname())
 			.userId(postRequest.getUserId())
 			.board(boardEntity)
+			.thumbnailUrl(postRequest.getPostImageList().isEmpty() ? null : postRequest.getPostImageList().get(0))
 			.createdBy(ADMIN)
 			.createdAt(LocalDateTime.now())
 			.updatedBy(ADMIN)
 			.updatedAt(LocalDateTime.now())
 			.build();
 		var saveEntity = postRepository.save(entity);
+
+		// 사진 이미지 저장
+		try {
+			if(!postRequest.getPostImageList().isEmpty()) {
+				for (String url : postRequest.getPostImageList()) {
+					PostImageEntity postImageEntity = PostImageEntity.builder()
+							.imageUrl(url)
+							.post(entity)
+							.createdBy(ADMIN)
+							.createdAt(LocalDateTime.now())
+							.updatedBy(ADMIN)
+							.updatedAt(LocalDateTime.now())
+							.build();
+					postImageRepository.save(postImageEntity);
+				}
+			}
+
+		} catch (Exception e) {
+			throw e;
+		}
+
+
+
 		return postConverter.toDto(saveEntity);
 	}
 
 	public PostDto getPost(Long id) {
-		Optional<PostEntity> postEntityOptional = postRepository.findByIdAndIsDelete(id, false);
+		Optional<PostEntity> postEntityOptional = postRepository.findById(id);
 		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + id));
 		return postConverter.toDto(post);
 	}
@@ -64,7 +91,7 @@ public class PostService {
 		PostRequest postRequest
 	) {
 		Long postId = postRequest.getId();
-		var postEntityOptional = postRepository.findByIdAndIsDelete(postId, false);
+		var postEntityOptional = postRepository.findById(postId);
 		var entity = postEntityOptional.orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다: " + postId));
 		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());

@@ -2,11 +2,14 @@ package com.kernel360.orury.domain.board.service;
 
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.model.BoardDto;
+import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.service.PostConverter;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +20,11 @@ public class BoardConverter {
 	public BoardDto toDto(BoardEntity boardEntity) {
 		var postList = boardEntity.getPostList()
 			.stream()
-			.map(postConverter::toDto)
+			.map(postEntity -> {
+				PostDto postDto = postConverter.toDto(postEntity);
+//				postDto.setImageList(Collections.emptyList()); // 빈 리스트로 설정
+				return postDto;
+			})
 			.toList();
 
 		return BoardDto.builder()
@@ -27,7 +34,7 @@ public class BoardConverter {
 			.createdAt(boardEntity.getCreatedAt())
 			.updatedBy(boardEntity.getUpdatedBy())
 			.updatedAt(boardEntity.getUpdatedAt())
-			.postDtoList(postList)
+			.postList(postList)
 			.build();
 	}
 

@@ -3,6 +3,7 @@ package com.kernel360.orury.domain.post.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.kernel360.orury.domain.comment.model.CommentDto;
+import com.kernel360.orury.domain.post.db.PostImageEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,11 +24,12 @@ public class PostDto {
 	private String userNickname;
 	private int viewCnt;
 	private int likeCnt;
-	private boolean isDelete;
 	private Long userId;//
 	private String createdBy;
 	private LocalDateTime createdAt;
 	private String updatedBy;
 	private LocalDateTime updatedAt;
-	private List<CommentDto> commentDtoList = List.of();
+	private String thumbnailUrl;
+	private List<PostImageEntity> imageList = List.of();
+	private List<CommentDto> commentList = List.of();
 }

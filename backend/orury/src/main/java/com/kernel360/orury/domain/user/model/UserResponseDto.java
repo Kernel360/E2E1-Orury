@@ -24,6 +24,6 @@ public class UserResponseDto {
 	private Long id;
 	private String emailAddr;
 	private String userNickname;
-	private String authority;
+	private String authorities;
 
 }

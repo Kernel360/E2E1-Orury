@@ -31,9 +31,7 @@ public class UserRegisterDto {
 	private String userNickname;
 	@NotBlank
 	private String passwd;
-
 	private LocalDateTime passwdUpdateDate;
-
 	private Boolean isWithrawl;
 	private String withdrawlId;
 	private LocalDateTime withdrawlAt;
@@ -44,6 +42,6 @@ public class UserRegisterDto {
 	private LocalDateTime createdAt;
 	private String updatedBy;
 	private LocalDateTime updatedAt;
-	private String authority;
+	private String authorities;
 
 }

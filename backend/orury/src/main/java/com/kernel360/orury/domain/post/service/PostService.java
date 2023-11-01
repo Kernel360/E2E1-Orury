@@ -2,24 +2,24 @@ package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.service.CommentService;
-import com.kernel360.orury.domain.post.model.PostViewRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 
-import com.kernel360.orury.global.domain.Api;
-import com.kernel360.orury.global.domain.Pagination;
+import com.kernel360.orury.global.common.Api;
+import com.kernel360.orury.global.common.Pagination;
+
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -85,7 +85,7 @@ public class PostService {
 
 	public Api<List<PostDto>> getPostList(Pageable pageable) {
 
-		var entityList =  postRepository.findAll(pageable);
+		var entityList = postRepository.findAll(pageable);
 
 		var pagination = Pagination.builder()
 			.page(entityList.getNumber())
@@ -93,14 +93,13 @@ public class PostService {
 			.size(entityList.getSize())
 			.totalElements(entityList.getTotalElements())
 			.totalPage(entityList.getTotalPages())
-			.build()
-			;
+			.build();
 
 		var dtoList = entityList.stream()
 			.map(postConverter::toDto)
 			.toList();
 
-		return  Api.<List<PostDto>>builder()
+		return Api.<List<PostDto>>builder()
 			.body(dtoList)
 			.pagination(pagination)
 			.build()

@@ -2,56 +2,72 @@ package com.kernel360.orury.domain.user.db;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.Email;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.kernel360.orury.global.domain.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kernel360.orury.global.common.BaseEntity;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
-@Entity(name = "user")
+@Entity
+@Table(name = "user")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 public class UserEntity extends BaseEntity {
 
+	@JsonIgnore
 	@Id
+	@Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String emailAddr;
 
-	private String userNickname;
+	@Column(name = "username")
+	private String username;
 
-	private String passwd;
+	@Column(name = "nickname")
+	private String nickname;
+
+	@Column(name = "password")
+	private String password;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	@LastModifiedDate
 	private LocalDateTime passwdUpdateDate;
-
-	private Boolean isWithdrawl;
-	private String withdrawlId;
-	private LocalDateTime withdrawlAt;
+	@Column(name = "activated")
+	private boolean activated;
+	private Boolean isWithdrawal;
+	private String withdrawalId;
+	private LocalDateTime withdrawalAt;
 	private String remark1;
 	private String remark2;
 	private String remark3;
-	@OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER)
-	private List<Authority> authorities = new ArrayList<>();
+	@ManyToMany
+	@JoinTable(
+		name = "user_authority",
+		joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
+		inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")}
+	)
+	private Set<Authority> authorities;
 
 }

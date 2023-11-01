@@ -1,5 +1,4 @@
-package com.kernel360.orury.global.domain;
-
+package com.kernel360.orury.global.common;
 
 import lombok.*;
 
@@ -10,6 +9,6 @@ import lombok.*;
 @Builder
 @ToString
 public class Api<T> {
-    private T body;
-    private Pagination pagination;
+	private T body;
+	private Pagination pagination;
 }

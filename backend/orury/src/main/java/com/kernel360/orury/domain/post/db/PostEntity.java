@@ -3,13 +3,16 @@ package com.kernel360.orury.domain.post.db;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.comment.db.CommentEntity;
-import com.kernel360.orury.global.domain.BaseEntity;
+import com.kernel360.orury.global.common.BaseEntity;
+
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+
 import java.util.List;
 
 @Getter

@@ -1,41 +1,53 @@
 package com.kernel360.orury.domain.user.controller;
 
-import org.springframework.scheduling.support.SimpleTriggerContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import com.kernel360.orury.domain.user.db.UserRepository;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
 
-@RequiredArgsConstructor
-@Controller
+import com.kernel360.orury.domain.user.model.UserDto;
+import com.kernel360.orury.domain.user.service.UserService;
+
+@RestController
+@RequestMapping("/api")
 public class UserController {
+	private final UserService userService;
 
-	private final UserRepository userRepository;
-
-	@GetMapping("/login")
-	public String login() {
-		return "login";
+	public UserController(UserService userService) {
+		this.userService = userService;
 	}
 
-	@ResponseBody
-	@GetMapping("/main/1")
-	public String getMain1() {
+	@GetMapping("/hello")
+	public ResponseEntity<String> hello() {
+		return ResponseEntity.ok("hello");
+	}
 
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		Authentication authentication = securityContext.getAuthentication();
+	@PostMapping("/test-redirect")
+	public void testRedirect(HttpServletResponse response) throws IOException {
+		response.sendRedirect("/api/user");
+	}
 
-		String password = (authentication.getCredentials() == null) ?
-			"보안을 위한 eraseCredentialsAfterAuthentication 정책에 의해 성공적으로 null 처리 되었습니다." :
-			authentication.getCredentials().toString() + "입니다.";
+	@PostMapping("/signup")
+	public ResponseEntity<UserDto> signup(
+		@Valid @RequestBody UserDto userDto
+	) {
+		return ResponseEntity.ok(userService.signup(userDto));
+	}
 
-		return "안녕하세요, " + authentication.getName() + "님!<br>" +
-			"귀하의 비밀번호는 " + password;
+	@GetMapping("/user")
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+	public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
+		return ResponseEntity.ok(userService.getMyUserWithAuthorities());
+	}
+
+	@GetMapping("/user/{username}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<UserDto> getUserInfo(@PathVariable String username) {
+		return ResponseEntity.ok(userService.getUserWithAuthorities(username));
 	}
 }

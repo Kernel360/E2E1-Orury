@@ -4,7 +4,8 @@ import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
 
-import com.kernel360.orury.global.domain.Api;
+import com.kernel360.orury.global.common.Api;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
@@ -43,8 +44,8 @@ public class PostController {
 	// 게시글 모두 조회
 	@GetMapping("/all")
 	public Api<List<PostDto>> getPostList(
-			@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
-			Pageable pageable
+		@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
+		Pageable pageable
 	) {
 		return postService.getPostList(pageable);
 	}

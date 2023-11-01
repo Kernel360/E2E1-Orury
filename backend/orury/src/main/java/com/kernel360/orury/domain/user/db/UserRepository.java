@@ -4,11 +4,11 @@ import java.util.Optional;
 
 import javax.swing.text.html.Option;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-	Optional<UserEntity> findByEmailAddr(String emailAddr);
 
-	Optional<UserEntity> findByUserNickname(String emailAddr);
-
+	@EntityGraph(attributePaths = "authorities")
+	Optional<UserEntity> findOneWithAuthoritiesByUsername(String username);
 }

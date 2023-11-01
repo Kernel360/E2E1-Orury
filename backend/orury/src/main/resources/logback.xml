@@ -14,7 +14,7 @@
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 1KB -->
-                <maxFileSize>1KB</maxFileSize>
+                <maxFileSize>2MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
 
@@ -30,7 +30,15 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="com.kernel360.orury.domain" level="INFO">
+    <logger name="com.kernel360.orury.global" level="INFO">
+        <appender-ref ref="ROLLING" />
+    </logger>
+
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE">
+        <appender-ref ref="ROLLING" />
+    </logger>
+
+    <logger name="org.hibernate.SQL" level="DEBUG">
         <appender-ref ref="ROLLING" />
     </logger>
 

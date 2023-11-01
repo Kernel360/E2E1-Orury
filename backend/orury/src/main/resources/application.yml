@@ -14,10 +14,3 @@ spring:
     url: ${LOCAL_DB_URL} # configuration에서 설정 필요
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_USER_PASSWORD}
-logging:
-  level:
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql: trace

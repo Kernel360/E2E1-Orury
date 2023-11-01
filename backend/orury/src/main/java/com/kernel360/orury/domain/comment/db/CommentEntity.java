@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.global.domain.BaseEntity;
+import com.kernel360.orury.global.domain.Listener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import javax.persistence.*;
  * description : 댓글 엔티티
  */
 @Entity(name = "comment")
+@EntityListeners(Listener.class)
 @Getter
 @SuperBuilder
 @ToString

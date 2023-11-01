@@ -5,6 +5,9 @@ import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
 
+import com.kernel360.orury.global.constants.Constant;
+import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.message.info.InfoMessages;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +29,9 @@ public class BoardService {
 	) {
 		var entity = BoardEntity.builder()
 			.boardTitle(boardRequest.getBoardTitle())
-			.createdBy("admin")  // 임의로 "admin" 넣음
+			.createdBy(Constant.ADMIN.getMessage())
 			.createdAt(LocalDateTime.now())
-			.updatedBy("admin") // 임의로 "admin" 넣음
+			.updatedBy(Constant.ADMIN.getMessage())
 			.updatedAt(LocalDateTime.now())
 			.build();
 
@@ -50,11 +53,11 @@ public class BoardService {
 		BoardRequest boardRequest
 	) {
 		BoardEntity entity = boardRepository.findById(boardRequest.getId())
-			.orElseThrow(() -> new RuntimeException("해당 게시판이 존재하지 않습니다: " + boardRequest.getId()));
+			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + boardRequest.getId()));
 
 		BoardDto updatedDto = boardConverter.toDto(entity);
 		updatedDto.setBoardTitle(boardRequest.getBoardTitle());
-		updatedDto.setUpdatedBy("admin"); // 임의로 "admin" 넣음
+		updatedDto.setUpdatedBy(Constant.ADMIN.getMessage());
 		updatedDto.setUpdatedAt(LocalDateTime.now());
 
 		boardRepository.save(boardConverter.toEntity(updatedDto));
@@ -64,12 +67,12 @@ public class BoardService {
 
 	public void deleteBoard(Long id) {
 		boardRepository.deleteById(id);
-		log.info("게시판이 삭제되었습니다. : {}", id);
+		log.info(InfoMessages.BOARD_DELETED.getMessage() + id);
 	}
 
 	public BoardDto getBoard(Long id) {
 		var entity = boardRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다.: " + id));
+			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + id));
 
 		return boardConverter.toDto(entity);
 	}

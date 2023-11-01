@@ -4,6 +4,7 @@ import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
+import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class CommentConverter {
     public CommentEntity toEntity(CommentDto commentdto) {
         PostEntity postEntity = postRepository.findById(commentdto.getPostId())
                 .orElseThrow(
-                        () -> new RuntimeException("해당 게시글이 없습니다: " + commentdto.getPostId())
+                        () -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + commentdto.getPostId())
                 );
         return CommentEntity.builder()
                 .id(commentdto.getId())

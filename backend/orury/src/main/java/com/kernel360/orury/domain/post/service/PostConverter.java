@@ -5,6 +5,7 @@ import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.service.CommentConverter;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.model.PostDto;
+import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class PostConverter {
     public PostEntity toEntity(PostDto postDto) {
         BoardEntity boardEntity = boardRepository.findById(postDto.getBoardId())
                 .orElseThrow(
-                        () -> new RuntimeException("해당 게시판이 없습니다: " + postDto.getBoardId())
+                        () -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + postDto.getBoardId())
                 );
 
         return PostEntity.builder()

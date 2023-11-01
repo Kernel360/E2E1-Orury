@@ -1,4 +1,4 @@
-package com.kernel360.orury.global.domain;
+package com.kernel360.orury.global.common;
 
 import lombok.*;
 

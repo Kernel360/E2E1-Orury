@@ -4,7 +4,7 @@ import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
 
-import com.kernel360.orury.global.domain.Api;
+import com.kernel360.orury.global.common.Api;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;

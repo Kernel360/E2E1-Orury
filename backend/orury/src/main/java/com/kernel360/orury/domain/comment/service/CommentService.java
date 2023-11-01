@@ -7,6 +7,8 @@ import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
+import com.kernel360.orury.global.constants.Constant;
+import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +38,9 @@ public class CommentService {
                 .userNickname(commentRequest.getUserNickname())
                 // 대댓글과 본댓글 판별
                 .pId(commentRequest.getId() == null ? null : commentRequest.getId())
-                .createdBy("admin")
+                .createdBy(Constant.ADMIN.getMessage())
                 .createdAt(LocalDateTime.now())
-                .updatedBy("admin")
+                .updatedBy(Constant.ADMIN.getMessage())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
@@ -52,10 +54,10 @@ public class CommentService {
     ){
         Long id = commentRequest.getId();
         Optional<CommentEntity> entity = commentRepository.findById(id);
-        CommentEntity updateEntity = entity.orElseThrow(() -> new RuntimeException("해당 댓글이 없습니다." + id));
+        CommentEntity updateEntity = entity.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + id));
         CommentDto updateDto = commentConverter.toDto(updateEntity);
         updateDto.setCommentContent(commentRequest.getCommentContent());
-        updateDto.setUpdatedBy("admin");
+        updateDto.setUpdatedBy(Constant.ADMIN.getMessage());
         updateDto.setUpdatedAt(LocalDateTime.now());
         CommentEntity saveEntity = commentConverter.toEntity(updateDto);
         commentRepository.save(saveEntity);

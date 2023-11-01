@@ -1,22 +1,17 @@
 package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardRepository;
-import com.kernel360.orury.domain.comment.service.CommentService;
+import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostImageEntity;
 import com.kernel360.orury.domain.post.db.PostImageRepository;
-import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
-
 import com.kernel360.orury.global.common.Api;
 import com.kernel360.orury.global.common.Pagination;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
-import com.kernel360.orury.global.message.info.InfoMessages;
 import lombok.RequiredArgsConstructor;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PostService {
@@ -105,7 +99,6 @@ public class PostService {
 		Long id
 	) {
 		postRepository.deleteById(id);
-		log.info(InfoMessages.POST_DELETED.getMessage() + id);
 	}
 
 	public Api<List<PostDto>> getPostList(Pageable pageable) {

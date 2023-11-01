@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.global.common.BaseEntity;
+import com.kernel360.orury.global.common.Listener;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OrderBy;
@@ -17,6 +18,7 @@ import java.util.List;
 @ToString
 @SuperBuilder
 @Entity(name = "post")
+@EntityListeners(Listener.class)
 public class PostEntity extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

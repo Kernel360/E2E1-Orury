@@ -9,9 +9,7 @@ import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
-import com.kernel360.orury.global.message.info.InfoMessages;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,7 +23,6 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
@@ -72,7 +69,6 @@ public class CommentService {
             CommentDelRequest commentDelRequest
     ){
         commentRepository.deleteById(commentDelRequest.getId());
-        log.info(InfoMessages.COMMENT_DELETED.getMessage() + commentDelRequest.getId());
     }
 
     public List<CommentDto> findAllByPostId(Long postId) {

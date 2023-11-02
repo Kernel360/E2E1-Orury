@@ -1,7 +1,9 @@
 package com.kernel360.orury.domain.user.db;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -65,8 +67,10 @@ public class UserEntity extends BaseEntity {
 	@ManyToMany
 	@JoinTable(
 		name = "user_authority",
-		joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-		inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")}
+		joinColumns = {
+			@JoinColumn(name = "user_id", referencedColumnName = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))},
+		inverseJoinColumns = {
+			@JoinColumn(name = "authority_name", referencedColumnName = "authority_name", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))}
 	)
 	private Set<Authority> authorities;
 

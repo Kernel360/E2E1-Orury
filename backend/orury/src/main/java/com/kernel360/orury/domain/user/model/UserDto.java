@@ -38,9 +38,9 @@ public class UserDto {
 	private String password;
 	private String nickname;
 	private LocalDateTime passwdUpdateDate;
-	private Boolean isWithrawl;
-	private String withdrawlId;
-	private LocalDateTime withdrawlAt;
+	private Boolean isWithdrawal;
+	private String withdrawalId;
+	private LocalDateTime withdrawalAt;
 	private String remark1;
 	private String remark2;
 	private String remark3;

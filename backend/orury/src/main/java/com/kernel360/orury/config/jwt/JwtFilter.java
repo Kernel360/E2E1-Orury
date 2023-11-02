@@ -26,6 +26,11 @@ public class JwtFilter extends GenericFilterBean {
 		this.tokenProvider = tokenProvider;
 	}
 
+	/**
+	 author : aqrms
+	 date : 2023/11/2
+	 description : 토큰의 인증정보를 SecurityContext에 저장
+	 */
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws
 		IOException,
@@ -45,6 +50,11 @@ public class JwtFilter extends GenericFilterBean {
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
+	/**
+	 author : aqrms
+	 date : 2023/11/2
+	 description : 리퀘스트 헤더에서 토큰 정보를 꺼내온다
+	 */
 	private String resolveToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 

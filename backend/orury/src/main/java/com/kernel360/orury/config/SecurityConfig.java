@@ -16,6 +16,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+/**
+ author : aqrms
+ date : 2023/11/2
+ description : @EnableMethodSecurity는 추후 컨트롤러에서 API메서드 단위로 권한을 적용(@PreAuthorize)하기 위함
+ */
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
@@ -62,7 +67,7 @@ public class SecurityConfig {
 			.sessionManagement(sessionManagement ->
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-
+			// JWT필터 적용
 			.apply(new JwtSecurityConfig(tokenProvider));
 		return http.build();
 	}

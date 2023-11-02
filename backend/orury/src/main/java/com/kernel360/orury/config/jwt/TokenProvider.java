@@ -37,12 +37,22 @@ public class TokenProvider implements InitializingBean {
 		this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
 	}
 
+	/**
+	 author : aqrms
+	 date : 2023/11/2
+	 description : 빈이 생성되고 위 생성자에서 주입받은 jwt 시크릿 키를 base65 디코듷해서 key 변수에 할당
+	 */
 	@Override
 	public void afterPropertiesSet() {
 		byte[] keyBytes = Decoders.BASE64.decode(secret);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
 
+	/**
+	 author : aqrms
+	 date : 2023/11/2
+	 description : Authentication을 파라미터로 받아서 권한들을 가져온다, yml 파일에 설정한 만료시간을 설정하고 토큰을 생성한다
+	 */
 	public String createToken(Authentication authentication) {
 		String authorities = authentication.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
@@ -59,6 +69,11 @@ public class TokenProvider implements InitializingBean {
 			.compact();
 	}
 
+	/**
+	 author : aqrms
+	 date : 2023/11/2
+	 description : 토큰을 파라미터로 받아서 클레임을 만들고 이를 이용해 유저 객체를 만들고 Authentication 객체 리턴
+	 */
 	public Authentication getAuthentication(String token) {
 		Claims claims = Jwts
 			.parserBuilder()

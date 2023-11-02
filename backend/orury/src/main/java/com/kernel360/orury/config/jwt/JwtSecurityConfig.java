@@ -12,11 +12,7 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
 		this.tokenProvider = tokenProvider;
 	}
 
-	/**
-	 author : aqrms
-	 date : 2023/11/2
-	 description : JwtFilter를 시큐리티 로직(SecurityConfig)에 등록하는 역할
-	 */
+	// JwtFilter를 시큐리티 로직(SecurityConfig)에 등록하는 역할
 	@Override
 	public void configure(HttpSecurity http) {
 		http.addFilterBefore(

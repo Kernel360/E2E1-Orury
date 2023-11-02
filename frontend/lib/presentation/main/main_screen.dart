@@ -12,34 +12,21 @@ import '../routes/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MainScreen extends StatelessWidget {
-  MainScreen({super.key});
+  const MainScreen({super.key});
 
   Future<List<Post>> fetchPosts() async {
     final response = await http.get(
-      Uri.http(dotenv.env['API_URL']!, '/api/board/4'),
+      Uri.http(dotenv.env['API_URL']!, '/api/board/7'),
       headers: {
         "Content-Type": "application/json",
       },
     );
 
     if (response.statusCode == 200) {
-      // final List<dynamic> data = json.decode(response.body);
-      // List<Post> posts = data.map((item) {
-      //   return Post(
-      //     item['id'],
-      //     item['boardId'],
-      //     item['postTitle'],
-      //     item['postContent'],
-      //     item['userNickname'],
-      //     item['viewCnt'],
-      //     item['likeCnt'],
-      //     item['userId'],
-      //   );
-      // }).toList();
-      // return posts;
-      final jsonData = json.decode(response.body);
+      // final jsonData = json.decode(response.body);
+      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
       final board = Board.fromJson(jsonData);
-      return board.postDtoList;
+      return board.postList;
     } else {
       throw Exception('Failed to load posts');
     }
@@ -67,18 +54,43 @@ class MainScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final post = snapshot.data![index];
                 return ListTile(
-                  leading: Image.network("https://economychosun.com/site/data/img_dir/2020/07/06/2020070600017_0.jpg"),
+                  // tileColor: AppColors.background,
+                  selectedTileColor: AppColors.oruryMain,
+                  leading: post.thumbnailUrl != null
+                      ? Image.network(
+                          post.thumbnailUrl!,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          errorBuilder: (BuildContext context, Object exception,
+                              StackTrace? stackTrace) {
+                            return const SizedBox
+                                .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
+                          },
+                        )
+                      : null,
+                  // null인 경우 leading 생략
                   title: Text(post.postTitle),
-                  subtitle: Text('작성자: ${post.userNickname}'),
+                  subtitle: Text(post.userNickname),
                   onTap: () {
                     // 게시물을 누르면 상세 페이지로 이동
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PostDetail(post),
+                        builder: (context) => PostDetail(post.id),
                       ),
                     );
                   },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.thumb_up, size: 15,), // 좋아요 아이콘
+                      Text(post.likeCnt.toString()), // 좋아요 수
+                      SizedBox(width: 20), // 간격 조절
+                      Icon(Icons.comment, size: 15,),  // 댓글 아이콘
+                      Text(post.commentList.length.toString()), // 댓글 수
+                    ],
+                  ),
                 );
               },
             );

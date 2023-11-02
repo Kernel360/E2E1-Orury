@@ -11,7 +11,9 @@ import com.kernel360.orury.global.common.Api;
 import com.kernel360.orury.global.common.Pagination;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -50,16 +52,16 @@ public class PostService {
 
 		// 사진 이미지 저장
 		try {
-			if(!postRequest.getPostImageList().isEmpty()) {
+			if (!postRequest.getPostImageList().isEmpty()) {
 				for (String url : postRequest.getPostImageList()) {
 					PostImageEntity postImageEntity = PostImageEntity.builder()
-							.imageUrl(url)
-							.post(entity)
-							.createdBy(Constant.ADMIN.getMessage())
-							.createdAt(LocalDateTime.now())
-							.updatedBy(Constant.ADMIN.getMessage())
-							.updatedAt(LocalDateTime.now())
-							.build();
+						.imageUrl(url)
+						.post(entity)
+						.createdBy(Constant.ADMIN.getMessage())
+						.createdAt(LocalDateTime.now())
+						.updatedBy(Constant.ADMIN.getMessage())
+						.updatedAt(LocalDateTime.now())
+						.build();
 					postImageRepository.save(postImageEntity);
 				}
 			}
@@ -68,14 +70,13 @@ public class PostService {
 			throw e;
 		}
 
-
-
 		return postConverter.toDto(saveEntity);
 	}
 
 	public PostDto getPost(Long id) {
 		Optional<PostEntity> postEntityOptional = postRepository.findById(id);
-		PostEntity post = postEntityOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + id));
+		PostEntity post = postEntityOptional.orElseThrow(
+			() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + id));
 		return postConverter.toDto(post);
 	}
 
@@ -84,7 +85,8 @@ public class PostService {
 	) {
 		Long postId = postRequest.getId();
 		var postEntityOptional = postRepository.findById(postId);
-		var entity = postEntityOptional.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + postId));
+		var entity = postEntityOptional.orElseThrow(
+			() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + postId));
 		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());
 		dto.setPostContent(postRequest.getPostContent());
@@ -103,7 +105,7 @@ public class PostService {
 
 	public Api<List<PostDto>> getPostList(Pageable pageable) {
 
-		var entityList =  postRepository.findAll(pageable);
+		var entityList = postRepository.findAll(pageable);
 
 		var pagination = Pagination.builder()
 			.page(entityList.getNumber())
@@ -111,14 +113,13 @@ public class PostService {
 			.size(entityList.getSize())
 			.totalElements(entityList.getTotalElements())
 			.totalPage(entityList.getTotalPages())
-			.build()
-			;
+			.build();
 
 		var dtoList = entityList.stream()
 			.map(postConverter::toDto)
 			.toList();
 
-		return  Api.<List<PostDto>>builder()
+		return Api.<List<PostDto>>builder()
 			.body(dtoList)
 			.pagination(pagination)
 			.build()

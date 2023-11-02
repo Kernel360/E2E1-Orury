@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.global.common.BaseEntity;
 import com.kernel360.orury.global.common.Listener;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,23 +29,23 @@ import javax.persistence.*;
 @AllArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CommentEntity extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private Long userId;
-    @ManyToOne
-    @JsonIgnore
-    @ToString.Exclude
-    private PostEntity post;
+	private Long userId;
+	@ManyToOne
+	@JsonIgnore
+	@ToString.Exclude
+	private PostEntity post;
 
-    @Column(columnDefinition = "TEXT")
-    private String commentContent;
+	@Column(columnDefinition = "TEXT")
+	private String commentContent;
 
-    private String userNickname;
-    private int likeCnt;
+	private String userNickname;
+	private int likeCnt;
 
-    // 부모 댓글 id, pId == null ? 본댓글 : 대댓글
-    private Long pId;
+	// 부모 댓글 id, pId == null ? 본댓글 : 대댓글
+	private Long pId;
 
 }

@@ -1,16 +1,22 @@
 spring:
   jpa:
     show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: validate
     properties:
-      format_sql: true
-      dialect: org.hibernate.dialect.MySQL8Dialect
       hibernate:
-        ddl-auto: validate
+        format_sql: true
         use_sql_comments: true
         show_sql: true
-        format_sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${LOCAL_DB_URL} # configuration에서 설정 필요
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_USER_PASSWORD}
+jwt:
+  header: Authorization
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
+  secret: ${LOCAL_JWT_SECRET_KEY}
+  token-validity-in-seconds: 86400

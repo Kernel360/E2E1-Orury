@@ -1,5 +1,8 @@
 package com.kernel360.orury.global.message.info;
 
+import lombok.Getter;
+
+@Getter
 public enum InfoMessages {
     BOARD_DELETED("게시판이 삭제되었습니다."),
     POST_DELETED("게시글이 삭제되었습니다."),
@@ -11,7 +14,4 @@ public enum InfoMessages {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

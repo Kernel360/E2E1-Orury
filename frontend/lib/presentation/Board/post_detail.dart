@@ -1,32 +1,136 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart';
+import 'package:orury/core/theme/constant/app_colors.dart';
+import 'package:orury/presentation/Board/comment.dart';
 import 'package:orury/presentation/Board/post.dart';
+import 'package:http/http.dart' as http;
 
 class PostDetail extends StatelessWidget {
-  final Post post;
+  final int id;
 
-  PostDetail(this.post);
+  PostDetail(this.id, {super.key});
+
+  Future<Post> fetchPost() async {
+    final response = await http.get(
+      Uri.http(dotenv.env['API_URL']!, '/api/post/' + id.toString()),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+      final post = Post.fromJson(jsonData);
+      return post;
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('게시물 상세보기'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.network("https://economychosun.com/site/data/img_dir/2020/07/06/2020070600017_0.jpg"), // 썸네일 이미지
-            SizedBox(height: 16),
-            Text(post.postTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), // 제목
-            Text('작성자: ${post.userNickname}'), // 작성자
-            Divider(),
-            Text(post.postContent), // 본문
-          ],
-        ),
-      ),
+    return FutureBuilder<Post>(
+      future: fetchPost(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          final post = snapshot.data!;
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('게시물 상세보기'),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: post.commentList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (post.thumbnailUrl != null)
+                          Image.network(post.thumbnailUrl!), // 썸네일 이미지
+                        SizedBox(height: 16),
+                        Text(post.postTitle,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold)), // 제목
+                        Text(
+                          post.userNickname.toString(),
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ), // 작성자
+                        Divider(),
+                        Text(post.postContent), // 본문
+                      ],
+                    );
+                  } else {
+                    Comment comment = post.commentList[index - 1];
+                    return ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(comment.commentContent),
+                          ),
+                          PopupMenuButton<String>(
+                            onSelected: (String result) {
+                              if (result == 'edit') {
+                                // 댓글 수정 기능 구현
+                              } else if (result == 'delete') {
+                                // 댓글 삭제 기능 구현
+                              }
+                            },
+                            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                              const PopupMenuItem<String>(
+                                value: 'edit',
+                                child: Text('수정'),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Text('삭제'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(comment.userNickname),
+                          Row(
+                            children: [
+                              Icon(Icons.favorite, color: Colors.red),
+                              Text(comment.likeCnt.toString()),
+                              SizedBox(width: 16),
+                              TextButton(
+                                onPressed: () {
+                                  // 대댓글 작성 기능 구현
+                                },
+                                child: Text('답글 달기'),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppColors.oruryMain,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }

@@ -16,6 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+
 /**
  author : aqrms
  date : 2023/11/2
@@ -24,6 +26,12 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
+
+	private static final List<String> SWAGGER = List.of(
+			"/swagger-ui.html",
+			"/swagger-ui/**",
+			"/v3/api-docs/**"
+	);
 	private final TokenProvider tokenProvider;
 	private final CorsFilter corsFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -59,6 +67,7 @@ public class SecurityConfig {
 			)
 
 			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
 				.antMatchers("/api/hello", "/api/authenticate", "/api/signup").permitAll()
 				.anyRequest().authenticated()
 			)

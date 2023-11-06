@@ -1,5 +1,6 @@
 package com.kernel360.orury.config.jwt;
 
+import com.kernel360.orury.global.message.errors.ErrorMessages;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -85,13 +86,13 @@ public class TokenProvider implements InitializingBean {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
 		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-			logger.info("잘못된 JWT 서명입니다.");
+			logger.info(ErrorMessages.MALFORMED_JWT.getMessage());
 		} catch (ExpiredJwtException e) {
-			logger.info("만료된 JWT 토큰입니다.");
+			logger.info(ErrorMessages.EXPIRED_JWT.getMessage());
 		} catch (UnsupportedJwtException e) {
-			logger.info("지원되지 않는 JWT 토큰입니다.");
+			logger.info(ErrorMessages.UNSUPPORTED_JWT.getMessage());
 		} catch (IllegalArgumentException e) {
-			logger.info("JWT 토큰이 잘못되었습니다.");
+			logger.info(ErrorMessages.ILLEGAL_ARGUMENT_JWT.getMessage());
 		}
 		return false;
 	}

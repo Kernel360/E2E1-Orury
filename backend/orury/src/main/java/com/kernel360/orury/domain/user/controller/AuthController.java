@@ -27,7 +27,7 @@ import com.kernel360.orury.domain.user.model.TokenDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthController {
 	private final TokenProvider tokenProvider;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -41,7 +41,7 @@ public class AuthController {
 	public ResponseEntity<TokenDto> authenticate(@Valid @RequestBody LoginDto loginDto) {
 
 		UsernamePasswordAuthenticationToken authenticationToken =
-			new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
+			new UsernamePasswordAuthenticationToken(loginDto.getEmailAddr(), loginDto.getPassword());
 
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);

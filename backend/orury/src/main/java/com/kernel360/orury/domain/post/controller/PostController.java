@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,17 +79,17 @@ public class PostController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 	}
 	// 게시글 삭제
-	@DeleteMapping("/{post_id}")
-	public ResponseEntity<String> deletePost(@PathVariable Long post_id) {
+	@DeleteMapping("/{postId}")
+	public ResponseEntity<String> deletePost(@PathVariable Long postId) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = authentication.getName();
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		boolean isAdmin = authorities.stream()
 				.anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
 
-		if(postService.isWriter(userEmail, post_id) || isAdmin ){
-			postService.deletePost(post_id);
-			return ResponseEntity.ok(InfoMessages.POST_DELETED.getMessage() + post_id);
+		if(postService.isWriter(userEmail, postId) || isAdmin ){
+			postService.deletePost(postId);
+			return ResponseEntity.ok(InfoMessages.POST_DELETED.getMessage() + postId);
 		}else{
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 "+ ErrorMessages.THERE_IS_NO_AUTHORITY.getMessage());
 		}

@@ -62,14 +62,7 @@ public class UserEntity extends BaseEntity {
 	private String remark1;
 	private String remark2;
 	private String remark3;
-//	@ManyToMany
-//	@JoinTable(
-//		name = "user_authority",
-//		joinColumns = {
-//			@JoinColumn(name = "id", referencedColumnName = "id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))},
-//		inverseJoinColumns = {
-//			@JoinColumn(name = "name", referencedColumnName = "name", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))}
-//	)
+
 	@ManyToMany
 	@JoinTable(
 		name = "user_authority",

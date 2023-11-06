@@ -7,6 +7,8 @@ import com.kernel360.orury.domain.post.db.PostImageRepository;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
+import com.kernel360.orury.domain.user.db.UserEntity;
+import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.common.Api;
 import com.kernel360.orury.global.common.Pagination;
 import com.kernel360.orury.global.constants.Constant;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,10 +31,14 @@ public class PostService {
 	private final BoardRepository boardRepository;
 	private final PostConverter postConverter;
 	private final PostImageRepository postImageRepository;
+	private final UserRepository userRepository;
 
 	public PostDto createPost(
-		PostRequest postRequest
+		PostRequest postRequest,
+		String userEmail
 	) {
+		var user = userRepository.findByEmailAddr(userEmail)
+				.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail));
 
 		var boardEntity = boardRepository.findById(postRequest.getBoardId())
 			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage()));
@@ -40,7 +47,7 @@ public class PostService {
 			.postTitle(postRequest.getPostTitle())
 			.postContent(postRequest.getPostContent())
 			.userNickname(postRequest.getUserNickname())
-			.userId(postRequest.getUserId())
+			.userId(user.getId())
 			.board(boardEntity)
 			.thumbnailUrl(postRequest.getPostImageList().isEmpty() ? null : postRequest.getPostImageList().get(0))
 			.createdBy(Constant.ADMIN.getMessage())
@@ -126,4 +133,16 @@ public class PostService {
 			;
 	}
 
+	public boolean isWriter(String userEmail, Long postId) {
+		PostEntity post = postRepository.findById(postId).orElseThrow(
+				() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + postId)
+		);
+
+		UserEntity user = userRepository.findByEmailAddr(userEmail).orElseThrow(
+				() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail)
+		);
+
+		return Objects.equals(user.getId(), post.getUserId());
+
+	}
 }

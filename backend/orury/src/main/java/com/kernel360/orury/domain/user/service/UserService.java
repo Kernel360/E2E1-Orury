@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import com.kernel360.orury.domain.user.db.AuthorityEntity;
 import com.kernel360.orury.global.constants.Constant;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

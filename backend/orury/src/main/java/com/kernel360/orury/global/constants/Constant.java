@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum Constant {
     ADMIN("admin"),
     SYSTEM("system"),
-    ROLE_USER("role_user"),
+    ROLE_USER("ROLE_USER"),
     ;
 
     private final String message;

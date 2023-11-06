@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum Constant {
-    ADMIN("admin")
+    ADMIN("admin"),
+    SYSTEM("system"),
+    ROLE_USER("role_user"),
     ;
 
     private final String message;

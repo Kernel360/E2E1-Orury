@@ -3,11 +3,13 @@ package com.kernel360.orury.domain.user.service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+import com.kernel360.orury.domain.user.db.AuthorityEntity;
+import com.kernel360.orury.global.constants.Constant;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kernel360.orury.domain.user.db.Authority;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.domain.user.exception.DuplicateMemberException;
@@ -27,22 +29,22 @@ public class UserService {
 
 	@Transactional
 	public UserDto signup(UserDto userDto) {
-		if (userRepository.findOneWithAuthoritiesByUsername(userDto.getUsername()).orElse(null) != null) {
+		if (userRepository.findOneWithAuthoritiesByEmailAddr(userDto.getEmailAddr()).orElse(null) != null) {
 			throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
 		}
 
-		Authority authority = Authority.builder()
-			.authorityName("ROLE_USER")
+		AuthorityEntity authority = AuthorityEntity.builder()
+			.name(Constant.ROLE_USER.getMessage())
 			.build();
 
 		UserEntity user = UserEntity.builder()
-			.username(userDto.getUsername())
+			.emailAddr(userDto.getEmailAddr())
 			.password(passwordEncoder.encode(userDto.getPassword()))
 			.authorities(Collections.singleton(authority))
 			.createdAt(LocalDateTime.now())
-			.createdBy("ADMIN")
+			.createdBy(Constant.SYSTEM.getMessage())
 			.updatedAt(LocalDateTime.now())
-			.updatedBy("ADMIN")
+			.updatedBy(Constant.SYSTEM.getMessage())
 			.activated(true)
 			.build();
 
@@ -51,14 +53,14 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserDto getUserWithAuthorities(String username) {
-		return UserDto.from(userRepository.findOneWithAuthoritiesByUsername(username).orElse(null));
+		return UserDto.from(userRepository.findOneWithAuthoritiesByEmailAddr(username).orElse(null));
 	}
 
 	@Transactional(readOnly = true)
 	public UserDto getMyUserWithAuthorities() {
 		return UserDto.from(
 			SecurityUtil.getCurrentUsername()
-				.flatMap(userRepository::findOneWithAuthoritiesByUsername)
+				.flatMap(userRepository::findOneWithAuthoritiesByEmailAddr)
 				.orElseThrow(() -> new NotFoundMemberException("Member not found"))
 		);
 	}

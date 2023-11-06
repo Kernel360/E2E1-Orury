@@ -14,7 +14,7 @@ import com.kernel360.orury.domain.user.model.UserDto;
 import com.kernel360.orury.domain.user.service.UserService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 	private final UserService userService;
 

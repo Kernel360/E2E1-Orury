@@ -38,14 +38,12 @@ public class UserEntity extends BaseEntity {
 
 	@JsonIgnore
 	@Id
-	@Column(name = "user_id")
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "email_addr")
 	private String emailAddr;
-
-	@Column(name = "username")
-	private String username;
 
 	@Column(name = "nickname")
 	private String nickname;
@@ -64,14 +62,15 @@ public class UserEntity extends BaseEntity {
 	private String remark1;
 	private String remark2;
 	private String remark3;
+
 	@ManyToMany
 	@JoinTable(
 		name = "user_authority",
-		joinColumns = {
-			@JoinColumn(name = "user_id", referencedColumnName = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))},
-		inverseJoinColumns = {
-			@JoinColumn(name = "authority_name", referencedColumnName = "authority_name", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))}
-	)
-	private Set<Authority> authorities;
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+		inverseJoinColumns = @JoinColumn(name = "authority_name", referencedColumnName = "name"),
+		foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT),
+		inverseForeignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+)
+	private Set<AuthorityEntity> authorities;
 
 }

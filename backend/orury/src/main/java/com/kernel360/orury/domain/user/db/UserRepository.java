@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 	@EntityGraph(attributePaths = "authorities")
-	Optional<UserEntity> findOneWithAuthoritiesByUsername(String username);
+	Optional<UserEntity> findOneWithAuthoritiesByEmailAddr(String username);
 }

@@ -7,6 +7,7 @@ import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
+import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -27,12 +29,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentConverter commentConverter;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public CommentDto createComment(CommentRequest commentRequest) {
-        PostEntity postEntity = postRepository.findById(commentRequest.getPostId()).get();
+    public CommentDto createComment(CommentRequest commentRequest, String userEmail) {
+        PostEntity postEntity = postRepository.findById(commentRequest.getPostId())
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + commentRequest.getPostId()));
+        var user = userRepository.findByEmailAddr(userEmail)
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail));
+        Long userId = user.getId();
 
         CommentEntity commentEntity = CommentEntity.builder()
-                .userId(commentRequest.getUserId())
+                .userId(userId)
                 .post(postEntity)
                 .commentContent(commentRequest.getCommentContent())
                 .userNickname(commentRequest.getUserNickname())
@@ -65,10 +72,8 @@ public class CommentService {
         return updateDto;
     }
 
-    public void deleteComment(
-            CommentDelRequest commentDelRequest
-    ){
-        commentRepository.deleteById(commentDelRequest.getId());
+    public void deleteComment(Long commentId){
+        commentRepository.deleteById(commentId);
     }
 
     public List<CommentDto> findAllByPostId(Long postId) {
@@ -78,4 +83,14 @@ public class CommentService {
                 .toList();
     }
 
+    public boolean isWriter(String userEmail, Long id) {
+        var comment = commentRepository.findById(id).orElseThrow(
+                () -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + id)
+        );
+        var user = userRepository.findByEmailAddr(userEmail).orElseThrow(
+                () -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail)
+        );
+        return Objects.equals(user.getId(), comment.getUserId());
+
+    }
 }

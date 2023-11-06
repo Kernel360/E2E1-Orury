@@ -8,6 +8,8 @@ public enum ErrorMessages {
     THERE_IS_NO_BOARD("게시판이 존재하지 않습니다."),
     THERE_IS_NO_POST("게시글이 존재하지 않습니다."),
     THERE_IS_NO_COMMENT("댓글이 존재하지 않습니다."),
+    THERE_IS_NO_USER("유저가 존재하지 않습니다."),
+    THERE_IS_NO_AUTHORITY("권한이 없습니다"),
 
     // 회원
     NOT_EXIST_USER_EMAIL("존재하지 않는 회원입니다. (email 계정 없음)"),

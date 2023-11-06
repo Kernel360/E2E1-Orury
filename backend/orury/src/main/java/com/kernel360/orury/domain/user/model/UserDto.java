@@ -55,8 +55,8 @@ public class UserDto {
 		return UserDto.builder()
 			.emailAddr(user.getEmailAddr())
 			.authorityDtoSet(user.getAuthorities().stream()
-				.map(authority -> AuthorityDto.builder().name(authority.getName()).build())
-				.collect(Collectors.toSet()))
+			.map(authority -> AuthorityDto.builder().name(authority.getName()).build())
+			.collect(Collectors.toSet()))
 			.build();
 	}
 }

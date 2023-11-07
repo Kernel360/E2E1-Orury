@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:orury/core/theme/constant/app_colors.dart';
+import 'package:orury/global/messages/board/post_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../routes/routes.dart';
@@ -18,6 +20,7 @@ class PostCreate extends StatefulWidget {
 
 class _PostCreateState extends State<PostCreate> {
   final _formKey = GlobalKey<FormState>();
+  final String? imgurClientId = dotenv.env['IMGUR_CLIENT_ID'];
   List<File> _images = [];
   final picker = ImagePicker();
 
@@ -27,20 +30,78 @@ class _PostCreateState extends State<PostCreate> {
   bool isObscure = true;
 
   Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    ImageSource? source = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text('사진 추가'),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, ImageSource.camera);
+              },
+              child: const Text('카메라로 사진 찍기'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, ImageSource.gallery);
+              },
+              child: const Text('갤러리에서 사진 선택'),
+            ),
+          ],
+        );
+      },
+    );
 
-    setState(() {
+    if (source != null) {
+      final pickedFile = await picker.pickImage(source: source);
+
       if (pickedFile != null && _images.length < 10) {
-        _images.add(File(pickedFile.path));
+        setState(() {
+          _images.add(File(pickedFile.path));
+        });
       }
-    });
+    }
   }
 
-  Future getUrl() async {} // API 결과를 가져오기 위한 함수 작성 필요해 보임
+  // imgur API를 통한 이미지 업로드
+  Future<List<String>> uploadImages() async {
+    List<String> urls = [];
 
+    for (var image in _images) {
+      final request = http.MultipartRequest('POST', Uri.parse(dotenv.env['IMGUR_UPLOAD_URL']!));
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+      request.headers.addAll({
+        'Authorization': 'Client-ID $imgurClientId',
+      });
+
+      try {
+        final response = await request.send();
+        final respStr = await response.stream.bytesToString();
+        if (response.statusCode == 200) {
+          final data = jsonDecode(respStr);
+          String str = data['data']['link'];
+          // 도메인 절삭
+          str = str.replaceFirst(dotenv.env['IMGUR_GET_IMAGE_URL']!, '');
+          urls.add(str);
+        } else {
+          print('Failed to upload image: $respStr');
+        }
+      } catch (e) {
+        print('Error occurred: $e');
+      }
+    }
+    return urls;
+  }
+
+
+  // 게시글 작성
   void post() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwtToken');
+
+    // 이미지 업로드하고 URL 리스트 받아오기
+    final imageUrls = await uploadImages();
 
     final response = await http.post(
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
@@ -50,31 +111,32 @@ class _PostCreateState extends State<PostCreate> {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
-        // 'user_id' : 1,   // 코드 수정 필요
-        'board_id' : 1, // 코드 수정 필요
+        'user_id' : 1,   // 코드 수정 필요
+        'board_id': 1, // 코드 수정 필요
         'post_title': titleController.text,
-        'user_nickname' : 'test1', // 코드 수정 필요
+        'user_nickname': 'test1', // 코드 수정 필요
         'post_content': contentController.text,
-        'post_image_list' : ["https://i.imgur.com/RD1Qemr.jpg", "https://i.imgur.com/3lPyhi2.jpg", "https://i.imgur.com/ggn3EMw.jpg"]
+        'post_image_list': imageUrls
         // 코드 수정 필요
       }),
     );
-    // 정상 회원가입 시 로그인 처리.
+
+    // 작성 성공
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('작성 성공!'),
+          content: Text(PostMessage.postSuccess),
         ),
       );
       titleController.clear();
       contentController.clear();
-      // _images는 안비워줘도 되나?
+      _images.clear();
       router.pop();
     } else {
       // HTTP 요청이 실패했다면,
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('게시글 작성에 실패하였습니다.'),
+          content: Text(PostMessage.postFail),
         ),
       );
     }
@@ -84,51 +146,91 @@ class _PostCreateState extends State<PostCreate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Image Picker Demo'),
+        title: Text('게시글 작성'),
       ),
-      body: Column(
-        children: <Widget>[
-          TextField(
-            decoration: InputDecoration(
-              labelText: '제목',
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(
+                labelText: '제목',
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurple),
+                ),
+              ),
+              controller: titleController,
             ),
-            controller: titleController,
-          ),
-          TextField(
-            decoration: InputDecoration(
-              labelText: '본문',
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(
+                labelText: '본문',
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.deepPurple),
+                ),
+              ),
+              maxLines: 5,
+              controller: contentController,
             ),
-            maxLines: 5,
-            controller: contentController,
-          ),
-          Wrap(
-            spacing: 8.0, // gap between adjacent chips
-            runSpacing: 4.0, // gap between lines
-            children: _images
-                .map((image) => Image.file(
-              image,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ))
-                .toList(),
-          ),
-          ElevatedButton(
-            onPressed: getImage,
-            child: Text('이미지 선택'),
-          ),
-          FilledButton(
-            onPressed: post,
-            style: const ButtonStyle().copyWith(
-              backgroundColor: MaterialStateProperty.all(
-                _formKey.currentState?.validate() ?? false
-                    ? null
-                    : Colors.grey.shade300,
+            SizedBox(height: 10),
+            Wrap(
+              spacing: 8.0, // gap between adjacent chips
+              runSpacing: 4.0, // gap between lines
+              children: _images
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) => Stack(
+                  children: <Widget>[
+                    Image.file(
+                      entry.value,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: IconButton(
+                        icon: Icon(Icons.close, size: 20),
+                        onPressed: () {
+                          setState(() {
+                            _images.removeAt(entry.key);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                  .toList(),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // 사진은 최대 10장까지 첨부 가능
+                if (_images.length < 10) {
+                  getImage();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('사진은 최대 10장까지만 첨부 가능합니다.'),
+                    ),
+                  );
+                }
+              },
+              child: Text('이미지 선택'),
+              style: ElevatedButton.styleFrom(
               ),
             ),
-            child: const Text('등록하기'),
-          ),
-        ],
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: post,
+              child: const Text('등록하기'),
+            ),
+          ],
+        ),
       ),
     );
   }

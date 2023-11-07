@@ -59,7 +59,7 @@ class PostDetail extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                      if (post.imageList != null && post.imageList!.isNotEmpty)
+                      if (post.imageList != null && post.imageList.isNotEmpty)
                           Container(
                             height: 200, // Adjust this as needed
                             child: ListView.builder(
@@ -68,7 +68,7 @@ class PostDetail extends StatelessWidget {
                               itemBuilder: (context, i) {
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
-                                  child: Image.network(post.imageList![i]), // 썸네일 이미지
+                                  child: Image.network(dotenv.env['IMGUR_GET_IMAGE_URL']! + post.imageList[i]),
                                 );
                               },
                             ),

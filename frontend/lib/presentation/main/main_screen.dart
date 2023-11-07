@@ -64,7 +64,7 @@ class MainScreen extends StatelessWidget {
                   selectedTileColor: AppColors.oruryMain,
                   leading: post.thumbnailUrl != null
                       ? Image.network(
-                          post.thumbnailUrl!,
+                          dotenv.env['IMGUR_GET_IMAGE_URL']! + post.thumbnailUrl!,
                           width: 80,
                           height: 80,
                           fit: BoxFit.cover,

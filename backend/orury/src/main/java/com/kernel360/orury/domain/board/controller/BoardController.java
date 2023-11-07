@@ -6,6 +6,7 @@ import com.kernel360.orury.domain.board.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ public class BoardController {
 	private final BoardService boardService;
 
 	// 게시판 생성
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("")
 	public BoardDto createBoard(
 		@Valid
@@ -35,6 +37,7 @@ public class BoardController {
 	}
 
 	// 게시판 업데이트
+	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping("")
 	public BoardDto updateBoard(
 		@Valid
@@ -53,6 +56,7 @@ public class BoardController {
 	}
 
 	// 게시판 삭제
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public void deleteBoard(
 		@PathVariable

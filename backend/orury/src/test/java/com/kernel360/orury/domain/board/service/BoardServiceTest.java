@@ -4,16 +4,13 @@ import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.domain.post.db.PostEntity;
-import com.kernel360.orury.domain.post.db.PostImageEntity;
 import com.kernel360.orury.global.constants.Constant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -97,7 +94,7 @@ class BoardServiceTest {
                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:06"))
                                 .thumbnailUrl("zsdfafef321212")
                                 .commentList(List.of())
-                                .imageList(List.of())
+                                .images("")
                                 .build(),
                         PostEntity.builder()
                                 .id(30L)
@@ -123,20 +120,6 @@ class BoardServiceTest {
                                                 .createdAt(LocalDateTime.parse("2023-10-31T19:12:11"))
                                                 .updatedBy(Constant.ADMIN.getMessage())
                                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:11"))
-                                                .build()
-                                ))
-                                .imageList(List.of(
-                                        PostImageEntity.builder()
-                                                .id(16L)
-                                                .imageUrl("zsdfafef321212")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(17L)
-                                                .imageUrl("1231252323")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(18L)
-                                                .imageUrl("12312112!!")
                                                 .build()
                                 ))
                                 .build()
@@ -192,7 +175,7 @@ class BoardServiceTest {
                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:06"))
                                 .thumbnailUrl("zsdfafef321212")
                                 .commentList(List.of())
-                                .imageList(List.of())
+                                .images("")
                                 .build(),
                         PostEntity.builder()
                                 .id(30L)
@@ -220,23 +203,6 @@ class BoardServiceTest {
                                                 .createdAt(LocalDateTime.parse("2023-10-31T19:12:11"))
                                                 .updatedBy(Constant.ADMIN.getMessage())
                                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:11"))
-                                                .build()
-                                ))
-                                .imageList(List.of(
-                                        PostImageEntity.builder()
-                                                .id(16L)
-//                                                .post(boardEntity)
-                                                .imageUrl("zsdfafef321212")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(17L)
-//                                                .post(boardEntity)
-                                                .imageUrl("1231252323")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(18L)
-//                                                .post(boardEntity)
-                                                .imageUrl("1231212!!")
                                                 .build()
                                 ))
                                 .build()

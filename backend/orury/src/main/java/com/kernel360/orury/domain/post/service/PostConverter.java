@@ -9,6 +9,8 @@ import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @Service
 @RequiredArgsConstructor
 public class PostConverter {
@@ -33,7 +35,7 @@ public class PostConverter {
                 .likeCnt(postEntity.getLikeCnt())
                 .userId(postEntity.getUserId())
                 .thumbnailUrl(postEntity.getThumbnailUrl())
-                .imageList(postEntity.getImageList())
+                .imageList(Arrays.stream(postEntity.getImages().split(",")).toList())
                 .commentList(commentList)
                 .createdBy(postEntity.getCreatedBy())
                 .createdAt(postEntity.getCreatedAt())

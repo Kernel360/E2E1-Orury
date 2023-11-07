@@ -3,6 +3,7 @@ import 'package:orury/presentation/main/main_screen.dart';
 import 'package:orury/presentation/pages/user/login_page.dart';
 import 'package:orury/presentation/routes/route_path.dart';
 
+import '../Board/post_create.dart';
 import '../pages/splash/splash_page.dart';
 import '../pages/user/register_page.dart';
 
@@ -24,9 +25,9 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
-      path: RoutePath.board_post,
-      name: 'board_post',
-      builder: (context, state) => BoardPost(),
+      path: RoutePath.postCreate,
+      name: 'post_create',
+      builder: (context, state) => PostCreate(),
     ),
     GoRoute(
       path: RoutePath.registerPage,

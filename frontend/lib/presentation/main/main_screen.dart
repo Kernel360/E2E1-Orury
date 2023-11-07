@@ -140,7 +140,7 @@ class MainScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          router.go(RoutePath.board_post);
+          router.push(RoutePath.postCreate);
         },
         child: Icon(Icons.add),
       ),

@@ -5,8 +5,12 @@ import 'package:orury/global/messages/user/user_message.dart';
 import 'package:orury/utils/extensions.dart';
 import 'package:orury/values/app_constants.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import '../../routes/route_path.dart';
 import '../../routes/routes.dart';
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -26,6 +30,40 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool isObscure = true;
   bool isConfirmPasswordObscure = true;
+
+  void signup() async {
+    final response = await http.post(
+      Uri.http(dotenv.env['API_URL']!, '/api/user/signup'),
+      headers: <String, String>{
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        'nickname' : nameController.text,
+        'email_addr': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+    // 정상 회원가입 시 로그인 처리.
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registration Complete!'),
+        ),
+      );
+      nameController.clear();
+      emailController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+      router.go(RoutePath.loginPage);
+    } else {
+      // HTTP 요청이 실패했다면,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('회원가입에 실패하였습니다.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,19 +261,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   FilledButton(
-                    onPressed: _formKey.currentState?.validate() ?? false
-                        ? () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Registration Complete!'),
-                              ),
-                            );
-                            nameController.clear();
-                            emailController.clear();
-                            passwordController.clear();
-                            confirmPasswordController.clear();
-                          }
-                        : null,
+                    onPressed: _formKey.currentState?.validate() ?? false ? signup : null,
                     style: const ButtonStyle().copyWith(
                       backgroundColor: MaterialStateProperty.all(
                         _formKey.currentState?.validate() ?? false

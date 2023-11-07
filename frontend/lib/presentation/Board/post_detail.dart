@@ -2,22 +2,27 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart';
 import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/presentation/Board/comment.dart';
 import 'package:orury/presentation/Board/post.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostDetail extends StatelessWidget {
   final int id;
 
   PostDetail(this.id, {super.key});
 
+  // 게시글 조회
   Future<Post> fetchPost() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwtToken');
+
     final response = await http.get(
       Uri.http(dotenv.env['API_URL']!, '/api/post/' + id.toString()),
       headers: {
         "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -26,7 +31,7 @@ class PostDetail extends StatelessWidget {
       final post = Post.fromJson(jsonData);
       return post;
     } else {
-      throw Exception('Failed to load posts');
+      throw Exception('Failed to load post detail');
     }
   }
 
@@ -54,8 +59,20 @@ class PostDetail extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (post.thumbnailUrl != null)
-                          Image.network(post.thumbnailUrl!), // 썸네일 이미지
+                      if (post.imageList != null && post.imageList!.isNotEmpty)
+                          Container(
+                            height: 200, // Adjust this as needed
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: post.imageList!.length,
+                              itemBuilder: (context, i) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Image.network(post.imageList![i]), // 썸네일 이미지
+                                );
+                              },
+                            ),
+                          ),
                         SizedBox(height: 16),
                         Text(post.postTitle,
                             style: TextStyle(

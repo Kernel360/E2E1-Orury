@@ -11,14 +11,20 @@ import '../Board/post_detail.dart';
 import '../routes/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   Future<List<Post>> fetchPosts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwtToken');
+
     final response = await http.get(
-      Uri.http(dotenv.env['API_URL']!, '/api/board/7'),
+      Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
       headers: {
         "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -134,7 +140,7 @@ class MainScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          router.go(RoutePath.board_post);
+          router.push(RoutePath.postCreate);
         },
         child: Icon(Icons.add),
       ),

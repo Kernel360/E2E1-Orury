@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class PostConverter {
                 .likeCnt(postEntity.getLikeCnt())
                 .userId(postEntity.getUserId())
                 .thumbnailUrl(postEntity.getThumbnailUrl())
-                .imageList(Arrays.stream(postEntity.getImages().split(",")).toList())
+                .imageList(postEntity.getImages() == null ? List.of() : Arrays.stream(postEntity.getImages().split(",")).toList())
                 .commentList(commentList)
                 .createdBy(postEntity.getCreatedBy())
                 .createdAt(postEntity.getCreatedAt())

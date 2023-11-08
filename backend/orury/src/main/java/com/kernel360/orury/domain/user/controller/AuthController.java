@@ -9,10 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kernel360.orury.config.jwt.JwtFilter;
 import com.kernel360.orury.config.jwt.TokenProvider;
@@ -53,6 +50,26 @@ public class AuthController {
 				.build();
 
 		return new ResponseEntity<>(tokenDto, httpHeaders, HttpStatus.OK);
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<TokenDto> refreshAccessToken(
+			@RequestHeader("Authorization") String refreshTokenHeader
+	){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		//서버 측에서 리프레시 토큰 검증
+		String refreshToken = refreshTokenHeader.replace("Bearer ", "");
+		if(tokenProvider.validateToken(refreshToken)){
+			String newAccessToken = tokenProvider.createAccessToken(authentication);
+			var tokenDto = TokenDto.builder()
+					.accessToken(newAccessToken)
+					.refreshToken(refreshToken)
+					.build();
+			return ResponseEntity.ok(tokenDto);
+		}
+		else{
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
 	}
 }
 

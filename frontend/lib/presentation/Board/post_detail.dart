@@ -35,6 +35,16 @@ class PostDetail extends StatelessWidget {
     }
   }
 
+  // 사진 클릭 시 확대 기능
+  void _showDialog(BuildContext context, String url) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        content: Image.network(url),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Post>(
@@ -66,9 +76,12 @@ class PostDetail extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               itemCount: post.imageList!.length,
                               itemBuilder: (context, i) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Image.network(dotenv.env['IMGUR_GET_IMAGE_URL']! + post.imageList[i]),
+                                return GestureDetector(
+                                  onTap: () => _showDialog(context, dotenv.env['IMGUR_GET_IMAGE_URL']! + post.imageList[i]),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Image.network(dotenv.env['IMGUR_GET_IMAGE_URL']! + post.imageList[i]),
+                                  ),
                                 );
                               },
                             ),

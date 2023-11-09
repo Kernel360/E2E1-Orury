@@ -1,7 +1,11 @@
 package com.kernel360.orury.config.jwt;
 
+import com.kernel360.orury.domain.user.db.RefreshTokenEntity;
+import com.kernel360.orury.domain.user.db.RefreshTokenRepository;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
+import com.kernel360.orury.global.exception.TokenExpiredException;
+import com.kernel360.orury.global.exception.TokenNotFoundException;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -19,6 +23,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -31,16 +38,19 @@ public class TokenProvider implements InitializingBean {
 	private static final String AUTHORITIES_KEY = "auth";
 	private final String secret;
 	private final UserRepository userRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 	private final long ACCESS_VALIDITY_MS = 30*1000L;
 	private final long REFRESH_VALIDITY_MS =  7*24*60*60*1000L;
 	private Key key;
 
 	public TokenProvider(
 		@Value("${jwt.secret}") String secret,
-		UserRepository userRepository
+		UserRepository userRepository,
+		RefreshTokenRepository tokenRepository
 		) {
 		this.secret = secret;
 		this.userRepository = userRepository;
+		this.refreshTokenRepository = tokenRepository;
 	}
 
 	// 빈이 생성되고 생성자에서 주입받은 jwt 시크릿 키를 base65 디코드해서 key 변수에 할당
@@ -55,8 +65,6 @@ public class TokenProvider implements InitializingBean {
 		String authorities = authentication.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.joining(","));
-
-		System.out.println("Authorities: " + authorities);
 
 		long now = (new Date()).getTime();
 		Date validity = new Date(now + tokenValidity);
@@ -101,5 +109,45 @@ public class TokenProvider implements InitializingBean {
 	public boolean validateToken(String token) throws ExpiredJwtException{
 		Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 		return true;
+	}
+
+	public void storeToken(String token){
+		Claims claims = Jwts
+				.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+		var userId = Long.parseLong(claims.get("userId").toString());
+
+		var user = userRepository.findById(userId).orElseThrow(
+				() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+		);
+
+		RefreshTokenEntity existingToken = refreshTokenRepository.findByUserId(userId).orElse(null);
+		if(existingToken != null){
+			refreshTokenRepository.delete(existingToken);
+		}
+
+		var expiredDate = claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		var refreshTokenEntity = RefreshTokenEntity.builder()
+				.tokenValue(token)
+				.user(user)
+				.expirationDate(expiredDate)
+				.build();
+		refreshTokenRepository.save(refreshTokenEntity);
+	}
+
+	public boolean validateRefreshToken(String refreshToken) {
+		var refreshTokenEntity = refreshTokenRepository.findByTokenValue(refreshToken).orElseThrow(
+				() -> new TokenNotFoundException("리프레시 토큰이 데이터베이스에 없습니다")
+		);
+		var expireDate = refreshTokenEntity.getExpirationDate();
+
+		if (LocalDateTime.now().isAfter(expireDate)) {
+			throw new TokenExpiredException("리프레시 토큰이 만료되었습니다.");
+		}
+
+		return validateToken(refreshToken);
 	}
 }

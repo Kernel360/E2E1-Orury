@@ -45,13 +45,13 @@ public class TokenProvider implements InitializingBean {
 	}
 
 	// Authentication을 파라미터로 받아서 권한들을 가져온다, yml 파일에 설정한 만료시간을 설정하고 토큰을 생성한다
-	public String createToken(Authentication authentication, Long token_validity) {
+	public String createToken(Authentication authentication, Long tokenValidity) {
 		String authorities = authentication.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.joining(","));
 
 		long now = (new Date()).getTime();
-		Date validity = new Date(now + token_validity);
+		Date validity = new Date(now + tokenValidity);
 
 		return Jwts.builder()
 			.setSubject(authentication.getName())
@@ -86,9 +86,8 @@ public class TokenProvider implements InitializingBean {
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
 
-	public boolean validateToken(String token) {
+	public boolean validateToken(String token) throws ExpiredJwtException{
 		Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 		return true;
-
 	}
 }

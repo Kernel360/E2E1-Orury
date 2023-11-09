@@ -39,6 +39,7 @@ public class UserService {
 		UserEntity user = UserEntity.builder()
 			.emailAddr(userDto.getEmailAddr())
 			.password(passwordEncoder.encode(userDto.getPassword()))
+			.nickname(userDto.getNickname())
 			.authorities(Collections.singleton(authority))
 			.createdAt(LocalDateTime.now())
 			.createdBy(Constant.SYSTEM.getMessage())

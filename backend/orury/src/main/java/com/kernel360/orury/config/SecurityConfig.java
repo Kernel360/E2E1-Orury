@@ -5,6 +5,7 @@ import com.kernel360.orury.config.jwt.JwtAccessDeniedHandler;
 import com.kernel360.orury.config.jwt.JwtSecurityConfig;
 import com.kernel360.orury.config.jwt.TokenProvider;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
 	private static final List<String> SWAGGER = List.of(
@@ -36,18 +38,6 @@ public class SecurityConfig {
 	private final CorsFilter corsFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-	public SecurityConfig(
-		TokenProvider tokenProvider,
-		CorsFilter corsFilter,
-		JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-		JwtAccessDeniedHandler jwtAccessDeniedHandler
-	) {
-		this.tokenProvider = tokenProvider;
-		this.corsFilter = corsFilter;
-		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-		this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
-	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -68,7 +58,7 @@ public class SecurityConfig {
 
 			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
 				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
-				.antMatchers("/api/hello", "/api/auth/authenticate", "/api/user/signup").permitAll()
+				.antMatchers("/api/hello", "/api/auth/login", "/api/user/signup").permitAll()
 				.anyRequest().authenticated()
 			)
 

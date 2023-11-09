@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
-import com.kernel360.orury.domain.user.exception.DuplicateMemberException;
-import com.kernel360.orury.domain.user.exception.NotFoundMemberException;
+import com.kernel360.orury.global.exception.DuplicateMemberException;
+import com.kernel360.orury.global.exception.NotFoundMemberException;
 import com.kernel360.orury.domain.user.model.UserDto;
 import com.kernel360.orury.global.common.SecurityUtil;
 

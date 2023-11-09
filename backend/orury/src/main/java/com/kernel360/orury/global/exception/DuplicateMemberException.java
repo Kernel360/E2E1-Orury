@@ -1,4 +1,4 @@
-package com.kernel360.orury.domain.user.exception;
+package com.kernel360.orury.global.exception;
 
 public class DuplicateMemberException extends RuntimeException {
 

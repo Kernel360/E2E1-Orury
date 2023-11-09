@@ -53,6 +53,7 @@ public class UserDto {
 			return null;
 
 		return UserDto.builder()
+			.id(user.getId())
 			.emailAddr(user.getEmailAddr())
 			.authorityDtoSet(user.getAuthorities().stream()
 			.map(authority -> AuthorityDto.builder().name(authority.getName()).build())

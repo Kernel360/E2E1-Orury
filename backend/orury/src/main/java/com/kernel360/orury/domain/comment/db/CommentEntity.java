@@ -42,7 +42,6 @@ public class CommentEntity extends BaseEntity {
 	@Column(columnDefinition = "TEXT")
 	private String commentContent;
 
-	private String userNickname;
 	private int likeCnt;
 
 	// 부모 댓글 id, pId == null ? 본댓글 : 대댓글

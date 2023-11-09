@@ -5,6 +5,8 @@ import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.service.CommentConverter;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.model.PostDto;
+import com.kernel360.orury.domain.user.db.UserEntity;
+import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.List;
 public class PostConverter {
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     private final CommentConverter commentConverter;
 
     public PostDto toDto(PostEntity postEntity) {
@@ -26,12 +29,16 @@ public class PostConverter {
                 .map(commentConverter::toDto)
                 .toList();
 
+        // userNickname 설정 로직 추가
+        UserEntity userEntity = userRepository.findById(postEntity.getUserId())
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + postEntity.getUserId()));
+
         return PostDto.builder()
                 .id(postEntity.getId())
                 .boardId(postEntity.getBoard().getId())
                 .postTitle(postEntity.getPostTitle())
                 .postContent(postEntity.getPostContent())
-                .userNickname(postEntity.getUserNickname())
+                .userNickname(userEntity.getNickname())
                 .viewCnt(postEntity.getViewCnt())
                 .likeCnt(postEntity.getLikeCnt())
                 .userId(postEntity.getUserId())
@@ -56,7 +63,6 @@ public class PostConverter {
                 .board(boardEntity)
                 .postTitle(postDto.getPostTitle())
                 .postContent(postDto.getPostContent())
-                .userNickname(postDto.getUserNickname())
                 .viewCnt(postDto.getViewCnt())
                 .likeCnt(postDto.getLikeCnt())
                 .userId(postDto.getUserId())

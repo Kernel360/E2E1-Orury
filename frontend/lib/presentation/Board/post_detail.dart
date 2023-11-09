@@ -321,7 +321,32 @@ class _PostDetailState extends State<PostDetail> {
                                   },
                                 );
                               } else if (result == 'delete') {
-                                // 댓글 삭제 기능 구현
+                                // 삭제 확인 다이얼로그 보여주기
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('삭제'),
+                                      content: Text('삭제하시겠습니까?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('취소'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('확인'),
+                                          onPressed: () {
+                                            // 댓글 삭제 기능 구현
+                                            deleteComment(comment.id);
+                                            // Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               }
                             },
                             itemBuilder: (BuildContext context) =>

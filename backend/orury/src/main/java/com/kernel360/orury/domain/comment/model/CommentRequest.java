@@ -29,6 +29,4 @@ public class CommentRequest {
     @NotBlank
     private String commentContent;
 
-    @NotBlank
-    private String userNickname;
 }

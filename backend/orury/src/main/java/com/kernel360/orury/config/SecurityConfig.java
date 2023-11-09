@@ -58,7 +58,7 @@ public class SecurityConfig {
 
 			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
 				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
-				.antMatchers("/api/hello", "/api/auth/authenticate", "/api/user/signup").permitAll()
+				.antMatchers("/api/hello", "/api/auth/login", "/api/user/signup").permitAll()
 				.anyRequest().authenticated()
 			)
 

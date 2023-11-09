@@ -22,6 +22,8 @@ public class PostRequest {
 	@NotBlank
 	private String postTitle;
 	@NotBlank
+	private String userNickname;
+	@NotBlank
 	private String postContent;
 	private List<String> postImageList;
 }

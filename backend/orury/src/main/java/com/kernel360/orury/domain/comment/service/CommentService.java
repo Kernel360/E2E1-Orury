@@ -42,6 +42,7 @@ public class CommentService {
                 .userId(userId)
                 .post(postEntity)
                 .commentContent(commentRequest.getCommentContent())
+                .userNickname(commentRequest.getUserNickname())
                 // 대댓글과 본댓글 판별
                 .pId(commentRequest.getId() == null ? null : commentRequest.getId())
                 .createdBy(Constant.ADMIN.getMessage())

@@ -37,6 +37,7 @@ public class PostEntity extends BaseEntity {
 	private String thumbnailUrl;
 	@Size(max=255)
 	private String images;
+	private String userNickname;
 	private int viewCnt;
 	private int likeCnt;
 	private Long userId;

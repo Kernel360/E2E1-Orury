@@ -44,6 +44,7 @@ public class PostService {
         var entity = PostEntity.builder()
                 .postTitle(postRequest.getPostTitle())
                 .postContent(postRequest.getPostContent())
+                .userNickname(postRequest.getUserNickname())
                 .userId(user.getId())
                 .board(boardEntity)
                 .thumbnailUrl(postRequest.getPostImageList().isEmpty() ? null : postRequest.getPostImageList().get(0))

@@ -23,7 +23,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -39,15 +38,20 @@ public class TokenProvider implements InitializingBean {
 	private final String secret;
 	private final UserRepository userRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
-	private final long ACCESS_VALIDITY_MS = 30*1000L;
-	private final long REFRESH_VALIDITY_MS =  7*24*60*60*1000L;
+
+	private final long accessValidityMs;
+	private final long refreshValidityMs;
 	private Key key;
 
 	public TokenProvider(
+		@Value("${jwt.access-validity}") Long accessValiditySec,
+		@Value("${jwt.refresh-validity}") Long refershValiditySec,
 		@Value("${jwt.secret}") String secret,
 		UserRepository userRepository,
 		RefreshTokenRepository tokenRepository
 		) {
+		this.refreshValidityMs = refershValiditySec;
+		this.accessValidityMs = accessValiditySec * 1000L;
 		this.secret = secret;
 		this.userRepository = userRepository;
 		this.refreshTokenRepository = tokenRepository;
@@ -81,10 +85,10 @@ public class TokenProvider implements InitializingBean {
 				.compact();
 	}
 	public String createAccessToken(Authentication authentication){
-		return createToken(authentication, this.ACCESS_VALIDITY_MS);
+		return createToken(authentication, this.accessValidityMs);
 	}
 	public String createRefreshToken(Authentication authentication){
-		return createToken(authentication, this.REFRESH_VALIDITY_MS);
+		return createToken(authentication, this.refreshValidityMs);
 	}
 
 	// 토큰을 파라미터로 받아서 클레임을 만들고 이를 이용해 유저 객체를 만들고 Authentication 객체 리턴
@@ -140,12 +144,12 @@ public class TokenProvider implements InitializingBean {
 
 	public boolean validateRefreshToken(String refreshToken) {
 		var refreshTokenEntity = refreshTokenRepository.findByTokenValue(refreshToken).orElseThrow(
-				() -> new TokenNotFoundException("리프레시 토큰이 데이터베이스에 없습니다")
+				() -> new TokenNotFoundException(ErrorMessages.ILLEGAL_REFRESH_JWT.getMessage())
 		);
 		var expireDate = refreshTokenEntity.getExpirationDate();
 
 		if (LocalDateTime.now().isAfter(expireDate)) {
-			throw new TokenExpiredException("리프레시 토큰이 만료되었습니다.");
+			throw new TokenExpiredException(ErrorMessages.EXPIRED_REFRESH_JWT.getMessage());
 		}
 
 		return validateToken(refreshToken);

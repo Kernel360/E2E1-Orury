@@ -1,5 +1,7 @@
 package com.kernel360.orury.config.jwt;
 
+import com.kernel360.orury.domain.user.db.UserEntity;
+import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -28,13 +30,17 @@ public class TokenProvider implements InitializingBean {
 	private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 	private static final String AUTHORITIES_KEY = "auth";
 	private final String secret;
+	private final UserRepository userRepository;
 	private final long ACCESS_VALIDITY_MS = 30*1000L;
 	private final long REFRESH_VALIDITY_MS =  7*24*60*60*1000L;
 	private Key key;
 
 	public TokenProvider(
-		@Value("${jwt.secret}") String secret) {
+		@Value("${jwt.secret}") String secret,
+		UserRepository userRepository
+		) {
 		this.secret = secret;
+		this.userRepository = userRepository;
 	}
 
 	// 빈이 생성되고 생성자에서 주입받은 jwt 시크릿 키를 base65 디코드해서 key 변수에 할당
@@ -50,15 +56,21 @@ public class TokenProvider implements InitializingBean {
 			.map(GrantedAuthority::getAuthority)
 			.collect(Collectors.joining(","));
 
+		System.out.println("Authorities: " + authorities);
+
 		long now = (new Date()).getTime();
 		Date validity = new Date(now + tokenValidity);
+		UserEntity user = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
+				()-> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+		);
 
 		return Jwts.builder()
-			.setSubject(authentication.getName())
-			.claim(AUTHORITIES_KEY, authorities)
-			.signWith(key, SignatureAlgorithm.HS512)
-			.setExpiration(validity)
-			.compact();
+				.claim("userId", user.getId())
+				.setSubject(authentication.getName())
+				.claim(AUTHORITIES_KEY, authorities)
+				.signWith(key, SignatureAlgorithm.HS512)
+				.setExpiration(validity)
+				.compact();
 	}
 	public String createAccessToken(Authentication authentication){
 		return createToken(authentication, this.ACCESS_VALIDITY_MS);

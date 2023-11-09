@@ -13,8 +13,19 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+// StatelessWidget 맨밑 }도 주석처리
+// class MainScreen extends StatelessWidget {
+//   const MainScreen({super.key});
+
+
+class MainScreen extends StatefulWidget {
+  MainScreen({Key? key}) : super(key: key);
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
 
   Future<List<Post>> fetchPosts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -64,16 +75,16 @@ class MainScreen extends StatelessWidget {
                   selectedTileColor: AppColors.oruryMain,
                   leading: post.thumbnailUrl != null
                       ? Image.network(
-                          dotenv.env['IMGUR_GET_IMAGE_URL']! + post.thumbnailUrl!,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            return const SizedBox
-                                .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
-                          },
-                        )
+                    dotenv.env['IMGUR_GET_IMAGE_URL']! + post.thumbnailUrl!,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (BuildContext context, Object exception,
+                        StackTrace? stackTrace) {
+                      return const SizedBox
+                          .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
+                    },
+                  )
                       : null,
                   // null인 경우 leading 생략
                   title: Text(post.postTitle),
@@ -93,7 +104,7 @@ class MainScreen extends StatelessWidget {
                       Icon(Icons.thumb_up, size: 15,), // 좋아요 아이콘
                       Text(post.likeCnt.toString()), // 좋아요 수
                       SizedBox(width: 20), // 간격 조절
-                      Icon(Icons.comment, size: 15,),  // 댓글 아이콘
+                      Icon(Icons.comment, size: 15,), // 댓글 아이콘
                       Text(post.commentList.length.toString()), // 댓글 수
                     ],
                   ),
@@ -147,3 +158,4 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
+// }

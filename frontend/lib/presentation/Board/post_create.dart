@@ -8,11 +8,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/global/messages/board/post_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:orury/presentation/Board/post.dart';
 
 import '../routes/routes.dart';
 
 class PostCreate extends StatefulWidget {
+
   const PostCreate({super.key});
+
 
   @override
   State<PostCreate> createState() => _PostCreateState();
@@ -26,7 +29,7 @@ class _PostCreateState extends State<PostCreate> {
 
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
-
+  
   bool isObscure = true;
 
   Future getImage() async {

@@ -1,7 +1,5 @@
 package com.kernel360.orury.domain.user.exception;
 
-import net.bytebuddy.implementation.bytecode.Throw;
-
 public class DuplicateMemberException extends RuntimeException {
 
 	public DuplicateMemberException() {

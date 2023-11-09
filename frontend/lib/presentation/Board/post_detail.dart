@@ -2,19 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/global/messages/board/comment_message.dart';
 import 'package:orury/presentation/Board/comment.dart';
 import 'package:orury/presentation/Board/post.dart';
-import 'package:http/http.dart' as http;
-import 'package:orury/presentation/Board/post_create.dart';
 import 'package:orury/presentation/Board/post_update.dart';
-import 'package:orury/presentation/routes/route_path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main/main_screen.dart';
-import '../routes/routes.dart';
 
 
 // StatelessWidget 맨 밑 } 주석처리
@@ -57,6 +53,16 @@ class _PostDetailState extends State<PostDetail> {
     } else {
       throw Exception('Failed to load post detail');
     }
+  }
+
+  // 사진 클릭 시 확대 기능
+  void _showDialog(BuildContext context, String url) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        content: Image.network(url),
+      ),
+    );
   }
 
   // 게시글 삭제
@@ -205,9 +211,12 @@ class _PostDetailState extends State<PostDetail> {
                               scrollDirection: Axis.horizontal,
                               itemCount: post.imageList!.length,
                               itemBuilder: (context, i) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Image.network(post.imageList[i]),
+                                return GestureDetector(
+                                    onTap: () => _showDialog(context, post.imageList[i]),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 8.0),
+                                      child: Image.network(post.imageList[i]),
+                                  ),
                                 );
                               },
                             ),
@@ -441,4 +450,3 @@ class _PostDetailState extends State<PostDetail> {
     );
   }
 }
-// }

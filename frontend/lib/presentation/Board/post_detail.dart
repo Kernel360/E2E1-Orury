@@ -33,6 +33,18 @@ class _PostDetailState extends State<PostDetail> {
 
   TextEditingController commentController = TextEditingController();
 
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPreferences();
+  }
+
+  Future<void> _initSharedPreferences() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   // 게시글 상세 조회
   Future<Post> fetchPost() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -96,6 +108,9 @@ class _PostDetailState extends State<PostDetail> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final refreshToken = prefs.getString('refreshToken');
+    final nickname = prefs.getString('nickname');
+    final userId = prefs.getInt('userId');
+
 
     final response = await http.post(
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
@@ -103,10 +118,11 @@ class _PostDetailState extends State<PostDetail> {
         "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',
       },
-      body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
+      body: jsonEncode({
+        "user_id": userId,
         "post_id": widget.id,
         "comment_content": commentController.text,
-        "user_nickname": "test1" //코드 수정 필요
+        "user_nickname": nickname
       }),
     );
 
@@ -124,6 +140,8 @@ class _PostDetailState extends State<PostDetail> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final refreshToken = prefs.getString('refreshToken');
+    final nickname = prefs.getString('nickname');
+    final userId = prefs.getInt('userId');
 
     final response = await http.patch(
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
@@ -131,10 +149,11 @@ class _PostDetailState extends State<PostDetail> {
         "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',
       },
-      body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
+      body: jsonEncode({
         "id": comId,
+        "user_id": userId,
         "comment_content": commentController.text,
-        "user_nickname": "test1" //코드 수정 필요
+        "user_nickname": nickname
       }),
     );
 
@@ -177,6 +196,8 @@ class _PostDetailState extends State<PostDetail> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final refreshToken = prefs.getString('refreshToken');
+    final nickname = prefs.getString('nickname');
+    final userId = prefs.getInt('userId');
 
     final response = await http.post(
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
@@ -186,9 +207,10 @@ class _PostDetailState extends State<PostDetail> {
       },
       body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
         "id": comId,
+        "user_id": userId,
         "post_id": widget.id,
         "comment_content": commentController.text,
-        "user_nickname": "test" //코드 수정 필요
+        "user_nickname": nickname
       }),
     );
 
@@ -200,7 +222,6 @@ class _PostDetailState extends State<PostDetail> {
       throw Exception('Failed to create reply');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -263,9 +284,11 @@ class _PostDetailState extends State<PostDetail> {
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold)), // 제목
+                            (post.userId == prefs.getInt('userId') || 'ROLE_ADMIN' == prefs.getString('role')) ?
                             PopupMenuButton<String>(
                               onSelected: (String result) {
                                 if (result == 'edit') {
+                                  // 게시글 수정 기능 구현
                                   // Navigator.push(
                                   //   context,
                                   //   MaterialPageRoute(
@@ -297,7 +320,8 @@ class _PostDetailState extends State<PostDetail> {
                                   child: Text('삭제'),
                                 ),
                               ],
-                            ),
+                            )
+                            : Container(),
                           ],
                         ),
                         Text(
@@ -322,6 +346,7 @@ class _PostDetailState extends State<PostDetail> {
                           Expanded(
                             child: Text(comment.commentContent),
                           ),
+                          (comment.userId == prefs.getInt('userId') || 'ROLE_ADMIN' == prefs.getString('role')) ?
                           PopupMenuButton<String>(
                             onSelected: (String result) {
                               if (result == 'edit') {
@@ -406,7 +431,8 @@ class _PostDetailState extends State<PostDetail> {
                                 child: Text('삭제'),
                               ),
                             ],
-                          ),
+                          )
+                          : Container(),
                         ],
                       ),
                       subtitle: Column(

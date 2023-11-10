@@ -31,7 +31,6 @@ class _MainScreenState extends State<MainScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // await prefs.remove('jwtToken');
     final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.get(
       Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
@@ -45,7 +44,23 @@ class _MainScreenState extends State<MainScreen> {
       final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
       final board = Board.fromJson(jsonData);
       return board.postList;
-    } else {
+    // accessToken 기간 만료에 대한 코드임. 길어질거 같아 일단 냅둠
+    // } else if (response.statusCode == 205) {  // 임시 statusCode.
+    //   final refreshToken = prefs.getString('refreshToken');
+    //
+    //   final tokenresponse = await http.post(
+    //     Uri.http(dotenv.env['API_URL']!, '/api/auth/refreshToken'),
+    //     headers: {
+    //     "Content-Type": "application/json",
+    //     'Authorization': 'Bearer $refreshToken',
+    //     },
+    //   );
+    //
+    //   if (tokenresponse.statusCode == 200) {
+    //     String? newAccessToken = tokenresponse.headers['newAccessToken'];  // 임시 key.
+    //     // await prefs.setString("accessToken", newAccessToken);
+    //   }
+    } else { // 추가적으로 에러 처리가 필요
       throw Exception('Failed to load posts');
     }
   }

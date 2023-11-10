@@ -55,6 +55,7 @@ public class UserDto {
 		return UserDto.builder()
 			.id(user.getId())
 			.emailAddr(user.getEmailAddr())
+			.nickname(user.getNickname())
 			.authorityDtoSet(user.getAuthorities().stream()
 			.map(authority -> AuthorityDto.builder().name(authority.getName()).build())
 			.collect(Collectors.toSet()))

@@ -54,6 +54,30 @@ class _LoginPageState extends State<LoginPage> {
           content: Text('어서오세요!'),
         ),
       );
+
+      final userResponse = await http.get(
+        Uri.http(dotenv.env['API_URL']!, '/api/user/user'),
+        headers: <String, String>{
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (userResponse.statusCode == 200) {
+        var userData = jsonDecode(userResponse.body);
+        int userId = userData['id'];
+        String nickname = userData['nickname'];
+        String role = userData['authority_dto_set'][0]['name'];
+        // SharedPreferences prefs = await SharedPreferences.getInstance();
+        // await prefs.setString('userId', userId.toString());
+        await prefs.setString('nickname', nickname);
+        await prefs.setInt('userId', userId);
+        await prefs.setString('role', role);
+
+      } else {
+        // 다시 로그인하거나 다시 시도하게끔? 해야하나
+      }
+
       emailController.clear();
       passwordController.clear();
       router.go(RoutePath.main);

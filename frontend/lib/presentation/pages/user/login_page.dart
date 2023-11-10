@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void login() async {
     final response = await http.post(
-      Uri.http(dotenv.env['API_URL']!, '/api/auth/authenticate'),
+      Uri.http(dotenv.env['API_URL']!, '/api/auth/login'),
       // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",
@@ -44,9 +44,11 @@ class _LoginPageState extends State<LoginPage> {
     // 정상 회원가입 시 로그인 처리.
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      String jwtToken = data['token'];
+      String accessToken = data['accessToken'];
+      String refreshToken = data['refreshToken'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('jwtToken', jwtToken);
+      await prefs.setString('accessToken', accessToken);
+      await prefs.setString('refreshToken', refreshToken);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('어서오세요!'),

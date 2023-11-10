@@ -101,7 +101,8 @@ class _PostCreateState extends State<PostCreate> {
   // 게시글 작성
   void post() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     // 이미지 업로드하고 URL 리스트 받아오기
     final imageUrls = await uploadImages();
@@ -111,7 +112,7 @@ class _PostCreateState extends State<PostCreate> {
       // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
       body: jsonEncode({
         'user_id' : 1,   // 코드 수정 필요

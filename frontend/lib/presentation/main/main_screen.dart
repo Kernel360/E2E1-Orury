@@ -29,18 +29,19 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<List<Post>> fetchPosts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    // await prefs.remove('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.get(
       Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
     );
 
     if (response.statusCode == 200) {
-      // final jsonData = json.decode(response.body);
       final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
       final board = Board.fromJson(jsonData);
       return board.postList;

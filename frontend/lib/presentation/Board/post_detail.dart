@@ -36,13 +36,14 @@ class _PostDetailState extends State<PostDetail> {
   // 게시글 상세 조회
   Future<Post> fetchPost() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.get(
       Uri.http(dotenv.env['API_URL']!, '/api/post/' + widget.id.toString()),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
     );
 
@@ -68,13 +69,14 @@ class _PostDetailState extends State<PostDetail> {
   // 게시글 삭제
   Future<void> deletePost() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.delete(
       Uri.http(dotenv.env['API_URL']!, '/api/post/' + widget.id.toString()),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
     );
 
@@ -92,13 +94,14 @@ class _PostDetailState extends State<PostDetail> {
   // 댓글 작성
   Future<void> commentCreate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.post(
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
       body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
         "post_id": widget.id,
@@ -117,18 +120,19 @@ class _PostDetailState extends State<PostDetail> {
   }
 
   // 댓글 수정
-  Future<void> commentUpdate(int comid) async {
+  Future<void> commentUpdate(int comId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.patch(
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
       body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
-        "id": comid,
+        "id": comId,
         "comment_content": commentController.text,
         "user_nickname": "test1" //코드 수정 필요
       }),
@@ -146,13 +150,14 @@ class _PostDetailState extends State<PostDetail> {
   // 댓글 삭제
   Future<void> deleteComment(int commentId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.delete(
       Uri.http(dotenv.env['API_URL']!, '/api/comment/' + commentId.toString()),
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
     );
 
@@ -164,6 +169,35 @@ class _PostDetailState extends State<PostDetail> {
       );
     } else {
       throw Exception(CommentMessage.commentFail);
+    }
+  }
+
+  // 대댓글 작성
+  Future<void> replyCreate(int comId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
+
+    final response = await http.post(
+      Uri.http(dotenv.env['API_URL']!, '/api/comment'),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
+        "id": comId,
+        "post_id": widget.id,
+        "comment_content": commentController.text,
+        "user_nickname": "test" //코드 수정 필요
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+      // final post = Post.fromJson(jsonData);
+      commentController.clear();
+    } else {
+      throw Exception('Failed to create reply');
     }
   }
 
@@ -279,6 +313,9 @@ class _PostDetailState extends State<PostDetail> {
                   } else {
                     Comment comment = post.commentList[post.commentList.length - index];
                     return ListTile(
+                      contentPadding: comment.pId != null ? EdgeInsets.only(left: 50.0) : null,
+                      // contentPadding: EdgeInsets.all(50.0),
+                      dense: comment.pId != null ? true : null,
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -381,20 +418,59 @@ class _PostDetailState extends State<PostDetail> {
                               Icon(Icons.favorite, color: Colors.red),
                               Text(comment.likeCnt.toString()),
                               SizedBox(width: 16),
-                              TextButton(
-                                onPressed: () {
-                                  // 대댓글 작성 기능 구현
-                                },
-                                child: Text('답글 달기'),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: AppColors.oruryMain,
+                              if (comment.pId == null)
+                                TextButton(
+                                  onPressed: () {
+                                    // 대댓글 작성 기능 구현
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('답글 작성'),
+                                          content: TextField(
+                                            controller: commentController,
+                                            autofocus: true,
+                                            decoration: InputDecoration(
+                                              labelText: "답글을 입력하세요",
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('취소'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text('작성'),
+                                              onPressed: () {
+                                                // 댓글 작성 처리를 수행합니다.
+                                                replyCreate(comment.id);
+                                                // 댓글 작성 및 저장이 완료되면, 게시글과 댓글을 다시 불러옵니다.
+                                                fetchPost().then((post) {
+                                                  setState(() {
+                                                    // 새로 불러온 게시글과 댓글로 화면을 업데이트합니다.
+                                                    this.post = post;
+                                                  });
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text('답글 달기'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: AppColors.oruryMain,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ],
                       ),
-                    );
+                    ); // !@!@#!@#!@#@!#!@@#@!#@!#@!#!@#!
                   }
                 },
               ),

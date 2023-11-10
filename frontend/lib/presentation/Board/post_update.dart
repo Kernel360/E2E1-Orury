@@ -34,17 +34,18 @@ class _PostUpdateState extends State<PostUpdate> {
 
   bool isObscure = true;
 
-  // 게시글 작성
+  // 게시글 수정
   void update() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwtToken');
+    final accessToken = prefs.getString('accessToken');
+    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.patch(
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
       // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $accessToken',
       },
       body: jsonEncode({
         'id' : widget.data?.id,

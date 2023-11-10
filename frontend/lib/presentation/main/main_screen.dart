@@ -5,6 +5,7 @@ import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/presentation/routes/route_path.dart';
 import 'package:http/http.dart' as http;
 
+import '../../global/http/http_request.dart';
 import '../Board/board.dart';
 import '../Board/post.dart';
 import '../Board/post_detail.dart';
@@ -12,10 +13,6 @@ import '../routes/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
-// StatelessWidget 맨밑 }도 주석처리
-// class MainScreen extends StatelessWidget {
-//   const MainScreen({super.key});
 
 
 class MainScreen extends StatefulWidget {
@@ -27,43 +24,18 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
+  // 게시글 목록 조회
   Future<List<Post>> fetchPosts() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    // await prefs.remove('jwtToken');
-    final accessToken = prefs.getString('accessToken');
-
-    final response = await http.get(
+    final response = await sendHttpRequest(
+      'GET',
       Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
     );
 
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      final board = Board.fromJson(jsonData);
-      return board.postList;
-    // accessToken 기간 만료에 대한 코드임. 길어질거 같아 일단 냅둠
-    // } else if (response.statusCode == 205) {  // 임시 statusCode.
-    //   final refreshToken = prefs.getString('refreshToken');
-    //
-    //   final tokenresponse = await http.post(
-    //     Uri.http(dotenv.env['API_URL']!, '/api/auth/refreshToken'),
-    //     headers: {
-    //     "Content-Type": "application/json",
-    //     'Authorization': 'Bearer $refreshToken',
-    //     },
-    //   );
-    //
-    //   if (tokenresponse.statusCode == 200) {
-    //     String? newAccessToken = tokenresponse.headers['newAccessToken'];  // 임시 key.
-    //     // await prefs.setString("accessToken", newAccessToken);
-    //   }
-    } else { // 추가적으로 에러 처리가 필요
-      throw Exception('Failed to load posts');
-    }
+    final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+    final board = Board.fromJson(jsonData);
+    return board.postList;
   }
+
 
   @override
   Widget build(BuildContext context) {

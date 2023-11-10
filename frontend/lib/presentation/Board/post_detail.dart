@@ -10,14 +10,9 @@ import 'package:orury/presentation/Board/post.dart';
 import 'package:orury/presentation/Board/post_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../global/http/http_request.dart';
 import '../main/main_screen.dart';
 
-
-// StatelessWidget 맨 밑 } 주석처리
-// class PostDetail extends StatelessWidget {
-//   final int id;
-//
-//   PostDetail(this.id, {super.key});
 
 class PostDetail extends StatefulWidget {
   final int id;
@@ -47,26 +42,16 @@ class _PostDetailState extends State<PostDetail> {
 
   // 게시글 상세 조회
   Future<Post> fetchPost() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
-
-    final response = await http.get(
-      Uri.http(dotenv.env['API_URL']!, '/api/post/' + widget.id.toString()),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
+    final response = await sendHttpRequest(
+      'GET',
+      Uri.http(dotenv.env['API_URL']!, '/api/post/${widget.id}'),
     );
 
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      final post = Post.fromJson(jsonData);
-      return post;
-    } else {
-      throw Exception('Failed to load post detail');
-    }
+    final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+    final post = Post.fromJson(jsonData);
+    return post;
   }
+
 
   // 사진 클릭 시 확대 기능
   void _showDialog(BuildContext context, String url) {
@@ -80,44 +65,27 @@ class _PostDetailState extends State<PostDetail> {
 
   // 게시글 삭제
   Future<void> deletePost() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
-
-    final response = await http.delete(
-      Uri.http(dotenv.env['API_URL']!, '/api/post/' + widget.id.toString()),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
+    final response = await sendHttpRequest(
+      'DELETE',
+      Uri.http(dotenv.env['API_URL']!, '/api/post/${widget.id}'),
     );
 
-    if (response.statusCode == 200) {
-      // router.pop();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
-      );
-    } else {
-      throw Exception('Failed to delete post');
-    }
+    // router.pop();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MainScreen()),
+    );
   }
 
   // 댓글 작성
   Future<void> commentCreate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
-    final nickname = prefs.getString('nickname');
     final userId = prefs.getInt('userId');
+    final nickname = prefs.getString('nickname');
 
-
-    final response = await http.post(
+    final response = await sendHttpRequest(
+      'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
       body: jsonEncode({
         "user_id": userId,
         "post_id": widget.id,
@@ -126,29 +94,18 @@ class _PostDetailState extends State<PostDetail> {
       }),
     );
 
-    if (response.statusCode == 200) {
-      // final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      // final post = Post.fromJson(jsonData);
-      commentController.clear();
-    } else {
-      throw Exception('Failed to create comment');
-    }
+    commentController.clear();
   }
 
   // 댓글 수정
   Future<void> commentUpdate(int comId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
-    final nickname = prefs.getString('nickname');
     final userId = prefs.getInt('userId');
+    final nickname = prefs.getString('nickname');
 
-    final response = await http.patch(
+    final response = await sendHttpRequest(
+      'PATCH',
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
       body: jsonEncode({
         "id": comId,
         "user_id": userId,
@@ -157,55 +114,33 @@ class _PostDetailState extends State<PostDetail> {
       }),
     );
 
-    if (response.statusCode == 200) {
-      // final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      // final post = Post.fromJson(jsonData);
-      commentController.clear();
-    } else {
-      throw Exception('Failed to update comment');
-    }
+    commentController.clear();
   }
 
   // 댓글 삭제
   Future<void> deleteComment(int commentId) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
-
-    final response = await http.delete(
+    final response = await sendHttpRequest(
+      'DELETE',
       Uri.http(dotenv.env['API_URL']!, '/api/comment/' + commentId.toString()),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
     );
 
-    if (response.statusCode == 200) {
-      // router.pop();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PostDetail(widget.id)),
-      );
-    } else {
-      throw Exception(CommentMessage.commentFail);
-    }
+    // router.pop();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => PostDetail(widget.id)),
+    );
   }
 
   // 대댓글 작성
   Future<void> replyCreate(int comId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
-    final nickname = prefs.getString('nickname');
     final userId = prefs.getInt('userId');
+    final nickname = prefs.getString('nickname');
 
-    final response = await http.post(
+    final response = await sendHttpRequest(
+      'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
-      body: jsonEncode({      // 현재 user_id가 1로 들어가는 중
+      body: jsonEncode({
         "id": comId,
         "user_id": userId,
         "post_id": widget.id,
@@ -214,14 +149,9 @@ class _PostDetailState extends State<PostDetail> {
       }),
     );
 
-    if (response.statusCode == 200) {
-      // final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      // final post = Post.fromJson(jsonData);
-      commentController.clear();
-    } else {
-      throw Exception('Failed to create reply');
-    }
+    commentController.clear();
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -10,6 +10,7 @@ import 'package:orury/global/messages/board/post_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:orury/presentation/Board/post.dart';
 
+import '../../global/http/http_request.dart';
 import '../routes/routes.dart';
 
 class PostCreate extends StatefulWidget {
@@ -101,49 +102,33 @@ class _PostCreateState extends State<PostCreate> {
   // 게시글 작성
   void post() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
+    final userId = prefs.getInt('userId');
 
     // 이미지 업로드하고 URL 리스트 받아오기
     final imageUrls = await uploadImages();
 
-    final response = await http.post(
+    final response = await sendHttpRequest(
+      'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
-      // Uri.parse(url),
-      headers: <String, String>{
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer $accessToken',
-      },
       body: jsonEncode({
-        'user_id' : 1,   // 코드 수정 필요
+        'user_id' : userId,
         'board_id': 1, // 코드 수정 필요
         'post_title': titleController.text,
-        'user_nickname': 'test1', // 코드 수정 필요
         'post_content': contentController.text,
         'post_image_list': imageUrls
-        // 코드 수정 필요
       }),
     );
 
     // 작성 성공
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(PostMessage.postSuccess),
-        ),
-      );
-      titleController.clear();
-      contentController.clear();
-      _images.clear();
-      router.pop();
-    } else {
-      // HTTP 요청이 실패했다면,
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(PostMessage.postFail),
-        ),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(PostMessage.postSuccess),
+      ),
+    );
+    titleController.clear();
+    contentController.clear();
+    _images.clear();
+    router.pop();
   }
 
   @override

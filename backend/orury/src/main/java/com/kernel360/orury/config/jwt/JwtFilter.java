@@ -1,5 +1,6 @@
 package com.kernel360.orury.config.jwt;
 
+import com.kernel360.orury.global.exception.TokenExpiredException;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
@@ -45,16 +46,8 @@ public class JwtFilter extends GenericFilterBean {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
 			}
-		}catch (ExpiredJwtException e) {
-			String errorMessage = ErrorMessages.EXPIRED_JWT.getMessage();
-			HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-			httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-			httpServletResponse.setContentType("application/json; charset=UTF-8"); // Set the content type with UTF-8 encoding
-			httpServletResponse.setCharacterEncoding("UTF-8"); // Set the character encoding
-			httpServletResponse.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
-			httpServletResponse.getWriter().flush();
-			return;
-
+		} catch (ExpiredJwtException e) {
+			throw new TokenExpiredException(ErrorMessages.EXPIRED_JWT.getMessage());
 		}
 		filterChain.doFilter(servletRequest, servletResponse);
 	}

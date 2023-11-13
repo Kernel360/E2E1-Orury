@@ -1,11 +1,9 @@
 package com.kernel360.orury.config;
 
-import com.kernel360.orury.config.jwt.JwtAuthenticationEntryPoint;
-import com.kernel360.orury.config.jwt.JwtAccessDeniedHandler;
-import com.kernel360.orury.config.jwt.JwtSecurityConfig;
-import com.kernel360.orury.config.jwt.TokenProvider;
+import com.kernel360.orury.config.jwt.*;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -38,6 +36,7 @@ public class SecurityConfig {
 	private final CorsFilter corsFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+	private CustomAuthenticationFailureHandler failureHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -67,7 +66,9 @@ public class SecurityConfig {
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
 			// JWT필터 적용
-			.apply(new JwtSecurityConfig(tokenProvider));
+			.apply(new JwtSecurityConfig(tokenProvider))
+		;
 		return http.build();
 	}
+
 }

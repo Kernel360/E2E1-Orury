@@ -18,10 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -36,7 +33,7 @@ public class PostService {
             String userEmail
     ) {
         var user = userRepository.findByEmailAddr(userEmail)
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail));
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail));
 
         var boardEntity = boardRepository.findById(postRequest.getBoardId())
                 .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage()));

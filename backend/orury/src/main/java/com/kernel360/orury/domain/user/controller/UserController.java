@@ -39,7 +39,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.signup(userDto));
 	}
 
-	@GetMapping("/user")
+	@GetMapping("/info")
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
 		return ResponseEntity.ok(userService.getMyUserWithAuthorities());

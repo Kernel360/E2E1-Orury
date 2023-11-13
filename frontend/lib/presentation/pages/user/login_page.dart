@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   void login() async {
     final response = await http.post(
       Uri.http(dotenv.env['API_URL']!, '/api/auth/login'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/auth/login'),
       // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",
@@ -57,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
 
       final userResponse = await http.get(
         Uri.http(dotenv.env['API_URL']!, '/api/user/info'),
+        // Uri.http(dotenv.env['AWS_API_URL']!, '/api/user/info'),
         headers: <String, String>{
           "Content-Type": "application/json",
           'Authorization': 'Bearer $accessToken',

@@ -110,6 +110,7 @@ class _PostCreateState extends State<PostCreate> {
     final response = await sendHttpRequest(
       'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
       body: jsonEncode({
         'user_id' : userId,
         'board_id': 1, // 코드 수정 필요

@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       final userResponse = await http.get(
-        Uri.http(dotenv.env['API_URL']!, '/api/user/user'),
+        Uri.http(dotenv.env['API_URL']!, '/api/user/info'),
         headers: <String, String>{
           "Content-Type": "application/json",
           'Authorization': 'Bearer $accessToken',

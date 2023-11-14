@@ -43,7 +43,6 @@ class _PostUpdateState extends State<PostUpdate> {
     final response = await http.patch(
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
       // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
-      // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',
@@ -65,12 +64,7 @@ class _PostUpdateState extends State<PostUpdate> {
       );
       titleController.clear();
       contentController.clear();
-      // router.pop();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PostDetail(widget.data!.id)),
-      );
-      // router.go(RoutePath.main);
+      router.pop();
     } else {
       // HTTP 요청이 실패했다면,
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,11 +97,11 @@ class _PostUpdateState extends State<PostUpdate> {
               height: 200, // Adjust this as needed
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: widget.data!.imageList!.length,
+                itemCount: widget.data?.imageList.length,
                 itemBuilder: (context, i) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: Image.network(widget.data!.imageList[i]),
+                    child: Image.network(widget.data?.imageList[i]),
                   );
                 },
               ),

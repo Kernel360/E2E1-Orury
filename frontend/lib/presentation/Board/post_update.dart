@@ -91,50 +91,52 @@ class _PostUpdateState extends State<PostUpdate> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: 200, // Adjust this as needed
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.data?.imageList.length,
-                itemBuilder: (context, i) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Image.network(widget.data?.imageList[i]),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '제목',
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.deepPurple),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 200, // Adjust this as needed
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: widget.data?.imageList.length,
+                  itemBuilder: (context, i) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Image.network(widget.data?.imageList[i]),
+                    );
+                  },
                 ),
               ),
-              controller: titleController,
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '본문',
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.deepPurple),
+              SizedBox(height: 10),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '제목',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.deepPurple),
+                  ),
                 ),
+                controller: titleController,
               ),
-              maxLines: 5,
-              controller: contentController,
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: update,
-              child: const Text('수정하기'),
-            ),
-          ],
+              SizedBox(height: 10),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '본문',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.deepPurple),
+                  ),
+                ),
+                maxLines: 5,
+                controller: contentController,
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: update,
+                child: const Text('수정하기'),
+              ),
+            ],
+          )
         ),
       ),
     );

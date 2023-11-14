@@ -252,6 +252,7 @@ class _PostDetailState extends State<PostDetail> {
                               if (result == 'edit') {
                                 // 댓글 수정 기능 구현
                                 // final commentController = TextEditingController(); // 댓글 컨트롤러 생성
+                                commentController.text = comment.commentContent;
 
                                 showDialog(
                                   context: context,

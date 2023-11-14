@@ -43,7 +43,6 @@ class _PostUpdateState extends State<PostUpdate> {
     final response = await http.patch(
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
       // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
-      // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',
@@ -65,12 +64,7 @@ class _PostUpdateState extends State<PostUpdate> {
       );
       titleController.clear();
       contentController.clear();
-      // router.pop();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PostDetail(widget.data!.id)),
-      );
-      // router.go(RoutePath.main);
+      router.pop();
     } else {
       // HTTP 요청이 실패했다면,
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,50 +91,52 @@ class _PostUpdateState extends State<PostUpdate> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: 200, // Adjust this as needed
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.data!.imageList!.length,
-                itemBuilder: (context, i) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Image.network(widget.data!.imageList[i]),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '제목',
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.deepPurple),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 200, // Adjust this as needed
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: widget.data?.imageList.length,
+                  itemBuilder: (context, i) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Image.network(widget.data?.imageList[i]),
+                    );
+                  },
                 ),
               ),
-              controller: titleController,
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '본문',
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.deepPurple),
+              SizedBox(height: 10),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '제목',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.deepPurple),
+                  ),
                 ),
+                controller: titleController,
               ),
-              maxLines: 5,
-              controller: contentController,
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: update,
-              child: const Text('수정하기'),
-            ),
-          ],
+              SizedBox(height: 10),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '본문',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.deepPurple),
+                  ),
+                ),
+                maxLines: 5,
+                controller: contentController,
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: update,
+                child: const Text('수정하기'),
+              ),
+            ],
+          )
         ),
       ),
     );

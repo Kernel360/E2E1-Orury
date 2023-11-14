@@ -42,13 +42,15 @@ class _PostCreateState extends State<PostCreate> {
           children: <Widget>[
             SimpleDialogOption(
               onPressed: () {
-                Navigator.pop(context, ImageSource.camera);
+                // Navigator.pop(context, ImageSource.camera);
+                router.pop(ImageSource.camera);
               },
               child: const Text('카메라로 사진 찍기'),
             ),
             SimpleDialogOption(
               onPressed: () {
-                Navigator.pop(context, ImageSource.gallery);
+                // Navigator.pop(context, ImageSource.gallery);
+                router.pop(ImageSource.gallery);
               },
               child: const Text('갤러리에서 사진 선택'),
             ),

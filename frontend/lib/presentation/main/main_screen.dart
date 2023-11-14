@@ -1,18 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/presentation/routes/route_path.dart';
-import 'package:http/http.dart' as http;
 
 import '../../global/http/http_request.dart';
 import '../Board/board.dart';
 import '../Board/post.dart';
-import '../Board/post_detail.dart';
 import '../routes/routes.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -80,11 +76,9 @@ class _MainScreenState extends State<MainScreen> {
                   subtitle: Text(post.userNickname),
                   onTap: () {
                     // 게시물을 누르면 상세 페이지로 이동
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PostDetail(post.id),
-                      ),
+                    router.push(
+                      RoutePath.postDetail,
+                      extra: post.id,
                     );
                   },
                   trailing: Row(

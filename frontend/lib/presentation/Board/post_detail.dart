@@ -2,16 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:orury/core/theme/constant/app_colors.dart';
-import 'package:orury/global/messages/board/comment_message.dart';
 import 'package:orury/presentation/Board/comment.dart';
 import 'package:orury/presentation/Board/post.dart';
-import 'package:orury/presentation/Board/post_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../global/http/http_request.dart';
-import '../main/main_screen.dart';
+import '../routes/route_path.dart';
+import '../routes/routes.dart';
 
 
 class PostDetail extends StatefulWidget {
@@ -72,11 +70,7 @@ class _PostDetailState extends State<PostDetail> {
       // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post/${widget.id}'),
     );
 
-    // router.pop();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MainScreen()),
-    );
+    router.pop();
   }
 
   // 댓글 작성
@@ -128,12 +122,6 @@ class _PostDetailState extends State<PostDetail> {
       Uri.http(dotenv.env['API_URL']!, '/api/comment/' + commentId.toString()),
       // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment/' + commentId.toString()),
     );
-
-    // router.pop();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => PostDetail(widget.id)),
-    );
   }
 
   // 대댓글 작성
@@ -172,18 +160,6 @@ class _PostDetailState extends State<PostDetail> {
           final post = snapshot.data!;
           return Scaffold(
             appBar: AppBar(
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  // 여기에 뒤로 가기 버튼을 눌렀을 때 수행할 작업을 코딩합니다.
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MainScreen(),  // 이전 화면으로 돌아갈 때 rebuild하려는 화면을 지정합니다.
-                    ),
-                  );
-                },
-              ),
               title: Text('게시물 상세보기'),
             ),
             body: Padding(
@@ -225,21 +201,10 @@ class _PostDetailState extends State<PostDetail> {
                               onSelected: (String result) {
                                 if (result == 'edit') {
                                   // 게시글 수정 기능 구현
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         PostUpdate(data: post),
-                                  //   ),
-                                  // );
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PostUpdate(data: post),
-                                    ),
+                                  router.push(
+                                    RoutePath.postUpdate,
+                                    extra: post,
                                   );
-
-                                  // context.go(RoutePath.postUpdate, extra: {'postset': postset});
                                 } else if (result == 'delete') {
                                   // 게시글 삭제 기능 구현
                                   deletePost();
@@ -274,7 +239,6 @@ class _PostDetailState extends State<PostDetail> {
                     Comment comment = post.commentList[post.commentList.length - index];
                     return ListTile(
                       contentPadding: comment.pId != null ? EdgeInsets.only(left: 50.0) : null,
-                      // contentPadding: EdgeInsets.all(50.0),
                       dense: comment.pId != null ? true : null,
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -288,6 +252,7 @@ class _PostDetailState extends State<PostDetail> {
                               if (result == 'edit') {
                                 // 댓글 수정 기능 구현
                                 // final commentController = TextEditingController(); // 댓글 컨트롤러 생성
+                                commentController.text = comment.commentContent;
 
                                 showDialog(
                                   context: context,
@@ -305,7 +270,7 @@ class _PostDetailState extends State<PostDetail> {
                                         TextButton(
                                           child: Text('취소'),
                                           onPressed: () {
-                                            Navigator.of(context).pop();
+                                            router.pop();
                                           },
                                         ),
                                         TextButton(
@@ -320,7 +285,7 @@ class _PostDetailState extends State<PostDetail> {
                                                 this.post = post;
                                               });
                                             });
-                                            Navigator.of(context).pop();
+                                            router.pop();
                                           },
                                         ),
                                       ],
@@ -339,7 +304,7 @@ class _PostDetailState extends State<PostDetail> {
                                         TextButton(
                                           child: Text('취소'),
                                           onPressed: () {
-                                            Navigator.of(context).pop();
+                                            router.pop();
                                           },
                                         ),
                                         TextButton(
@@ -347,7 +312,15 @@ class _PostDetailState extends State<PostDetail> {
                                           onPressed: () {
                                             // 댓글 삭제 기능 구현
                                             deleteComment(comment.id);
-                                            // Navigator.of(context).pop();
+
+                                            fetchPost().then((post) {
+                                              setState(() {
+                                                // 새로 불러온 게시글과 댓글로 화면을 업데이트합니다.
+                                                this.post = post;
+                                              });
+                                            });
+
+                                            router.pop();
                                           },
                                         ),
                                       ],
@@ -400,7 +373,7 @@ class _PostDetailState extends State<PostDetail> {
                                             TextButton(
                                               child: Text('취소'),
                                               onPressed: () {
-                                                Navigator.of(context).pop();
+                                                router.pop();
                                               },
                                             ),
                                             TextButton(
@@ -415,7 +388,7 @@ class _PostDetailState extends State<PostDetail> {
                                                     this.post = post;
                                                   });
                                                 });
-                                                Navigator.of(context).pop();
+                                                router.pop();
                                               },
                                             ),
                                           ],
@@ -432,7 +405,7 @@ class _PostDetailState extends State<PostDetail> {
                           ),
                         ],
                       ),
-                    ); // !@!@#!@#!@#@!#!@@#@!#@!#@!#!@#!
+                    );
                   }
                 },
               ),
@@ -458,7 +431,7 @@ class _PostDetailState extends State<PostDetail> {
                         TextButton(
                           child: Text('취소'),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            router.pop();
                           },
                         ),
                         TextButton(
@@ -473,7 +446,7 @@ class _PostDetailState extends State<PostDetail> {
                                 this.post = post;
                               });
                             });
-                            Navigator.of(context).pop();
+                            router.pop();
                           },
                         ),
                       ],

@@ -29,6 +29,7 @@ class _MainScreenState extends State<MainScreen> {
     final response = await sendHttpRequest(
       'GET',
       Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/board/1'),
     );
 
     final jsonData = jsonDecode(utf8.decode(response.bodyBytes));

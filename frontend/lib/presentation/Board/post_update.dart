@@ -42,6 +42,7 @@ class _PostUpdateState extends State<PostUpdate> {
 
     final response = await http.patch(
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
       // Uri.parse(url),
       headers: <String, String>{
         "Content-Type": "application/json",

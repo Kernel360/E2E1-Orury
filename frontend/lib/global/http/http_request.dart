@@ -33,6 +33,7 @@ Future<http.Response> sendHttpRequest(String method, Uri uri, {String? body, Map
     final refreshToken = prefs.getString('refreshToken');
     final tokenResponse = await http.post(
       Uri.http(dotenv.env['API_URL']!, '/api/auth/refreshToken'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/auth/refreshToken'),
       headers: {
         "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',

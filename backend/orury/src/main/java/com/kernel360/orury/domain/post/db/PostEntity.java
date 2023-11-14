@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OrderBy;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -32,7 +33,10 @@ public class PostEntity extends BaseEntity {
 	private String postTitle;
 	@Column(columnDefinition = "TEXT")
 	private String postContent;
-	private String userNickname;
+	@Size(max=255)
+	private String thumbnailUrl;
+	@Size(max=255)
+	private String images;
 	private int viewCnt;
 	private int likeCnt;
 	private Long userId;
@@ -41,10 +45,4 @@ public class PostEntity extends BaseEntity {
 	@Builder.Default
 	@OrderBy(clause = "id desc")
 	private List<CommentEntity> commentList = List.of();
-	// 사진 url list
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	@Builder.Default
-	@OrderBy(clause = "id asc")
-	private List<PostImageEntity> imageList = List.of();
-	private String thumbnailUrl;
 }

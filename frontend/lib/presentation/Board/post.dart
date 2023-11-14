@@ -8,6 +8,7 @@ class Post {
   final String postContent;
   final String userNickname;
   final String? thumbnailUrl;
+  final List<dynamic> imageList;
   final int viewCnt;
   final int likeCnt;
   final int userId;
@@ -22,6 +23,7 @@ class Post {
       required this.postContent,
       required this.userNickname,
       required this.thumbnailUrl,
+      required this.imageList,
       required this.viewCnt,
       required this.likeCnt,
       required this.userId,
@@ -39,6 +41,7 @@ class Post {
         postContent: json['post_content'],
         userNickname: json['user_nickname'],
         thumbnailUrl: json['thumbnail_url'],
+        imageList: json['image_list'],
         viewCnt: json['view_cnt'],
         likeCnt: json['like_cnt'],
         userId: json['user_id'],

@@ -5,32 +5,37 @@ import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/presentation/routes/route_path.dart';
 import 'package:http/http.dart' as http;
 
+import '../../global/http/http_request.dart';
 import '../Board/board.dart';
 import '../Board/post.dart';
 import '../Board/post_detail.dart';
 import '../routes/routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+import 'package:shared_preferences/shared_preferences.dart';
 
+
+class MainScreen extends StatefulWidget {
+  MainScreen({Key? key}) : super(key: key);
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+
+  // 게시글 목록 조회
   Future<List<Post>> fetchPosts() async {
-    final response = await http.get(
-      Uri.http(dotenv.env['API_URL']!, '/api/board/7'),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    final response = await sendHttpRequest(
+      'GET',
+      Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
     );
 
-    if (response.statusCode == 200) {
-      // final jsonData = json.decode(response.body);
-      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      final board = Board.fromJson(jsonData);
-      return board.postList;
-    } else {
-      throw Exception('Failed to load posts');
-    }
+    final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+    final board = Board.fromJson(jsonData);
+    return board.postList;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +63,16 @@ class MainScreen extends StatelessWidget {
                   selectedTileColor: AppColors.oruryMain,
                   leading: post.thumbnailUrl != null
                       ? Image.network(
-                          post.thumbnailUrl!,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            return const SizedBox
-                                .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
-                          },
-                        )
+                    dotenv.env['IMGUR_GET_IMAGE_URL']! + post.thumbnailUrl!,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (BuildContext context, Object exception,
+                        StackTrace? stackTrace) {
+                      return const SizedBox
+                          .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
+                    },
+                  )
                       : null,
                   // null인 경우 leading 생략
                   title: Text(post.postTitle),
@@ -87,7 +92,7 @@ class MainScreen extends StatelessWidget {
                       Icon(Icons.thumb_up, size: 15,), // 좋아요 아이콘
                       Text(post.likeCnt.toString()), // 좋아요 수
                       SizedBox(width: 20), // 간격 조절
-                      Icon(Icons.comment, size: 15,),  // 댓글 아이콘
+                      Icon(Icons.comment, size: 15,), // 댓글 아이콘
                       Text(post.commentList.length.toString()), // 댓글 수
                     ],
                   ),
@@ -134,10 +139,11 @@ class MainScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          router.go(RoutePath.board_post);
+          router.push(RoutePath.postCreate);
         },
         child: Icon(Icons.add),
       ),
     );
   }
 }
+// }

@@ -1,17 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:orury/components/app_text_form_field.dart';
 import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/global/messages/user/user_message.dart';
-import 'package:orury/presentation/main/main_screen.dart';
 import 'package:orury/resources/vectors.dart';
-import 'package:orury/values/app_constants.dart';
-import 'package:orury/values/app_routes.dart';
 import 'package:orury/utils/extensions.dart';
+import 'package:orury/values/app_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../routes/route_path.dart';
 import '../../routes/routes.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,6 +28,68 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool isObscure = true;
+
+  void login() async {
+    final response = await http.post(
+      Uri.http(dotenv.env['API_URL']!, '/api/auth/login'),
+      // Uri.parse(url),
+      headers: <String, String>{
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        'email_addr': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+    // 정상 회원가입 시 로그인 처리.
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      String accessToken = data['accessToken'];
+      String refreshToken = data['refreshToken'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('accessToken', accessToken);
+      await prefs.setString('refreshToken', refreshToken);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('어서오세요!'),
+        ),
+      );
+
+      final userResponse = await http.get(
+        Uri.http(dotenv.env['API_URL']!, '/api/user/info'),
+        headers: <String, String>{
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (userResponse.statusCode == 200) {
+        var userData = jsonDecode(userResponse.body);
+        int userId = userData['id'];
+        String nickname = userData['nickname'];
+        String role = userData['authority_dto_set'][0]['name'];
+        // SharedPreferences prefs = await SharedPreferences.getInstance();
+        // await prefs.setString('userId', userId.toString());
+        await prefs.setString('nickname', nickname);
+        await prefs.setInt('userId', userId);
+        await prefs.setString('role', role);
+
+      } else {
+        // 다시 로그인하거나 다시 시도하게끔? 해야하나
+      }
+
+      emailController.clear();
+      passwordController.clear();
+      router.go(RoutePath.main);
+    } else {
+      // HTTP 요청이 실패했다면,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('로그인에 실패하였습니다. 계정을 확인해주세요.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,18 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 15,
                     ),
                     FilledButton(
-                      onPressed: _formKey.currentState?.validate() ?? false
-                          ? () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('어서오세요!'),
-                                ),
-                              );
-                              emailController.clear();
-                              passwordController.clear();
-                              router.go(RoutePath.main);
-                            }
-                          : null,
+                      onPressed: _formKey.currentState?.validate() ?? false ? login : null,
                       style: const ButtonStyle().copyWith(
                         backgroundColor: MaterialStateProperty.all(
                           _formKey.currentState?.validate() ?? false

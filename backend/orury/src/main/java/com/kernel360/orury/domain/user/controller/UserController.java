@@ -14,7 +14,7 @@ import com.kernel360.orury.domain.user.model.UserDto;
 import com.kernel360.orury.domain.user.service.UserService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 	private final UserService userService;
 
@@ -39,7 +39,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.signup(userDto));
 	}
 
-	@GetMapping("/user")
+	@GetMapping("/info")
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
 		return ResponseEntity.ok(userService.getMyUserWithAuthorities());

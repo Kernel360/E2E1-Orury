@@ -30,8 +30,6 @@ public class UserDto {
 	private Long id;
 
 	@NotNull
-	private String username;
-	@NotNull
 	private String emailAddr;
 	@NotNull
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -55,10 +53,12 @@ public class UserDto {
 			return null;
 
 		return UserDto.builder()
-			.username(user.getUsername())
+			.id(user.getId())
+			.emailAddr(user.getEmailAddr())
+			.nickname(user.getNickname())
 			.authorityDtoSet(user.getAuthorities().stream()
-				.map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
-				.collect(Collectors.toSet()))
+			.map(authority -> AuthorityDto.builder().name(authority.getName()).build())
+			.collect(Collectors.toSet()))
 			.build();
 	}
 }

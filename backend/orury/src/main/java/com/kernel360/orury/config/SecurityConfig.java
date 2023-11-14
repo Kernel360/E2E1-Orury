@@ -1,10 +1,9 @@
 package com.kernel360.orury.config;
 
-import com.kernel360.orury.config.jwt.JwtAuthenticationEntryPoint;
-import com.kernel360.orury.config.jwt.JwtAccessDeniedHandler;
-import com.kernel360.orury.config.jwt.JwtSecurityConfig;
-import com.kernel360.orury.config.jwt.TokenProvider;
+import com.kernel360.orury.config.jwt.*;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+
 /**
  author : aqrms
  date : 2023/11/2
@@ -23,23 +24,19 @@ import org.springframework.web.filter.CorsFilter;
  */
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+	private static final List<String> SWAGGER = List.of(
+			"/swagger-ui.html",
+			"/swagger-ui/**",
+			"/v3/api-docs/**"
+	);
 	private final TokenProvider tokenProvider;
 	private final CorsFilter corsFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-	public SecurityConfig(
-		TokenProvider tokenProvider,
-		CorsFilter corsFilter,
-		JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-		JwtAccessDeniedHandler jwtAccessDeniedHandler
-	) {
-		this.tokenProvider = tokenProvider;
-		this.corsFilter = corsFilter;
-		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-		this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
-	}
+	private CustomAuthenticationFailureHandler failureHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -59,7 +56,8 @@ public class SecurityConfig {
 			)
 
 			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-				.antMatchers("/api/hello", "/api/authenticate", "/api/signup").permitAll()
+				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
+				.antMatchers("/api/hello", "/api/auth/login", "/api/user/signup").permitAll()
 				.anyRequest().authenticated()
 			)
 
@@ -68,7 +66,9 @@ public class SecurityConfig {
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
 			// JWT필터 적용
-			.apply(new JwtSecurityConfig(tokenProvider));
+			.apply(new JwtSecurityConfig(tokenProvider))
+		;
 		return http.build();
 	}
+
 }

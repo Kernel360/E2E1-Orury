@@ -4,16 +4,13 @@ import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.domain.post.db.PostEntity;
-import com.kernel360.orury.domain.post.db.PostImageEntity;
 import com.kernel360.orury.global.constants.Constant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -87,7 +84,6 @@ class BoardServiceTest {
                                 .id(32L)
                                 .postTitle("댓글 삭제 테스트")
                                 .postContent("하나더 해보자123")
-                                .userNickname("테스트맨!")
                                 .viewCnt(0)
                                 .likeCnt(0)
                                 .userId(5L)
@@ -97,13 +93,12 @@ class BoardServiceTest {
                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:06"))
                                 .thumbnailUrl("zsdfafef321212")
                                 .commentList(List.of())
-                                .imageList(List.of())
+                                .images("")
                                 .build(),
                         PostEntity.builder()
                                 .id(30L)
                                 .postTitle("댓글 삭제 테스트")
                                 .postContent("하나더 해보자123")
-                                .userNickname("테스트맨!")
                                 .viewCnt(0)
                                 .likeCnt(0)
                                 .userId(5L)
@@ -116,27 +111,12 @@ class BoardServiceTest {
                                         CommentEntity.builder()
                                                 .id(16L)
                                                 .userId(3L)
-                                                .userNickname("응애맨")
                                                 .commentContent("로그 삭제 테스트")
                                                 .likeCnt(0)
                                                 .createdBy(Constant.ADMIN.getMessage())
                                                 .createdAt(LocalDateTime.parse("2023-10-31T19:12:11"))
                                                 .updatedBy(Constant.ADMIN.getMessage())
                                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:11"))
-                                                .build()
-                                ))
-                                .imageList(List.of(
-                                        PostImageEntity.builder()
-                                                .id(16L)
-                                                .imageUrl("zsdfafef321212")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(17L)
-                                                .imageUrl("1231252323")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(18L)
-                                                .imageUrl("12312112!!")
                                                 .build()
                                 ))
                                 .build()
@@ -182,7 +162,6 @@ class BoardServiceTest {
 //                                .board(boardEntity)
                                 .postTitle("댓글 삭제 테스트")
                                 .postContent("하나더 해보자123")
-                                .userNickname("테스트맨!")
                                 .viewCnt(0)
                                 .likeCnt(0)
                                 .userId(5L)
@@ -192,14 +171,13 @@ class BoardServiceTest {
                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:06"))
                                 .thumbnailUrl("zsdfafef321212")
                                 .commentList(List.of())
-                                .imageList(List.of())
+                                .images("")
                                 .build(),
                         PostEntity.builder()
                                 .id(30L)
 //                                .board(boardEntity)
                                 .postTitle("댓글 삭제 테스트")
                                 .postContent("하나더 해보자123")
-                                .userNickname("테스트맨!")
                                 .viewCnt(0)
                                 .likeCnt(0)
                                 .userId(5L)
@@ -212,7 +190,6 @@ class BoardServiceTest {
                                         CommentEntity.builder()
                                                 .id(16L)
                                                 .userId(3L)
-                                                .userNickname("응애맨")
 //                                                .post(boardEntity)
                                                 .commentContent("로그 삭제 테스트")
                                                 .likeCnt(0)
@@ -220,23 +197,6 @@ class BoardServiceTest {
                                                 .createdAt(LocalDateTime.parse("2023-10-31T19:12:11"))
                                                 .updatedBy(Constant.ADMIN.getMessage())
                                                 .updatedAt(LocalDateTime.parse("2023-10-31T19:12:11"))
-                                                .build()
-                                ))
-                                .imageList(List.of(
-                                        PostImageEntity.builder()
-                                                .id(16L)
-//                                                .post(boardEntity)
-                                                .imageUrl("zsdfafef321212")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(17L)
-//                                                .post(boardEntity)
-                                                .imageUrl("1231252323")
-                                                .build(),
-                                        PostImageEntity.builder()
-                                                .id(18L)
-//                                                .post(boardEntity)
-                                                .imageUrl("1231212!!")
                                                 .build()
                                 ))
                                 .build()

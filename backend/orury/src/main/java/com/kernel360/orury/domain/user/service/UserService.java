@@ -5,6 +5,8 @@ import java.util.Collections;
 
 import com.kernel360.orury.domain.user.db.AuthorityEntity;
 import com.kernel360.orury.global.constants.Constant;
+import com.kernel360.orury.global.message.errors.ErrorMessages;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,5 +65,13 @@ public class UserService {
 				.flatMap(userRepository::findOneWithAuthoritiesByEmailAddr)
 				.orElseThrow(() -> new NotFoundMemberException("Member not found"))
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public Long getUserIdByEmail(String email){
+		return userRepository.findByEmailAddr(email).orElseThrow(
+				() -> new UsernameNotFoundException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+		).getId();
+
 	}
 }

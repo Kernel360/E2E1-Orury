@@ -1,8 +1,9 @@
-package com.kernel360.orury.domain.user.notification.controller;
+package com.kernel360.orury.domain.notification.controller;
 
 
-import com.kernel360.orury.domain.user.notification.service.NotifyService;
+import com.kernel360.orury.domain.notification.service.NotifyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,16 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NotifyController {
     private final NotifyService notifyService;
 
-    @GetMapping(value = "/subscribe", produces = "text/event-stream")
+    @GetMapping(value = "/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(
-            @AuthenticationPrincipal User principal,
-            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId
+            @PathVariable Long id
     ){
-        return notifyService.subscribe(principal.getUsername(), lastEventId);
+        return notifyService.subscribe(id);
+    }
+
+    @PostMapping("/send-data/{id}")
+    public void sendData(@PathVariable Long id){
+        notifyService.notify(id, "data");
     }
 
 }

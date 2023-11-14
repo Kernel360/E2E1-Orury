@@ -28,14 +28,6 @@ public class NotifyService {
 
         sendToClient(userId, "EventStream Created. [userId=" + userId + "]");
 
-//        // prevent 503 error
-//        String eventId = makeTimeIncludeId(userEmail);
-//        sendNotification(emitter, eventId, emitterId, "EventStream Created. [userEmail=" + userEmail+"]");
-//
-//        // clident가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실 예방
-//        if(hasLostData(lastEventId)){
-//            sendLostData(lastEventId, userEmail, emitterId, emitter);
-//        }
 
         return emitter;
     }

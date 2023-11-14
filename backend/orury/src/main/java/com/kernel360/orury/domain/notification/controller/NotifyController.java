@@ -2,10 +2,11 @@ package com.kernel360.orury.domain.notification.controller;
 
 
 import com.kernel360.orury.domain.notification.service.NotifyService;
+import com.kernel360.orury.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -14,12 +15,14 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class NotifyController {
     private final NotifyService notifyService;
+    private final UserService userService;
 
-    @GetMapping(value = "/subscribe/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/subscribe/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(
-            @PathVariable Long id
+            @PathVariable
+            Long userId
     ){
-        return notifyService.subscribe(id);
+        return notifyService.subscribe(userId);
     }
 
     @PostMapping("/send-data/{id}")

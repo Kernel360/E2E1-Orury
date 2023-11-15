@@ -2,6 +2,7 @@ package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
+import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.comment.service.CommentConverter;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.model.PostDto;
@@ -11,8 +12,7 @@ import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.System.getenv;
@@ -32,6 +32,23 @@ public class PostConverter {
                 .map(commentConverter::toDto)
                 .toList();
 
+        // map으로 변환
+        Map<String, List<CommentDto>> commentMap = new HashMap<>();
+
+        for (CommentDto comment : commentList) {
+
+            Long pid = comment.getPId();
+
+            if (pid == null) {
+                commentMap.computeIfAbsent("0", k -> new ArrayList<>()).add(comment);
+
+            } else {
+                // pid가 있는 경우
+                commentMap.computeIfAbsent(pid.toString(), k -> new ArrayList<>()).add(comment);
+            }
+        }
+
+
         // userNickname 설정 로직 추가
         UserEntity userEntity = userRepository.findById(postEntity.getUserId())
                 .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + postEntity.getUserId()));
@@ -50,6 +67,7 @@ public class PostConverter {
                     .map(image -> getenv().get("IMGUR_URL") + image)
                     .collect(Collectors.toList()))
                 .commentList(commentList)
+                .commentMap(commentMap)
                 .createdBy(postEntity.getCreatedBy())
                 .createdAt(postEntity.getCreatedAt())
                 .updatedBy(postEntity.getUpdatedBy())

@@ -5,6 +5,7 @@ import com.kernel360.orury.domain.comment.db.CommentRepository;
 import com.kernel360.orury.domain.comment.model.CommentDelRequest;
 import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
+import com.kernel360.orury.domain.notification.service.NotifyService;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.user.db.UserRepository;
@@ -12,6 +13,7 @@ import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +32,7 @@ public class CommentService {
     private final CommentConverter commentConverter;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotifyService notifyService;
 
     public CommentDto createComment(CommentRequest commentRequest, String userEmail) {
         PostEntity postEntity = postRepository.findById(commentRequest.getPostId())
@@ -52,7 +55,24 @@ public class CommentService {
 
         CommentEntity saveEntity = commentRepository.save(commentEntity);
 
+        // 대댓글이 달렸을 때 댓글 작성자에게 알림을 보냄
+        Long notifyUserId = null;
+        if( commentEntity.getPId() != null ) {
+            notifyUserId = commentRepository.findById(commentEntity.getPId()).orElseThrow(
+                    () -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + commentEntity.getPId())
+            ).getUserId();
+        }
+        // 댓글이 달렸을 때는 게시글 작성자에게 알림을 보냄
+        else
+            notifyUserId = postEntity.getUserId();
+        sendNotificationToPostAuthor(notifyUserId, saveEntity.getId());
+
         return commentConverter.toDto(saveEntity);
+    }
+
+    private void sendNotificationToPostAuthor(Long userId, Long id) {
+        // user Id를 통해 만들어진 emitter 검색
+        notifyService.notify(userId, "new comment created [comment id:  "+id + "]" , "comment");
     }
 
     public CommentDto updateComment(

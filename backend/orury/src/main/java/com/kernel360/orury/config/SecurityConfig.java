@@ -30,7 +30,8 @@ public class SecurityConfig {
 	private static final List<String> SWAGGER = List.of(
 			"/swagger-ui.html",
 			"/swagger-ui/**",
-			"/v3/api-docs/**"
+			"/v3/api-docs/**",
+			"/api/notify/**" // sse 테스트를 위해 임시로
 	);
 	private final TokenProvider tokenProvider;
 	private final CorsFilter corsFilter;

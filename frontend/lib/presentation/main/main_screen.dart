@@ -88,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
                       Text(post.likeCnt.toString()), // 좋아요 수
                       SizedBox(width: 20), // 간격 조절
                       Icon(Icons.comment, size: 15,), // 댓글 아이콘
-                      Text(post.commentList.length.toString()), // 댓글 수
+                      Text((post.commentMap['0']?.length).toString()),
                     ],
                   ),
                 );

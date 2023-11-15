@@ -73,17 +73,16 @@ class _PostDetailState extends State<PostDetail> {
     router.pop();
   }
 
-  // 댓글 작성
-  Future<void> commentCreate() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  // 댓글 및 답글 작성 함수
+  Future<void> commentCreate({int? parentCommentId}) async {
     final userId = prefs.getInt('userId');
     final nickname = prefs.getString('nickname');
 
     final response = await sendHttpRequest(
       'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
       body: jsonEncode({
+        "id": parentCommentId,
         "user_id": userId,
         "post_id": widget.id,
         "comment_content": commentController.text,
@@ -94,7 +93,7 @@ class _PostDetailState extends State<PostDetail> {
     commentController.clear();
   }
 
-  // 댓글 수정
+  // 댓글 및 답글 수정
   Future<void> commentUpdate(int comId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId');
@@ -115,37 +114,62 @@ class _PostDetailState extends State<PostDetail> {
     commentController.clear();
   }
 
-  // 댓글 삭제
+  // 댓글 및 답글 삭제
   Future<void> deleteComment(int commentId) async {
     final response = await sendHttpRequest(
       'DELETE',
-      Uri.http(dotenv.env['API_URL']!, '/api/comment/' + commentId.toString()),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment/' + commentId.toString()),
+      Uri.http(dotenv.env['API_URL']!, '/api/comment/$commentId'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment/$commentId'),
     );
   }
 
-  // 대댓글 작성
-  Future<void> replyCreate(int comId) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
-    final nickname = prefs.getString('nickname');
-
-    final response = await sendHttpRequest(
-      'POST',
-      Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
-      body: jsonEncode({
-        "id": comId,
-        "user_id": userId,
-        "post_id": widget.id,
-        "comment_content": commentController.text,
-        "user_nickname": nickname
-      }),
-    );
-
-    commentController.clear();
+  // 댓글 및 대댓글 작성, 수정, 삭제 후 게시글 및 댓글 다시 불러오는 함수
+  void refreshPostAfterCommentAction() {
+    fetchPost().then((post) {
+      setState(() {
+        this.post = post;
+      });
+    });
   }
 
+  // 작성, 수정 다이얼로그
+  void showCommentDialog({String? title, String? labelText, String? buttonText,
+    bool showTextField = true, String? initialText, required Function onPressed}) {
+
+    commentController.text = initialText ?? '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title ?? '댓글 작성'),
+          content: showTextField ? TextField(
+            controller: commentController,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: labelText ?? "댓글을 입력하세요",
+            ),
+          ) : Text('삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('취소'),
+              onPressed: () {
+                router.pop();
+              },
+            ),
+            TextButton(
+              child: Text(buttonText ?? '작성'),
+              onPressed: () {
+                onPressed();
+                refreshPostAfterCommentAction();
+                router.pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +182,15 @@ class _PostDetailState extends State<PostDetail> {
           return Text('Error: ${snapshot.error}');
         } else {
           final post = snapshot.data!;
+          final commentMap = post.commentMap;
+          final mainComments = commentMap['0'] ?? []; // 본댓글 리스트
+          int totalComments = mainComments.length; // 본댓글 개수를 먼저 셉니다.
+
+          // 본댓글에 해당하는 대댓글 개수를 더합니다.
+          mainComments.forEach((mainComment) {
+            totalComments += (commentMap[mainComment.id.toString()]?.length ?? 0);
+          });
+
           return Scaffold(
             appBar: AppBar(
               title: Text('게시물 상세보기'),
@@ -165,18 +198,18 @@ class _PostDetailState extends State<PostDetail> {
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ListView.builder(
-                itemCount: post.commentList.length + 1,
+                itemCount: totalComments + 1,
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (post.imageList != null && post.imageList.isNotEmpty)
+                        if (post.imageList.isNotEmpty)
                           Container(
                             height: 200, // Adjust this as needed
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: post.imageList!.length,
+                              itemCount: post.imageList.length,
                               itemBuilder: (context, i) {
                                 return GestureDetector(
                                     onTap: () => _showDialog(context, post.imageList[i]),
@@ -236,7 +269,22 @@ class _PostDetailState extends State<PostDetail> {
                       ],
                     );
                   } else {
-                    Comment comment = post.commentList[post.commentList.length - index];
+                    Comment? comment;
+                    int commentIndex = index - 1;
+                    for (var mainComment in mainComments) {
+                      if (commentIndex < 1 + (commentMap[mainComment.id.toString()]?.length ?? 0)) {
+                        if (commentIndex == 0) {
+                          comment = mainComment; // 본 댓글 출력
+                        } else {
+                          comment = commentMap[mainComment.id.toString()]![commentIndex - 1]; // 대댓글 출력
+                        }
+                        break;
+                      } else {
+                        commentIndex -= 1 + (commentMap[mainComment.id.toString()]?.length ?? 0);
+                      }
+                    }
+
+                    if (comment != null) {
                     return ListTile(
                       contentPadding: comment.pId != null ? EdgeInsets.only(left: 50.0) : null,
                       dense: comment.pId != null ? true : null,
@@ -251,82 +299,14 @@ class _PostDetailState extends State<PostDetail> {
                             onSelected: (String result) {
                               if (result == 'edit') {
                                 // 댓글 수정 기능 구현
-                                // final commentController = TextEditingController(); // 댓글 컨트롤러 생성
-                                commentController.text = comment.commentContent;
+                                comment?.pId == null ?
+                                showCommentDialog(title: '댓글 수정', initialText: comment?.commentContent, buttonText: '수정', onPressed: () {commentUpdate(comment!.id);})
+                                : showCommentDialog(title: '답글 수정', labelText: '답글을 입력하세요', initialText: comment?.commentContent, buttonText: '수정', onPressed: () {commentUpdate(comment!.id);});
 
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('댓글 수정'),
-                                      content: TextField(
-                                        controller: commentController,
-                                        autofocus: true,
-                                        decoration: InputDecoration(
-                                          labelText: "댓글을 입력하세요",
-                                        ),
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('취소'),
-                                          onPressed: () {
-                                            router.pop();
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: Text('수정'),
-                                          onPressed: () {
-                                            // 댓글 수정 처리를 수행합니다.
-                                            commentUpdate(comment.id);
-                                            // 댓글 작성 및 저장이 완료되면, 게시글과 댓글을 다시 불러옵니다.
-                                            fetchPost().then((post) {
-                                              setState(() {
-                                                // 새로 불러온 게시글과 댓글로 화면을 업데이트합니다.
-                                                this.post = post;
-                                              });
-                                            });
-                                            router.pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
                               } else if (result == 'delete') {
                                 // 삭제 확인 다이얼로그 보여주기
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('삭제'),
-                                      content: Text('삭제하시겠습니까?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('취소'),
-                                          onPressed: () {
-                                            router.pop();
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: Text('확인'),
-                                          onPressed: () {
-                                            // 댓글 삭제 기능 구현
-                                            deleteComment(comment.id);
+                                showCommentDialog(title: '삭제', buttonText: '삭제', showTextField: false, onPressed: () {deleteComment(comment!.id);});
 
-                                            fetchPost().then((post) {
-                                              setState(() {
-                                                // 새로 불러온 게시글과 댓글로 화면을 업데이트합니다.
-                                                this.post = post;
-                                              });
-                                            });
-
-                                            router.pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
                               }
                             },
                             itemBuilder: (BuildContext context) =>
@@ -357,44 +337,8 @@ class _PostDetailState extends State<PostDetail> {
                                 TextButton(
                                   onPressed: () {
                                     // 대댓글 작성 기능 구현
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text('답글 작성'),
-                                          content: TextField(
-                                            controller: commentController,
-                                            autofocus: true,
-                                            decoration: InputDecoration(
-                                              labelText: "답글을 입력하세요",
-                                            ),
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: Text('취소'),
-                                              onPressed: () {
-                                                router.pop();
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: Text('작성'),
-                                              onPressed: () {
-                                                // 댓글 작성 처리를 수행합니다.
-                                                replyCreate(comment.id);
-                                                // 댓글 작성 및 저장이 완료되면, 게시글과 댓글을 다시 불러옵니다.
-                                                fetchPost().then((post) {
-                                                  setState(() {
-                                                    // 새로 불러온 게시글과 댓글로 화면을 업데이트합니다.
-                                                    this.post = post;
-                                                  });
-                                                });
-                                                router.pop();
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
+                                    showCommentDialog(title: '답글 작성', labelText: '답글을 입력하세요', onPressed: () {commentCreate(parentCommentId: comment!.id);});
+
                                   },
                                   child: Text('답글 달기'),
                                   style: TextButton.styleFrom(
@@ -405,7 +349,10 @@ class _PostDetailState extends State<PostDetail> {
                           ),
                         ],
                       ),
-                    );
+                    );} else {
+                      return Container();
+                    }
+
                   }
                 },
               ),
@@ -413,46 +360,8 @@ class _PostDetailState extends State<PostDetail> {
             floatingActionButton: ElevatedButton(
               child: Text('댓글 달기'),
               onPressed: () {
-                // final commentController = TextEditingController(); // 댓글 컨트롤러 생성
+                showCommentDialog(onPressed: () {commentCreate();});
 
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('댓글 작성'),
-                      content: TextField(
-                        controller: commentController,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          labelText: "댓글을 입력하세요",
-                        ),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('취소'),
-                          onPressed: () {
-                            router.pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('작성'),
-                          onPressed: () {
-                            // 댓글 작성 처리를 수행합니다.
-                            commentCreate();
-                            // 댓글 작성 및 저장이 완료되면, 게시글과 댓글을 다시 불러옵니다.
-                            fetchPost().then((post) {
-                              setState(() {
-                                // 새로 불러온 게시글과 댓글로 화면을 업데이트합니다.
-                                this.post = post;
-                              });
-                            });
-                            router.pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
               },
             ),
           );

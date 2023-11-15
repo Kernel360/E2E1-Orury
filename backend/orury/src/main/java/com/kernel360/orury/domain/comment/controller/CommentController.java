@@ -72,6 +72,5 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     "댓글 삭제" + ErrorMessages.THERE_IS_NO_AUTHORITY.getMessage());
         }
-
     }
 }

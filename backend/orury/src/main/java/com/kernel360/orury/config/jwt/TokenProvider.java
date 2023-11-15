@@ -50,7 +50,7 @@ public class TokenProvider implements InitializingBean {
 		UserRepository userRepository,
 		RefreshTokenRepository tokenRepository
 		) {
-		this.refreshValidityMs = refershValiditySec;
+		this.refreshValidityMs = refershValiditySec * 1000L;
 		this.accessValidityMs = accessValiditySec * 1000L;
 		this.secret = secret;
 		this.userRepository = userRepository;

@@ -27,7 +27,7 @@ public class NotifyController {
 
     @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable Long id){
-        notifyService.notify(id, "data");
+        notifyService.notify(id, "data", "api");
     }
 
 }

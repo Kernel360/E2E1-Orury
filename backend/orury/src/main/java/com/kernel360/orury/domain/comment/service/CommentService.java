@@ -72,7 +72,7 @@ public class CommentService {
 
     private void sendNotificationToPostAuthor(Long userId, Long id) {
         // user Id를 통해 만들어진 emitter 검색
-        notifyService.notify(userId, SseEmitter.event().name("comment").data(id));
+        notifyService.notify(userId, "new comment created [comment id:  "+id + "]" , "comment");
     }
 
     public CommentDto updateComment(

@@ -43,6 +43,6 @@ public class PostEntity extends BaseEntity {
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	@Builder.Default
-	@OrderBy(clause = "id desc")
+	@OrderBy(clause = "id asc")
 	private List<CommentEntity> commentList = List.of();
 }

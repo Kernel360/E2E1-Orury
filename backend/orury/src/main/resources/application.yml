@@ -3,11 +3,15 @@ jasypt:
     bean: jasyptEncryptorAES
 
 spring:
+  batch:
+    jdbc:
+      initialize-schema: ALWAYS
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -28,5 +32,5 @@ jwt:
   secret: ${LOCAL_JWT_SECRET_KEY}
 #  secret: ENC(XNkGVBeK1sJZhLhri+zz7pJOhHCvfif265mvT8OUIbOGeQcOCtHNnG2s3qjsKNe2u+dLoNVQBzbF1bKUfDxi8Po5tL7jQbZMPA33Dg1QMQFQWV46IyrYnLykYXQQvpin/SNPXW04ECDoRLF3TNwcS22D8uWEwe8L2wtcauyHeO1z+J6lUQArPHy76O2pzC7FHlBjOTw3STd23e3dd1WBQtHAYVmOIvNuPreulzSaHXc=)
   access-validity: 3600
-  refresh-validity: 604800
+  refresh-validity: 7200
 

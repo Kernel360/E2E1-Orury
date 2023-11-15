@@ -40,7 +40,7 @@ import java.util.Map;
 @Slf4j
 public class DeleteExpiredTokenJobConfig {
 
-    private JobBuilderFactory jobBuilderFactory;
+    private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
 

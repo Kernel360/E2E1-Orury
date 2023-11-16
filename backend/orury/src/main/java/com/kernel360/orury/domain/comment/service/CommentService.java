@@ -61,18 +61,24 @@ public class CommentService {
             notifyUserId = commentRepository.findById(commentEntity.getPId()).orElseThrow(
                     () -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + commentEntity.getPId())
             ).getUserId();
+            if (!Objects.equals(notifyUserId, saveEntity.getUserId())) {
+                sendNotificationToPostAuthor(notifyUserId, postEntity.getPostTitle() + "의 댓글 답변 달림");
+            }
         }
         // 댓글이 달렸을 때는 게시글 작성자에게 알림을 보냄
-        else
+        else {
             notifyUserId = postEntity.getUserId();
-        sendNotificationToPostAuthor(notifyUserId, saveEntity.getId());
+            if (!Objects.equals(notifyUserId, saveEntity.getUserId())) {
+                sendNotificationToPostAuthor(notifyUserId, postEntity.getPostTitle() + " 댓글 달림");
+            }
+        }
 
         return commentConverter.toDto(saveEntity);
     }
 
-    private void sendNotificationToPostAuthor(Long userId, Long id) {
+    private void sendNotificationToPostAuthor(Long userId, String message) {
         // user Id를 통해 만들어진 emitter 검색
-        notifyService.notify(userId, "new comment created [comment id:  "+id + "]" , "comment");
+        notifyService.notify(userId, message , "comment");
     }
 
     public CommentDto updateComment(

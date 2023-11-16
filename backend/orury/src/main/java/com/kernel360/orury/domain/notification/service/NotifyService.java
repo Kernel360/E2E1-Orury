@@ -31,8 +31,7 @@ public class NotifyService {
     public SseEmitter subscribe(Long userId) {
         SseEmitter emitter = createEmitter(userId);
 
-        sendToClient(userId, "EventStream Created. [userId=" + userId + "]", "new comment");
-
+//        sendToClient(userId, "EventStream Created. [userId=" + userId + "]", "new comment");
 
         return emitter;
     }

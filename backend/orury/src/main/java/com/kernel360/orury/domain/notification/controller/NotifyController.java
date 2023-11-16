@@ -24,10 +24,4 @@ public class NotifyController {
     ){
         return notifyService.subscribe(userId);
     }
-
-    @PostMapping("/send-data/{id}")
-    public void sendData(@PathVariable Long id){
-        notifyService.notify(id, "data", "api");
-    }
-
 }

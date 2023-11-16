@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layout/tables-data :: layout(~{::table}, ~{::#hiddenForm})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="hiddenForm" type="hidden"></form>
+<table class="table datatable">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">게시판 ID</th>
+        <th scope="col">게시글 제목</th>
+        <th scope="col">게시글 내용</th>
+        <th scope="col">작성일</th>
+        <th scope="col">수정일</th>
+        <th scope="col">게시글 삭제</th>
+
+        <!-- 필요한 다른 컬럼들 -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${postList}">
+        <td th:text="${post.id}"></td>
+        <td th:text="${post.boardId}"></td>
+        <td th:text="${post.postTitle}"></td>
+        <td th:text="${post.postContent}"></td>
+        <td th:text="${post.createdAt}"></td>
+        <td th:text="${post.updatedAt}"></td>
+        <td>
+            <form th:action="@{/admin/deletePost}" method="post">
+                <input type="hidden" th:value="${post.id}" name="postId">
+                <button class="btn btn-danger" type="submit">삭제하기</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

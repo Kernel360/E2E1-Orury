@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layout/tables-data :: layout(~{::table}, ~{::#createForm})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form class="col-md-4" id="createForm" th:action="@{/admin/board}" method="post">
+    <input name="boardTitle" type="text" placeholder="생성할 게시판 명">
+    <button class="btn btn-primary" type="submit">게시판 생성</button>
+</form>
+<table class="table datatable">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">게시판 이름</th>
+        <th scope="col">게시판 이름 수정</th>
+        <th scope="col">게시판 삭제</th>
+
+        <!-- 필요한 다른 컬럼들 -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="board : ${boardList}">
+        <td th:text="${board.id}"></td>
+        <td th:text="${board.boardTitle}"></td>
+        <td>
+            <form id="updateForm" th:action="@{/admin/updateBoard}" method="post">
+                <input type="hidden" th:value="${board.id}" name="id">
+                <input type="text" th:value="${board.boardTitle}" placeholder="수정할 게시판 명" name="boardTitle">
+                <button class="btn btn-warning" type="submit">게시판명 수정</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/admin/deleteBoard}" method="post">
+                <input type="hidden" th:value="${board.id}" name="boardId">
+                <button class="btn btn-danger" type="submit">삭제하기</button>
+            </form>
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

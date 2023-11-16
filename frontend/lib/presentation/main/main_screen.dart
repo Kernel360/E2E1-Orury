@@ -2,13 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:orury/core/theme/constant/app_colors.dart';
 import 'package:orury/presentation/routes/route_path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../global/http/http_request.dart';
 import '../Board/board.dart';
 import '../Board/post.dart';
 import '../routes/routes.dart';
+
+import 'package:http/http.dart' as http;
 
 
 class MainScreen extends StatefulWidget {
@@ -19,6 +23,39 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final client = http.Client();
+
+  @override
+  void initState() {
+    super.initState();
+    connectToServer();
+  }
+
+
+  @override
+  void dispose() {
+    client.close();
+    super.dispose();
+  }
+
+  Future<void> connectToServer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await client.send(http.Request('GET', Uri.http(dotenv.env['API_URL']!, '/api/notify/subscribe/' + prefs.getInt('userId').toString())));
+    if (response.statusCode == 200) {
+      await for (final data in response.stream.transform(utf8.decoder).transform(LineSplitter())) {
+        // SSE 스트림 데이터 처리 로직 구현
+        print('Received data: $data');
+        if (data.startsWith('data:')) {
+          Fluttertoast.showToast(
+            msg: data.substring(6),
+            backgroundColor: Colors.white,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP
+          );
+        }
+      }
+    }
+  }
 
   // 게시글 목록 조회
   Future<List<Post>> fetchPosts() async {
@@ -88,7 +125,7 @@ class _MainScreenState extends State<MainScreen> {
                       Text(post.likeCnt.toString()), // 좋아요 수
                       SizedBox(width: 20), // 간격 조절
                       Icon(Icons.comment, size: 15,), // 댓글 아이콘
-                      Text((post.commentMap['0']?.length).toString()),
+                      Text((post.commentMap['0']?.length ?? 0).toString()),
                     ],
                   ),
                 );

@@ -81,6 +81,7 @@ class _PostDetailState extends State<PostDetail> {
     final response = await sendHttpRequest(
       'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/comment'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
       body: jsonEncode({
         "id": parentCommentId,
         "user_id": userId,

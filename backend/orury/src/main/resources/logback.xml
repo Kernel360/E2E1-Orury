@@ -1,9 +1,13 @@
 <configuration scan="true" scanPeriod="30 seconds">
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) [%C.%M:%line] - %msg%n</Pattern>
+            <Pattern>%green(%d{yyyy-MM-dd HH:mm:ss}:) %magenta([%thread]) %clr(%-5level) %cyan(%logger) - %yellow(%msg%n) [%C.%M:%line] - %msg%n</Pattern>
         </layout>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
     </appender>
 
     <!-- TRACE Level Appender -->
@@ -151,7 +155,7 @@
     </appender>
 
     <root level="TRACE">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="CONSOLE" />
         <appender-ref ref="TRACE_ROLLING" />
         <appender-ref ref="DEBUG_ROLLING" />
         <appender-ref ref="INFO_ROLLING" />
@@ -159,5 +163,15 @@
         <appender-ref ref="ERROR_ROLLING" />
         <appender-ref ref="FATAL_ROLLING" />
     </root>
+
+    <logger name="org.hibernate.SQL" level="DEBUG">
+        <appender-ref ref="DEBUG_ROLLING" />
+    </logger>
+
+    <logger name="org.hibernate.type.descriptor.sql" level="DEBUG">
+        <appender-ref ref="DEBUG_ROLLING" />
+    </logger>
+
+
 
 </configuration>

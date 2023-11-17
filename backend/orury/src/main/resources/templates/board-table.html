@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{layout/tables-data :: layout(~{::table}, ~{::#createForm})}">
+<html lang="en" th:replace="~{layout/tables-data :: layout(~{::table}, ~{::#createForm}, ~{::#tableName})}">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
 
-
+<h5 id="tableName">게시판 관리</h5>
 <form class="col-md-4" id="createForm" th:action="@{/admin/board}" method="post">
     <input name="boardTitle" type="text" placeholder="생성할 게시판 명">
     <button class="btn btn-primary" type="submit">게시판 생성</button>

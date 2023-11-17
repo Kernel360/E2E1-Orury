@@ -37,15 +37,16 @@ public class AdminPostController {
 		return "post-table";
 	}
 
+	@PostMapping("/post")
+	public String createPost(@ModelAttribute PostRequest postRequest) {
+		adminPostService.createPost(postRequest);
+		return "redirect:/admin/post";
+	}
+
 	@PostMapping("/deletePost")
 	public String deletePost(@RequestParam("postId") Long postId) {
 		adminPostService.deletePost(postId);
 		return "redirect:/admin/post";
 	}
 
-	@PostMapping("/post")
-	public String createPost(@ModelAttribute PostRequest postRequest) {
-		adminPostService.createPost(postRequest);
-		return "redirect:/admin/post";
-	}
 }

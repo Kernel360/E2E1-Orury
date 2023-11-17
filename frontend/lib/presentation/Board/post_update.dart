@@ -38,11 +38,10 @@ class _PostUpdateState extends State<PostUpdate> {
   void update() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
-    final refreshToken = prefs.getString('refreshToken');
 
     final response = await http.patch(
-      Uri.http(dotenv.env['API_URL']!, '/api/post'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/post'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
       headers: <String, String>{
         "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',

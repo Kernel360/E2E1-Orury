@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layout/tables-data :: layout(~{::table}, ~{::#hiddenForm}, ~{::#tableName})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h5 id="tableName">댓글 관리</h5>
+<form id="hiddenForm" type="hidden"></form>
+<table class="table datatable">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">작성자 ID</th>
+        <th scope="col">게시글 ID</th>
+        <th scope="col">부모댓글 ID</th>
+        <th scope="col">댓글 내용</th>
+        <th scope="col">작성일</th>
+        <th scope="col">수정일</th>
+        <th scope="col">게시글 삭제</th>
+
+        <!-- 필요한 다른 컬럼들 -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="comment : ${commentList}">
+        <td th:text="${comment.id}"></td>
+        <td th:text="${comment.userId}"></td>
+        <td th:text="${comment.postId}"></td>
+        <td th:text="${comment.PId}"></td>
+        <td th:text="${comment.commentContent}"></td>
+        <td th:text="${comment.createdAt}"></td>
+        <td th:text="${comment.updatedAt}"></td>
+        <td>
+            <form th:action="@{/admin/deleteComment}" method="post">
+                <input type="hidden" th:value="${comment.id}" name="commentId">
+                <button class="btn btn-danger" type="submit">삭제하기</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

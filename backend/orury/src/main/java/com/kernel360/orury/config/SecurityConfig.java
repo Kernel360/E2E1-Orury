@@ -3,6 +3,7 @@ package com.kernel360.orury.config;
 import com.kernel360.orury.config.jwt.*;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,10 +29,10 @@ import java.util.List;
 public class SecurityConfig {
 
 	private static final List<String> SWAGGER = List.of(
-			"/swagger-ui.html",
-			"/swagger-ui/**",
-			"/v3/api-docs/**",
-			"/api/notify/**" // sse 테스트를 위해 임시로
+		"/swagger-ui.html",
+		"/swagger-ui/**",
+		"/v3/api-docs/**",
+		"/api/notify/**" // sse 테스트를 위해 임시로
 	);
 	private final TokenProvider tokenProvider;
 	private final CorsFilter corsFilter;
@@ -58,6 +59,8 @@ public class SecurityConfig {
 
 			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
 				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
+				.antMatchers("/assets/**").permitAll()
+				.antMatchers("/admin/**").permitAll()
 				.antMatchers("/api/hello", "/api/auth/login", "/api/user/signup").permitAll()
 				.anyRequest().authenticated()
 			)

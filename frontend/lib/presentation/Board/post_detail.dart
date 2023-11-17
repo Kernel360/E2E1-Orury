@@ -281,12 +281,14 @@ class _PostDetailState extends State<PostDetail> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              post.postTitle,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ), // 제목
-                            // 추가: 좋아요 토글 아이콘
+                            Expanded(
+                              child: Text(
+                                post.postTitle,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            // 수정: 좋아요 토글 아이콘
                             IconButton(
                               icon: Icon(
                                 isLike ? Icons.favorite : Icons.favorite_border,
@@ -444,7 +446,7 @@ class _PostDetailState extends State<PostDetail> {
                                     setState(() {
                                       // 수정: 댓글 좋아요 상태 토글
                                       isCommentLikedList[index - 1] =
-                                      !isCommentLikedList[index - 1];
+                                          !isCommentLikedList[index - 1];
                                     });
 
                                     // 추가: 댓글 좋아요 상태 업데이트 API 호출

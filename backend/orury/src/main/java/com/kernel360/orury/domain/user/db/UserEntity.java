@@ -42,7 +42,7 @@ public class UserEntity extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "email_addr")
+	@Column(name = "email_addr", unique = true)
 	private String emailAddr;
 
 	@Column(name = "nickname")

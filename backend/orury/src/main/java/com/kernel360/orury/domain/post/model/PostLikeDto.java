@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,8 +11,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 @Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-
-public class PostViewRequest {
-    @NotNull
-    private Long id;
+public class PostLikeDto {
+    private Long postId;
+    private Long userId;
 }

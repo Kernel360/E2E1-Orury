@@ -17,6 +17,9 @@ class Post {
   final List<Comment> commentList;
   final Map<String, List<Comment>> commentMap;
 
+  bool isLike; // 좋아요 상태를 나타내는 변수
+
+
   // Post(this.id, this.boardId, this.postTitle, this.postContent,
   //     this.userNickname, this.viewCnt, this.likeCnt, this.userId);
 
@@ -32,7 +35,8 @@ class Post {
       required this.likeCnt,
       required this.userId,
       required this.commentList,
-      required this.commentMap
+      required this.commentMap,
+      required this.isLike
   });
 
   //
@@ -62,7 +66,8 @@ class Post {
         likeCnt: json['like_cnt'],
         userId: json['user_id'],
         commentList: commentObjects,
-        commentMap: commentMap2
+        commentMap: commentMap2,
+        isLike: json['is_like']
     );
   }
 }

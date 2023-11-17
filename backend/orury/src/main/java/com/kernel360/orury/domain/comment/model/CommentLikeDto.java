@@ -6,12 +6,12 @@ import lombok.*;
 
 @Getter
 @Setter
-@ToString
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CommentDelRequest {
-
-    private Long id;
+public class CommentLikeDto {
+    private Long commentId;
+    private Long userId;
 }

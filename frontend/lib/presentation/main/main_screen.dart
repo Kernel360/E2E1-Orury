@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.thumb_up, size: 15,), // 좋아요 아이콘
+                      Icon(Icons.favorite, size: 15, color: Colors.red,), // 좋아요 아이콘
                       Text(post.likeCnt.toString()), // 좋아요 수
                       SizedBox(width: 20), // 간격 조절
                       Icon(Icons.comment, size: 15,), // 댓글 아이콘

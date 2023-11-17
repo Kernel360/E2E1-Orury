@@ -1,6 +1,9 @@
 package com.kernel360.orury.domain.post.controller;
 
+import com.kernel360.orury.config.jwt.TokenProvider;
 import com.kernel360.orury.domain.post.model.PostDto;
+import com.kernel360.orury.domain.post.model.PostLikeDto;
+import com.kernel360.orury.domain.post.model.PostLikeRequest;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostService;
 
@@ -8,8 +11,11 @@ import com.kernel360.orury.global.common.Api;
 
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import com.kernel360.orury.global.message.info.InfoMessages;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -22,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.security.Key;
 import java.util.Collection;
 import java.util.List;
 
@@ -93,5 +100,14 @@ public class PostController {
 		}else{
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 "+ ErrorMessages.THERE_IS_NO_AUTHORITY.getMessage());
 		}
+	}
+
+	// 게시글 좋아요 업데이트
+	@PatchMapping("/like")
+	public PostLikeDto updatePostLike(
+			@Valid
+			@RequestBody PostLikeRequest postLikeRequest
+	) {
+		return postService.updatePostLike(postLikeRequest);
 	}
 }

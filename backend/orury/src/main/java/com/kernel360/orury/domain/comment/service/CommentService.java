@@ -1,13 +1,16 @@
 package com.kernel360.orury.domain.comment.service;
 
-import com.kernel360.orury.domain.comment.db.CommentEntity;
-import com.kernel360.orury.domain.comment.db.CommentRepository;
-import com.kernel360.orury.domain.comment.model.CommentDelRequest;
+import com.kernel360.orury.domain.comment.db.*;
 import com.kernel360.orury.domain.comment.model.CommentDto;
+import com.kernel360.orury.domain.comment.model.CommentLikeDto;
+import com.kernel360.orury.domain.comment.model.CommentLikeRequest;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
 import com.kernel360.orury.domain.notification.service.NotifyService;
 import com.kernel360.orury.domain.post.db.PostEntity;
+import com.kernel360.orury.domain.post.db.PostLikeEntity;
+import com.kernel360.orury.domain.post.db.PostLikePK;
 import com.kernel360.orury.domain.post.db.PostRepository;
+import com.kernel360.orury.domain.post.model.PostLikeRequest;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
@@ -29,6 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final CommentConverter commentConverter;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -116,6 +120,31 @@ public class CommentService {
                 () -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail)
         );
         return Objects.equals(user.getId(), comment.getUserId());
+    }
 
+    // 댓글 좋아요 상태 업데이트
+    public CommentLikeDto updateCommentLike(CommentLikeRequest commentLikeRequest) {
+        boolean isLike = commentLikeRequest.isLike();
+
+        CommentLikePK commentLikePK = new CommentLikePK();
+        commentLikePK.setCommentId(commentLikeRequest.getCommentId());
+        commentLikePK.setUserId(commentLikeRequest.getUserId());
+
+        var entity = CommentLikeEntity.builder()
+                .commentLikePK(commentLikePK)
+                .createdBy(commentLikeRequest.getUserId().toString())
+                .createdAt(LocalDateTime.now())
+                .updatedBy(commentLikeRequest.getUserId().toString())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        CommentLikeDto likeDto = commentConverter.toLikeDto(entity);
+
+        if (isLike) {
+            commentLikeRepository.save(entity);
+        } else {
+            commentLikeRepository.delete(entity);
+        }
+        return likeDto;
     }
 }

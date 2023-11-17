@@ -1,5 +1,7 @@
 package com.kernel360.orury.config.jwt;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kernel360.orury.global.exception.TokenExpiredException;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -47,7 +49,25 @@ public class JwtFilter extends GenericFilterBean {
 				logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
 			}
 		} catch (ExpiredJwtException e) {
-			throw new TokenExpiredException(ErrorMessages.EXPIRED_JWT.getMessage());
+
+			HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+			String errorMessage = ErrorMessages.EXPIRED_JWT.getMessage();
+			// Create an ObjectMapper
+			ObjectMapper objectMapper = new ObjectMapper();
+			// Create a JSON object
+			JsonNode errorJson = objectMapper.createObjectNode()
+					.put("error", errorMessage)
+					.put("errorCode", HttpStatus.UNAUTHORIZED.value());
+			// Convert JSON object to string
+			String jsonString = objectMapper.writeValueAsString(errorJson);
+			// Set status code and headers
+			httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+			httpServletResponse.setContentType("application/json; charset=UTF-8");
+			httpServletResponse.setCharacterEncoding("UTF-8");
+			// Write JSON string to the response body
+			httpServletResponse.getWriter().write(jsonString);
+			httpServletResponse.getWriter().flush();
+			return;
 		}
 		filterChain.doFilter(servletRequest, servletResponse);
 	}

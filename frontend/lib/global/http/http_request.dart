@@ -37,7 +37,8 @@ Future<http.Response> sendHttpRequest(String method, Uri uri, {String? body, Map
     if (jsonDecode(response.body)['errorCode'] == 401) { // 응답 바디의 errorCode가 401인 경우
       final refreshToken = prefs.getString('refreshToken');
       final tokenResponse = await http.post(
-        Uri.http(dotenv.env['API_URL']!, '/api/auth/refreshToken'),
+        // Uri.http(dotenv.env['API_URL']!, '/api/auth/refreshToken'),
+        Uri.http(dotenv.env['AWS_API_URL']!, '/api/auth/refreshToken'),
         headers: {
           "Content-Type": "application/json",
           'Authorization': 'Bearer $refreshToken',

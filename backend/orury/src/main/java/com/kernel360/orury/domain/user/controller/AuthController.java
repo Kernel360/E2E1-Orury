@@ -1,6 +1,8 @@
 package com.kernel360.orury.domain.user.controller;
 
 import javax.validation.Valid;
+
+import com.kernel360.orury.global.constants.Constant;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +11,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import com.kernel360.orury.config.jwt.JwtFilter;
 import com.kernel360.orury.config.jwt.TokenProvider;
 import com.kernel360.orury.domain.user.model.LoginDto;
 import com.kernel360.orury.domain.user.model.TokenDto;
@@ -39,8 +40,8 @@ public class AuthController {
 		tokenProvider.storeToken(refreshToken);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
-		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + refreshToken);
+		httpHeaders.add(Constant.AUTHORIZATION.getMessage(), "Bearer " + accessToken);
+		httpHeaders.add(Constant.REFRESH_HEADER.getMessage(), "Bearer " + refreshToken);
 
 		var tokenDto = TokenDto.builder()
 				.accessToken(accessToken)
@@ -52,7 +53,7 @@ public class AuthController {
 
 	@PostMapping("/refreshToken")
 	public ResponseEntity<TokenDto> refreshAccessToken(
-			@RequestHeader("Authorization") String refreshTokenHeader
+			@RequestHeader("Refresh-Token") String refreshTokenHeader
 	){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		//서버 측에서 리프레시 토큰 검증

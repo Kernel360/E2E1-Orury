@@ -14,7 +14,8 @@
     <appender name="TRACE_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOCAL_LOG_URL}/logs/trace/trace-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+<!--            <fileNamePattern>${LOCAL_LOG_URL}/logs/trace/trace-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+            <fileNamePattern>${AWS_LOG_URL}/logs/trace/trace-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 1일까지 보관 -->
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -38,7 +39,8 @@
     <appender name="DEBUG_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOCAL_LOG_URL}/logs/debug/debug-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+<!--            <fileNamePattern>${LOCAL_LOG_URL}/logs/debug/debug-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+            <fileNamePattern>${AWS_LOG_URL}/logs/debug/debug-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 1일까지 보관 -->
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -62,7 +64,8 @@
     <appender name="INFO_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOCAL_LOG_URL}/logs/info/info-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+<!--            <fileNamePattern>${LOCAL_LOG_URL}/logs/info/info-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+            <fileNamePattern>${AWS_LOG_URL}/logs/info/info-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 1일까지 보관 -->
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -86,7 +89,8 @@
     <appender name="WARN_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOCAL_LOG_URL}/logs/warn/warn-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+<!--            <fileNamePattern>${LOCAL_LOG_URL}/logs/warn/warn-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+            <fileNamePattern>${AWS_LOG_URL}/logs/warn/warn-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 1일까지 보관 -->
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -110,7 +114,8 @@
     <appender name="ERROR_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOCAL_LOG_URL}/logs/error/error-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+<!--            <fileNamePattern>${LOCAL_LOG_URL}/logs/error/error-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+            <fileNamePattern>${AWS_LOG_URL}/logs/error/error-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 1일까지 보관 -->
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -134,7 +139,8 @@
     <appender name="FATAL_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOCAL_LOG_URL}/logs/fatal/fatal-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+<!--            <fileNamePattern>${LOCAL_LOG_URL}/logs/fatal/fatal-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+            <fileNamePattern>${AWS_LOG_URL}/logs/fatal/fatal-logback-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 1일까지 보관 -->
             <maxHistory>1</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">

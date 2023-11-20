@@ -33,8 +33,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void signup() async {
     final response = await http.post(
-      Uri.http(dotenv.env['API_URL']!, '/api/user/signup'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/user/signup'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/user/signup'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/user/signup'),
       headers: <String, String>{
         "Content-Type": "application/json",
       },

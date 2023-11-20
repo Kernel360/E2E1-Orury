@@ -43,8 +43,8 @@ class _PostDetailState extends State<PostDetail> {
   Future<Post> fetchPost() async {
     final response = await sendHttpRequest(
       'GET',
-      Uri.http(dotenv.env['API_URL']!, '/api/post/${widget.id}'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post/${widget.id}'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/post/${widget.id}'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/post/${widget.id}'),
     );
 
     final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
@@ -69,8 +69,8 @@ class _PostDetailState extends State<PostDetail> {
   Future<void> deletePost() async {
     final response = await sendHttpRequest(
       'DELETE',
-      Uri.http(dotenv.env['API_URL']!, '/api/post/${widget.id}'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post/${widget.id}'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/post/${widget.id}'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/post/${widget.id}'),
     );
 
     router.pop();
@@ -83,8 +83,8 @@ class _PostDetailState extends State<PostDetail> {
 
     final response = await sendHttpRequest(
       'POST',
-      Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/comment'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
       body: jsonEncode({
         "id": parentCommentId,
         "user_id": userId,
@@ -105,8 +105,8 @@ class _PostDetailState extends State<PostDetail> {
 
     final response = await sendHttpRequest(
       'PATCH',
-      Uri.http(dotenv.env['API_URL']!, '/api/comment'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/comment'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment'),
       body: jsonEncode({
         "id": comId,
         "user_id": userId,
@@ -122,8 +122,8 @@ class _PostDetailState extends State<PostDetail> {
   Future<void> deleteComment(int commentId) async {
     final response = await sendHttpRequest(
       'DELETE',
-      Uri.http(dotenv.env['API_URL']!, '/api/comment/$commentId'),
-      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment/$commentId'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/comment/$commentId'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment/$commentId'),
     );
   }
 
@@ -185,7 +185,8 @@ class _PostDetailState extends State<PostDetail> {
   void updateLikeStatus(bool isLiked) async {
     final response = await sendHttpRequest(
       'PATCH',
-      Uri.http(dotenv.env['API_URL']!, '/api/post/like'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/post/like'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/post/like'),
       body: jsonEncode({
         'user_id': prefs.getInt('userId'),
         'post_id': widget.id,
@@ -205,7 +206,8 @@ class _PostDetailState extends State<PostDetail> {
   void updateCommentLikeStatus(bool isLiked, int commentId) async {
     final response = await sendHttpRequest(
       'PATCH',
-      Uri.http(dotenv.env['API_URL']!, '/api/comment/like'),
+      // Uri.http(dotenv.env['API_URL']!, '/api/comment/like'),
+      Uri.http(dotenv.env['AWS_API_URL']!, '/api/comment/like'),
       body: jsonEncode({
         'user_id': prefs.getInt('userId'),
         'comment_id': commentId,

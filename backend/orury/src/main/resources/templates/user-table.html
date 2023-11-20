@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layout/tables-data :: layout(~{::table}, ~{::#hiddenForm}, ~{::#tableName})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h5 id="tableName">유저권한 관리</h5>
+<form id="hiddenForm" type="hidden"></form>
+<table class="table datatable">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">이메일</th>
+        <th scope="col">닉네임</th>
+        <th scope="col">생성 일자</th>
+        <th scope="col">수정 일자</th>
+        <th scope="col">유저 권한</th>
+        <th scope="col">권한 변경</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${userList}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.emailAddr}"></td>
+        <td th:text="${user.nickname}"></td>
+        <td th:text="${user.createdAt}"></td>
+        <td th:text="${user.updatedAt}"></td>
+        <td>
+           <span th:each="authority :${user.authorityDtoSet}">
+               <span th:text="${authority.name}"></span>
+           </span>
+        </td>
+        <td>
+            <form th:action="@{/admin/authority}" method="post">
+                <input type="hidden" th:value="${user.id}" name="userId">
+                <select name="authority">
+                    <option value="ROLE_USER">User</option>
+                    <option value="ROLE_ADMIN">Admin</option>
+                </select>
+                <button class="btn btn-warning" type="submit">권한변경</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

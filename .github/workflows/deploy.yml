@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feature/#146_deploy_github_action
   pull_request:
     branches:
       - main

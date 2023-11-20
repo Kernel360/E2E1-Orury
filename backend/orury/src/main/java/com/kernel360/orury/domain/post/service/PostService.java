@@ -1,9 +1,10 @@
 package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardRepository;
-import com.kernel360.orury.domain.post.db.PostEntity;
-import com.kernel360.orury.domain.post.db.PostRepository;
+import com.kernel360.orury.domain.post.db.*;
 import com.kernel360.orury.domain.post.model.PostDto;
+import com.kernel360.orury.domain.post.model.PostLikeDto;
+import com.kernel360.orury.domain.post.model.PostLikeRequest;
 import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
@@ -24,6 +25,7 @@ import java.util.*;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
     private final BoardRepository boardRepository;
     private final PostConverter postConverter;
     private final UserRepository userRepository;
@@ -118,6 +120,32 @@ public class PostService {
         );
 
         return Objects.equals(user.getId(), post.getUserId());
+    }
 
+
+    // 게시글 좋아요 상태 업데이트
+    public PostLikeDto updatePostLike(PostLikeRequest postLikeRequest) {
+        boolean isLike = postLikeRequest.isLike();
+
+        PostLikePK postLikePK = new PostLikePK();
+        postLikePK.setPostId(postLikeRequest.getPostId());
+        postLikePK.setUserId(postLikeRequest.getUserId());
+
+        var entity = PostLikeEntity.builder()
+                .postLikePK(postLikePK)
+                .createdBy(postLikeRequest.getUserId().toString())
+                .createdAt(LocalDateTime.now())
+                .updatedBy(postLikeRequest.getUserId().toString())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        PostLikeDto likeDto = postConverter.toLikeDto(entity);
+
+        if (isLike) {
+            postLikeRepository.save(entity);
+        } else {
+            postLikeRepository.delete(entity);
+        }
+        return likeDto;
     }
 }

@@ -42,13 +42,15 @@ class _PostCreateState extends State<PostCreate> {
           children: <Widget>[
             SimpleDialogOption(
               onPressed: () {
-                Navigator.pop(context, ImageSource.camera);
+                // Navigator.pop(context, ImageSource.camera);
+                router.pop(ImageSource.camera);
               },
               child: const Text('카메라로 사진 찍기'),
             ),
             SimpleDialogOption(
               onPressed: () {
-                Navigator.pop(context, ImageSource.gallery);
+                // Navigator.pop(context, ImageSource.gallery);
+                router.pop(ImageSource.gallery);
               },
               child: const Text('갤러리에서 사진 선택'),
             ),
@@ -110,6 +112,7 @@ class _PostCreateState extends State<PostCreate> {
     final response = await sendHttpRequest(
       'POST',
       Uri.http(dotenv.env['API_URL']!, '/api/post'),
+      // Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
       body: jsonEncode({
         'user_id' : userId,
         'board_id': 1, // 코드 수정 필요

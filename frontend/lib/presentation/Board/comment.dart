@@ -8,6 +8,8 @@ class Comment {
   final String userNickname;
   final int likeCnt;
 
+  bool isLike;
+
   Comment(
       {required this.id,
       required this.pId,
@@ -15,7 +17,8 @@ class Comment {
       required this.postId,
       required this.commentContent,
       required this.userNickname,
-      required this.likeCnt});
+      required this.likeCnt,
+      required this.isLike});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
@@ -26,6 +29,7 @@ class Comment {
       commentContent: json['comment_content'],
       userNickname: json['user_nickname'],
       likeCnt: json['like_cnt'],
+      isLike: json['is_like']
     );
   }
 }

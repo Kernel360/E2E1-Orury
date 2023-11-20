@@ -1,5 +1,6 @@
 package com.kernel360.orury.domain.comment.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
@@ -29,4 +30,7 @@ public class CommentDto {
     private LocalDateTime createdAt;
     private String updatedBy;
     private LocalDateTime updatedAt;
+
+    @JsonProperty("is_like")
+    private boolean isLike;
 }

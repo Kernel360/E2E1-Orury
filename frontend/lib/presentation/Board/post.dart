@@ -1,4 +1,6 @@
 // 게시물 데이터 모델
+import 'dart:ffi';
+
 import 'package:orury/presentation/Board/comment.dart';
 
 class Post {
@@ -13,11 +15,16 @@ class Post {
   final int likeCnt;
   final int userId;
   final List<Comment> commentList;
+  final Map<String, List<Comment>> commentMap;
+
+  bool isLike; // 좋아요 상태를 나타내는 변수
+
 
   // Post(this.id, this.boardId, this.postTitle, this.postContent,
   //     this.userNickname, this.viewCnt, this.likeCnt, this.userId);
 
-  Post({required this.id,
+  Post({
+      required this.id,
       required this.boardId,
       required this.postTitle,
       required this.postContent,
@@ -27,12 +34,25 @@ class Post {
       required this.viewCnt,
       required this.likeCnt,
       required this.userId,
-      required this.commentList});
+      required this.commentList,
+      required this.commentMap,
+      required this.isLike
+  });
 
   //
   factory Post.fromJson(Map<String, dynamic> json) {
     var commentList = json['comment_list'] as List;
     List<Comment> commentObjects = commentList.map((comment) => Comment.fromJson(comment)).toList();
+
+    final Map<String, List<Comment>> commentMap2 = {};
+    var commentMapJson = json['comment_map'] as Map;
+
+    for (var key in commentMapJson.keys) {
+      var commentMapList = commentMapJson[key] as List;
+      List<Comment> commentMapListObjects = commentMapList.map((comment) => Comment.fromJson(comment)).toList();
+      commentMap2[key] = commentMapListObjects; // 여기서 Long은 Dart에 기본적으로 제공되는 타입이 아닙니다.
+    }
+
 
     return Post(
         id: json['id'],
@@ -45,6 +65,9 @@ class Post {
         viewCnt: json['view_cnt'],
         likeCnt: json['like_cnt'],
         userId: json['user_id'],
-        commentList: commentObjects);
+        commentList: commentObjects,
+        commentMap: commentMap2,
+        isLike: json['is_like']
+    );
   }
 }

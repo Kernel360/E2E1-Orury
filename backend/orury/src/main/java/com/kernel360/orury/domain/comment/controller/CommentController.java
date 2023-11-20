@@ -1,8 +1,12 @@
 package com.kernel360.orury.domain.comment.controller;
 
 import com.kernel360.orury.domain.comment.model.CommentDto;
+import com.kernel360.orury.domain.comment.model.CommentLikeDto;
+import com.kernel360.orury.domain.comment.model.CommentLikeRequest;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
 import com.kernel360.orury.domain.comment.service.CommentService;
+import com.kernel360.orury.domain.post.model.PostLikeRequest;
+import com.kernel360.orury.global.common.ApiResponse;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import com.kernel360.orury.global.message.info.InfoMessages;
@@ -72,6 +76,14 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     "댓글 삭제" + ErrorMessages.THERE_IS_NO_AUTHORITY.getMessage());
         }
+    }
 
+    // 댓글 좋아요 업데이트
+    @PatchMapping("/like")
+    public CommentLikeDto updateCommentLike(
+            @Valid
+            @RequestBody CommentLikeRequest commentLikeRequest
+    ) {
+        return commentService.updateCommentLike(commentLikeRequest);
     }
 }

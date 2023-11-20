@@ -15,7 +15,10 @@ import '../routes/routes.dart';
 
 class PostCreate extends StatefulWidget {
 
-  const PostCreate({super.key});
+  // const PostCreate({super.key});
+  final int id;
+
+  PostCreate(this.id, {Key? key}) : super(key: key);
 
 
   @override
@@ -115,7 +118,7 @@ class _PostCreateState extends State<PostCreate> {
       Uri.http(dotenv.env['AWS_API_URL']!, '/api/post'),
       body: jsonEncode({
         'user_id' : userId,
-        'board_id': 1, // 코드 수정 필요
+        'board_id': widget.id, // 코드 수정 필요
         'post_title': titleController.text,
         'post_content': contentController.text,
         'post_image_list': imageUrls

@@ -1,9 +1,13 @@
 package com.kernel360.orury.config.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kernel360.orury.domain.user.db.RefreshTokenEntity;
 import com.kernel360.orury.domain.user.db.RefreshTokenRepository;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
+import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.exception.TokenExpiredException;
 import com.kernel360.orury.global.exception.TokenNotFoundException;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
@@ -26,6 +30,7 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -64,53 +69,76 @@ public class TokenProvider implements InitializingBean {
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	// Authentication을 파라미터로 받아서 권한들을 가져온다, yml 파일에 설정한 만료시간을 설정하고 토큰을 생성한다
-	public String createToken(Authentication authentication, Long tokenValidity) {
+
+
+	public String createAccessToken(Authentication authentication){
 		String authorities = authentication.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.joining(","));
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.joining(","));
 
 		long now = (new Date()).getTime();
-		Date validity = new Date(now + tokenValidity);
+		Date validity = new Date(now + accessValidityMs);
 		UserEntity user = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
 				()-> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
 		);
 
 		return Jwts.builder()
-				.claim("userId", user.getId())
+				.claim(Constant.USERID.getMessage(), user.getId())
 				.setSubject(authentication.getName())
 				.claim(AUTHORITIES_KEY, authorities)
 				.signWith(key, SignatureAlgorithm.HS512)
 				.setExpiration(validity)
 				.compact();
 	}
-	public String createAccessToken(Authentication authentication){
-		return createToken(authentication, this.accessValidityMs);
-	}
 	public String createRefreshToken(Authentication authentication){
-		return createToken(authentication, this.refreshValidityMs);
+		long now = (new Date()).getTime();
+		Date validity = new Date(now + this.refreshValidityMs);
+
+		//
+		var userId = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
+				()-> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+		).getId();
+
+		return Jwts.builder()
+				.claim( Constant.USERID.getMessage(), userId)
+				.signWith(key, SignatureAlgorithm.HS512)
+				.setExpiration(validity)
+				.compact();
 	}
 
 	// 토큰을 파라미터로 받아서 클레임을 만들고 이를 이용해 유저 객체를 만들고 Authentication 객체 리턴
-	public Authentication getAuthentication(String token) {
-		Claims claims = Jwts
-			.parserBuilder()
-			.setSigningKey(key)
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
+	public Authentication getAuthentication(String token) throws JsonProcessingException {
+//		Claims claims = Jwts
+//			.parserBuilder()
+//			.setSigningKey(key)
+//			.build()
+//			.parseClaimsJws(token)
+//			.getBody();
+		
+		String[] chunks = token.split("\\.");
+		String payload = new String(Base64.getUrlDecoder().decode(chunks[1]));
+
+		// Jackson ObjectMapper를 사용하여 JSON으로 파싱
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(payload);
+
+		// 필요한 정보 추출
+//		String userId = jsonNode.get("userId").asText();
+		String sub = jsonNode.get("sub").asText();
+		String auth = jsonNode.get("auth").asText();
 
 		Collection<? extends GrantedAuthority> authorities =
-			Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+			Arrays.stream(auth.split(","))
 				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
+				.toList();
 
-		User principal = new User(claims.getSubject(), "", authorities);
+		User principal = new User(sub, "", authorities);
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
 
-	public boolean validateToken(String token) throws ExpiredJwtException{
+
+	public boolean validateToken(String token ) throws ExpiredJwtException{
 		Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 		return true;
 	}
@@ -122,6 +150,7 @@ public class TokenProvider implements InitializingBean {
 				.build()
 				.parseClaimsJws(token)
 				.getBody();
+
 		var userId = Long.parseLong(claims.get("userId").toString());
 
 		var user = userRepository.findById(userId).orElseThrow(
@@ -154,4 +183,6 @@ public class TokenProvider implements InitializingBean {
 
 		return validateToken(refreshToken);
 	}
+
+
 }

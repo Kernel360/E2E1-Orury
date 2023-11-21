@@ -52,3 +52,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+/**
+ * '-plan.jar' 파일은 'jar' 파일과는 다르게
+ * 'dependencies'를 제외한 [classes / resources] 만을 포함하고 있어
+ * 'java -jar' 옵션으로 jar 파일을 실행시킬 수 없다.
+ */
+jar {
+    enabled = false;
+}

@@ -3,6 +3,7 @@ package com.kernel360.orury.config.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kernel360.orury.global.constants.Constant;
+import com.kernel360.orury.global.exception.RefreshExpiredJwtException;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
@@ -56,39 +57,50 @@ public class JwtFilter extends OncePerRequestFilter {
 		String accessToken = resolveToken(authorizationHeader);
 
 		if (StringUtils.hasText(refreshToken)){
-			try{
+			try {
 				tokenProvider.validateToken(refreshToken);
-			} catch (ExpiredJwtException e) {
-				// Create an ObjectMapper
-				ObjectMapper objectMapper = new ObjectMapper();
-				// Create a JSON object
-				JsonNode errorJson = objectMapper.createObjectNode()
-						.put("error", ErrorMessages.EXPIRED_REFRESH_JWT.getMessage())
-						.put("errorCode", 402);
-				// Convert JSON object to string
-				tempResponse(objectMapper, errorJson, servletResponse);
-				return;
+				assert accessToken != null;
+				Authentication authentication = tokenProvider.getAuthentication(accessToken);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), servletRequest.getRequestURI());
+			}catch(ExpiredJwtException e){
+				RefreshExpiredJwtException refreshExpiredJwtException = new RefreshExpiredJwtException("Refresh Expired Jwt Exception");
+				servletRequest.setAttribute("exception", refreshExpiredJwtException);
+			}catch(Exception e){
+				servletRequest.setAttribute("exception", e);
 			}
+//			} catch (ExpiredJwtException e) {
+//				// Create an ObjectMapper
+//				ObjectMapper objectMapper = new ObjectMapper();
+//				// Create a JSON object
+//				JsonNode errorJson = objectMapper.createObjectNode()
+//						.put("error", ErrorMessages.EXPIRED_REFRESH_JWT.getMessage())
+//						.put("errorCode", 402);
+//				// Convert JSON object to string
+//				tempResponse(objectMapper, errorJson, servletResponse);
+//				return;
+//			}
 		}else {
 			try {
 				tokenProvider.validateToken(accessToken);
-			} catch (ExpiredJwtException e) {
-				// Create an ObjectMapper
-				ObjectMapper objectMapper = new ObjectMapper();
-				// Create a JSON object
-				JsonNode errorJson = objectMapper.createObjectNode()
-						.put("error", ErrorMessages.EXPIRED_JWT.getMessage())
-						.put("errorCode", 401);
-				// Convert JSON object to string
-				tempResponse(objectMapper, errorJson, servletResponse);
-				return;
+				Authentication authentication = tokenProvider.getAuthentication(accessToken);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), servletRequest.getRequestURI());
+			}catch(Exception e){
+				servletRequest.setAttribute("exception", e);
 			}
+//			} catch (Exception e) {
+//				// Create an ObjectMapper
+//				ObjectMapper objectMapper = new ObjectMapper();
+//				// Create a JSON object
+//				JsonNode errorJson = objectMapper.createObjectNode()
+//						.put("error", ErrorMessages.EXPIRED_JWT.getMessage())
+//						.put("errorCode", 401);
+//				// Convert JSON object to string
+//				tempResponse(objectMapper, errorJson, servletResponse);
+//				return;
+//			}
 		}
-
-        assert accessToken != null;
-        Authentication authentication = tokenProvider.getAuthentication(accessToken);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), servletRequest.getRequestURI());
 
 		filterChain.doFilter(servletRequest, servletResponse);
 	}

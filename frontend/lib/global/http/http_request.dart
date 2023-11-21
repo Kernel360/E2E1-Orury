@@ -37,7 +37,7 @@ Future<http.Response> sendHttpRequest(String method, Uri uri, {String? body, Map
   if (response.statusCode == 200) { // 응답의 상태 코드가 200인 경우
     return response; // 응답을 그대로 반환
   } else if (response.statusCode == 401) { // 응답의 상태 코드가 401인 경우
-    if (jsonDecode(response.body)['errorCode'] == 401) { // 응답 바디의 errorCode가 401인 경우
+    if (jsonDecode(response.body)['code'] == 401) { // 응답 바디의 errorCode가 401인 경우
       final refreshToken = prefs.getString('refreshToken');
       final tokenResponse = await http.post(
         // Uri.http(dotenv.env['API_URL']!, '/api/auth/refreshToken'),
@@ -57,7 +57,7 @@ Future<http.Response> sendHttpRequest(String method, Uri uri, {String? body, Map
 
         // 재귀 호출하여 새로운 토큰으로 다시 HTTP 요청을 보냅니다.
         return sendHttpRequest(method, uri, body: body, headers: headers);
-      } else if (jsonDecode(tokenResponse.body)['errorCode'] == 402) { // 응답 바디의 errorCode가 402인 경우
+      } else if (jsonDecode(tokenResponse.body)['code'] == 402) { // 응답 바디의 errorCode가 402인 경우
         Set<String> keys = prefs.getKeys();
 
         for (String key in keys) {

@@ -10,8 +10,7 @@
 |[형준](https://github.com/kkkapuq)|                                                [찬욱](https://github.com/mooncw)                                                |[종민](https://github.com/ShineCorine)|[무룡](https://github.com/aqrms)|
 
 ## 기술 스택
-
-![readme_stack](https://github.com/Kernel360/E2E1-Orury/assets/44130863/48959e1d-06d5-4b0a-be68-6d83ff143040)
+<img src="https://github.com/Kernel360/E2E1-Orury/assets/44130863/48959e1d-06d5-4b0a-be68-6d83ff143040" width=400, height=800>
 
 ## 서비스 흐름도
 ![image](https://github.com/Kernel360/E2E1-Orury/assets/44130863/ef0c31d3-623a-4ef8-b9a8-2a8fe0e5706b)

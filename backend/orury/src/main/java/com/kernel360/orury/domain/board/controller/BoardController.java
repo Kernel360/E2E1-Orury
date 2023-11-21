@@ -4,8 +4,10 @@ import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
 import com.kernel360.orury.domain.board.service.BoardService;
 
+import com.kernel360.orury.domain.post.model.PostDto;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,10 +51,17 @@ public class BoardController {
 
 	// 특정 게시판 조회
 	@GetMapping("/{id}")
-	public BoardDto getBoard(
+	public ResponseEntity<BoardDto> getBoard(
 		@PathVariable Long id
 	) {
-		return boardService.getBoard(id);
+		return ResponseEntity.ok(boardService.getBoard(id));
+	}
+
+	// 공지 간단 조회
+	@GetMapping("/notice")
+	public ResponseEntity<List<PostDto>> getNoticeBoard(
+	) {
+		return ResponseEntity.ok(boardService.getNoticeBoard(1L));
 	}
 
 	// 게시판 삭제

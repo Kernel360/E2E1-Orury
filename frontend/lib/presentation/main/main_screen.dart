@@ -28,11 +28,14 @@ class _MainScreenState extends State<MainScreen> {
 
   late List<Boards> board_list;
 
+  late SharedPreferences prefs;
+
   int _selectedCategory = 2;
 
   @override
   void initState() {
     super.initState();
+    initSharedPreferences();
     connectToServer();
     loadBoards();
   }
@@ -41,6 +44,10 @@ class _MainScreenState extends State<MainScreen> {
   void dispose() {
     client.close();
     super.dispose();
+  }
+
+  Future<void> initSharedPreferences() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   Future<void> connectToServer() async {
@@ -111,171 +118,196 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('Orury!'), actions: [
-        TextButton(
-          onPressed: () {
-            logout();
-          },
-          style: Theme.of(context).textButtonTheme.style,
-          child: Text(
-            '로그아웃',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.black,
-                  fontWeight: FontWeight.bold,
+    return FutureBuilder(
+        future: initSharedPreferences(),
+        builder: (BuildContext context, AsyncSnapshot<void> prefssnapshot) {
+          if (prefssnapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Loading indicator
+          } else if (prefssnapshot.hasError) {
+            return Text('Error: ${prefssnapshot.error}');
+          } else {
+            return Scaffold(
+              appBar:
+                  AppBar(centerTitle: true, title: Text('Orury!'), actions: [
+                TextButton(
+                  onPressed: () {
+                    logout();
+                  },
+                  style: Theme.of(context).textButtonTheme.style,
+                  child: Text(
+                    '로그아웃',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
                 ),
-          ),
-        ),
-      ]),
-      body: FutureBuilder(
-          future: loadBoards(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // 데이터를 기다리는 동안 표시할 위젯
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
-            } else {
-              return FutureBuilder<List<Post>>(
-                future: fetchPosts(board_list[_selectedCategory-1].id),
-                builder: (context, postsnapshot) {
-                  if (postsnapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (postsnapshot.hasError) {
-                    return Center(child: Text('Error: ${postsnapshot.error}'));
-                  // } else if (!postsnapshot.hasData ||
-                  //     postsnapshot.data!.isEmpty) {
-                  //   return Center(child: Text('No data available.'));
-                  } else {
-                    return Column(children: [
-                      Container(
-                          height: 50.0,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal, // 가로 스크롤 설정
-                            itemCount: board_list.length, // 버튼 개수
-                            itemBuilder: (context, index) {
-                              return ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedCategory = index + 1;
-                                  });
-                                },
-                                child: Text('${board_list[index].boardTitle}'),
-                              );
-                            },
-                          )),
-                      SizedBox(height: 15),
-                      Text(
-                          board_list[_selectedCategory-1].boardTitle + ' 게시판',
-                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)
-                      ),
-                      Expanded(
-                          child: ListView.builder(
-                        itemCount: postsnapshot.data?.length,
-                        itemBuilder: (context, index) {
-                          final post = postsnapshot.data![index];
-                          return ListTile(
-                            // tileColor: AppColors.background,
-                            selectedTileColor: AppColors.oruryMain,
-                            leading: post.thumbnailUrl != null
-                                ? Image.network(
-                                    dotenv.env['IMGUR_GET_IMAGE_URL']! +
-                                        post.thumbnailUrl!,
-                                    width: 80,
-                                    height: 80,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (BuildContext context,
-                                        Object exception,
-                                        StackTrace? stackTrace) {
-                                      return const SizedBox
-                                          .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
+              ]),
+              body: FutureBuilder(
+                  future: loadBoards(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator(); // 데이터를 기다리는 동안 표시할 위젯
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}'); // 에러 발생 시 표시할 위젯
+                    } else {
+                      return FutureBuilder<List<Post>>(
+                        future:
+                            fetchPosts(board_list[_selectedCategory - 1].id),
+                        builder: (context, postsnapshot) {
+                          if (postsnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (postsnapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${postsnapshot.error}'));
+                            // } else if (!postsnapshot.hasData ||
+                            //     postsnapshot.data!.isEmpty) {
+                            //   return Center(child: Text('No data available.'));
+                          } else {
+                            return Column(children: [
+                              Container(
+                                  height: 50.0,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    // 가로 스크롤 설정
+                                    itemCount: board_list.length,
+                                    // 버튼 개수
+                                    itemBuilder: (context, index) {
+                                      return ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _selectedCategory = index + 1;
+                                          });
+                                        },
+                                        child: Text(
+                                            '${board_list[index].boardTitle}'),
+                                      );
                                     },
-                                  )
-                                : null,
-                            // null인 경우 leading 생략
-                            title: Text(post.postTitle),
-                            subtitle: Text(post.userNickname),
-                            onTap: () {
-                              // 게시물을 누르면 상세 페이지로 이동
-                              router.push(
-                                RoutePath.postDetail,
-                                extra: post.id,
-                              );
-                            },
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.favorite,
-                                  size: 15,
-                                  color: Colors.red,
-                                ),
-                                // 좋아요 아이콘
-                                Text(post.likeCnt.toString()),
-                                // 좋아요 수
-                                SizedBox(width: 20),
-                                // 간격 조절
-                                Icon(
-                                  Icons.comment,
-                                  size: 15,
-                                ),
-                                // 댓글 아이콘
-                                Text((post.commentMap['0']?.length ?? 0)
-                                    .toString()),
-                              ],
-                            ),
-                          );
+                                  )),
+                              SizedBox(height: 15),
+                              Text(
+                                  board_list[_selectedCategory - 1].boardTitle +
+                                      ' 게시판',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                              Expanded(
+                                  child: ListView.builder(
+                                itemCount: postsnapshot.data?.length,
+                                itemBuilder: (context, index) {
+                                  final post = postsnapshot.data![index];
+                                  return ListTile(
+                                    // tileColor: AppColors.background,
+                                    selectedTileColor: AppColors.oruryMain,
+                                    leading: post.thumbnailUrl != null
+                                        ? Image.network(
+                                            dotenv.env['IMGUR_GET_IMAGE_URL']! +
+                                                post.thumbnailUrl!,
+                                            width: 80,
+                                            height: 80,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (BuildContext context,
+                                                Object exception,
+                                                StackTrace? stackTrace) {
+                                              return const SizedBox
+                                                  .shrink(); // 이미지 로드에 실패하면 아무것도 표시하지 않음
+                                            },
+                                          )
+                                        : null,
+                                    // null인 경우 leading 생략
+                                    title: Text(post.postTitle),
+                                    subtitle: Text(post.userNickname),
+                                    onTap: () {
+                                      // 게시물을 누르면 상세 페이지로 이동
+                                      router.push(
+                                        RoutePath.postDetail,
+                                        extra: post.id,
+                                      );
+                                    },
+                                    trailing:
+                                        board_list[_selectedCategory - 1].id !=
+                                                1
+                                            ? Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.favorite,
+                                                    size: 15,
+                                                    color: Colors.red,
+                                                  ),
+                                                  // 좋아요 아이콘
+                                                  Text(post.likeCnt.toString()),
+                                                  // 좋아요 수
+                                                  SizedBox(width: 20),
+                                                  // 간격 조절
+                                                  Icon(
+                                                    Icons.comment,
+                                                    size: 15,
+                                                  ),
+                                                  // 댓글 아이콘
+                                                  Text((post.commentMap['0']
+                                                              ?.length ??
+                                                          0)
+                                                      .toString()),
+                                                ],
+                                              )
+                                            : null,
+                                  );
+                                },
+                              ))
+                            ]);
+                          }
                         },
-                      ))
-                    ]);
-                  }
-                },
-              );
-            }
-          }),
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.people,
-              color: Colors.blue, // 'board' 탭은 파란색 아이콘
-            ),
-            label: 'board',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.map,
-              color: Colors.black, // 다른 탭들은 검은색 아이콘
-            ),
-            label: 'map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: Colors.black,
-            ),
-            label: 'profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.black,
-            ),
-            label: 'setting',
-          ),
-        ],
-        backgroundColor: AppColors.oruryMain,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          router.push(
-              RoutePath.postCreate,
-              extra: board_list[_selectedCategory-1].id
-          );
-        },
-        child: Icon(Icons.add),
-      ),
-    );
+                      );
+                    }
+                  }),
+              bottomNavigationBar: BottomNavigationBar(
+                showUnselectedLabels: false,
+                showSelectedLabels: false,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.people,
+                      color: Colors.blue, // 'board' 탭은 파란색 아이콘
+                    ),
+                    label: 'board',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.map,
+                      color: Colors.black, // 다른 탭들은 검은색 아이콘
+                    ),
+                    label: 'map',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.person,
+                      color: Colors.black,
+                    ),
+                    label: 'profile',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.settings,
+                      color: Colors.black,
+                    ),
+                    label: 'setting',
+                  ),
+                ],
+                backgroundColor: AppColors.oruryMain,
+              ),
+              floatingActionButton: prefs.getString('role') == 'ROLE_ADMIN'
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        router.push(RoutePath.postCreate,
+                            extra: board_list[_selectedCategory - 1].id);
+                      },
+                      child: Icon(Icons.add),
+                    )
+                  : null,
+            );
+          }
+        });
   }
 }

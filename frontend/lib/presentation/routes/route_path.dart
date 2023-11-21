@@ -7,4 +7,5 @@ class RoutePath {
   static const String postUpdate = '/post/update';
   static const String postDetail = '/post/detail';
   static const String registerPage = '/register';
+  static const String noticeDetail = '/notice';
 }

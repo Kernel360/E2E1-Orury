@@ -4,6 +4,7 @@ import 'package:orury/presentation/main/main_screen.dart';
 import 'package:orury/presentation/pages/user/login_page.dart';
 import 'package:orury/presentation/routes/route_path.dart';
 
+import '../Board/notice_detail.dart';
 import '../Board/post.dart';
 import '../Board/post_create.dart';
 import '../Board/post_update.dart';
@@ -59,6 +60,17 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final postId = state.extra as int?;
         return PostDetail(postId ?? 0);
+      },
+    ),
+
+    GoRoute(
+      path: RoutePath.noticeDetail,
+      name: 'notice_page',
+      builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>?;
+        final title = extras?['title'] ?? '';
+        final content = extras?['content'] ?? '';
+        return NoticeDetail(title, content);
       },
     ),
 

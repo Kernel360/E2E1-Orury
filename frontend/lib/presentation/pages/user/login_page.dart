@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../routes/route_path.dart';
 import '../../routes/routes.dart';
+import 'notice_slide.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -94,6 +95,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final size = context.mediaQuerySize;
     return Scaffold(
+      appBar: AppBar(
+        title: MySlidingAppBar(),
+      ),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,

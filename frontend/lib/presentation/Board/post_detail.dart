@@ -291,7 +291,7 @@ class _PostDetailState extends State<PostDetail> {
                               ),
                             ),
                             // 수정: 좋아요 토글 아이콘
-                            IconButton(
+                            post.boardId != 1 ? IconButton(
                               icon: Icon(
                                 isLike ? Icons.favorite : Icons.favorite_border,
                                 color: isLike ? Colors.red : Colors.grey,
@@ -304,7 +304,7 @@ class _PostDetailState extends State<PostDetail> {
                                 // 추가: 좋아요 상태 업데이트 API 호출
                                 updateLikeStatus(isLike);
                               },
-                            ),
+                            ) : Container(),
                             (post.userId == prefs.getInt('userId') ||
                                     'ROLE_ADMIN' == prefs.getString('role'))
                                 ? PopupMenuButton<String>(
@@ -488,14 +488,14 @@ class _PostDetailState extends State<PostDetail> {
                 },
               ),
             ),
-            floatingActionButton: ElevatedButton(
+            floatingActionButton: post.boardId != 1 ? ElevatedButton(
               child: Text('댓글 달기'),
               onPressed: () {
                 showCommentDialog(onPressed: () {
                   commentCreate();
                 });
               },
-            ),
+            ) : null,
           );
         }
       },

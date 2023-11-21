@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<ApiResponse> handleTokenExpiredException(TokenExpiredException ex){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(HttpStatus.UNAUTHORIZED, 401, ErrorMessages.EXPIRED_REFRESH_JWT.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(HttpStatus.UNAUTHORIZED, 401, ErrorMessages.EXPIRED_JWT.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -42,5 +42,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse> boardNotFoundException(RuntimeException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(HttpStatus.BAD_REQUEST, 400, ex.getMessage()));
+    }
+
+    @ExceptionHandler(RefreshExpiredJwtException.class)
+    public ResponseEntity<ApiResponse> handleRefreshTokenExpiredException(RefreshExpiredJwtException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(HttpStatus.UNAUTHORIZED, 402, ErrorMessages.EXPIRED_REFRESH_JWT.getMessage()));
     }
 }

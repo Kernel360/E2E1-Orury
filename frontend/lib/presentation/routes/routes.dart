@@ -28,10 +28,14 @@ final GoRouter router = GoRouter(
       name: 'login_page',
       builder: (context, state) => const LoginPage(),
     ),
+
     GoRoute(
       path: RoutePath.postCreate,
       name: 'post_create',
-      builder: (context, state) => PostCreate(),
+      builder: (context, state) {
+        final boardId = state.extra as int?;
+        return PostCreate(boardId ?? 0);
+      },
     ),
 
     GoRoute(

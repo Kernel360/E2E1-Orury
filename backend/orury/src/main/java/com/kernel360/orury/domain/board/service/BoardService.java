@@ -4,6 +4,10 @@ import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
+import com.kernel360.orury.domain.post.db.PostEntity;
+import com.kernel360.orury.domain.post.db.PostRepository;
+import com.kernel360.orury.domain.post.model.PostDto;
+import com.kernel360.orury.domain.post.service.PostConverter;
 import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.message.errors.ErrorMessages;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,8 @@ public class BoardService {
 
 	public final BoardRepository boardRepository;
 	public final BoardConverter boardConverter;
+	public final PostRepository postRepository;
+	public final PostConverter postConverter;
 
 	public BoardDto createBoard(
 		BoardRequest boardRequest
@@ -69,5 +75,16 @@ public class BoardService {
 			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + id));
 
 		return boardConverter.toDto(entity);
+	}
+
+	public List<PostDto> getNoticeBoard(Long id) {
+		var noticeList = postRepository.findAllByBoardId(id);
+		if(noticeList.isEmpty()) {
+			new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + id);
+		}
+
+		return noticeList.stream()
+			.map(postConverter::toNoticeDto) // 각 엔티티를 Dto로 변환
+			.toList();
 	}
 }

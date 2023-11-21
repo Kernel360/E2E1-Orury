@@ -61,7 +61,7 @@ public class SecurityConfig {
 				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
 				.antMatchers("/assets/**").permitAll()
 				.antMatchers("/admin/**").permitAll()
-				.antMatchers("/api/hello", "/api/auth/login", "/api/user/signup").permitAll()
+				.antMatchers("/api/hello", "/api/auth/login", "/api/user/signup", "/api/board/notice").permitAll()
 				.anyRequest().authenticated()
 			)
 

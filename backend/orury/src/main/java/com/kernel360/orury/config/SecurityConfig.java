@@ -3,6 +3,7 @@ package com.kernel360.orury.config;
 import com.kernel360.orury.config.jwt.*;
 import com.kernel360.orury.config.jwt.admin.AdminAuthenticationFilter;
 import com.kernel360.orury.config.jwt.admin.AdminAuthorizationFilter;
+import com.kernel360.orury.config.jwt.admin.AdminJwtAuthenticationEntryPoint;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.domain.user.service.CustomUserDetailsService;
 
@@ -50,17 +51,9 @@ public class SecurityConfig {
 	private final UserRepository userRepository;
 	private final CorsFilter corsFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private final AdminJwtAuthenticationEntryPoint adminJwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final CustomUserDetailsService customUserDetailsService;
-
-	@Value("${jwt.cookie-name}")
-	private String cookieName;
-	@Value("${jwt.refresh-cookie-name}")
-	private String cookieRefreshName;
-	@Value("${jwt.access-validity}")
-	private String accessCookieMaxAge;
-	@Value("${jwt.refresh-validity}")
-	private String refreshCookieMaxAge;
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -85,49 +78,29 @@ public class SecurityConfig {
 		Exception {
 		http
 			.requestMatchers(requestMatchers -> requestMatchers
-				.antMatchers("/admin/**")
+				.antMatchers("/admin/**")  // /api로 시작하는 요청을 처리
 			)
-			.csrf().disable()
-			.httpBasic().disable();
-		// AdminAuthenticationFilter filter = new AdminAuthenticationFilter(
-		// 	tokenProvider,
-		// 	cookieName,
-		// 	cookieRefreshName,
-		// 	accessCookieMaxAge,
-		// 	refreshCookieMaxAge
-		// );
-		// filter.setAuthenticationManager(authenticationManager);
-		// filter.setFilterProcessesUrl("/admin/proc-login");
-		http
-			// .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(
-				new AdminAuthorizationFilter(
-					userRepository,
-					tokenProvider,
-					cookieName,
-					cookieRefreshName,
-					accessCookieMaxAge),
-				BasicAuthenticationFilter.class
+			.csrf(csrf -> csrf.disable())
+
+			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(exceptionHandling -> exceptionHandling
+				.accessDeniedHandler(jwtAccessDeniedHandler)
+				.authenticationEntryPoint(adminJwtAuthenticationEntryPoint)
 			)
+
 			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-				.antMatchers("/assets/**").permitAll()
+				.mvcMatchers(SWAGGER.toArray(new String[0])).permitAll()
+				.antMatchers("/admin/login").permitAll()
 				.anyRequest().authenticated()
 			)
-			.formLogin()
-			.loginPage("/admin/login")
-			.permitAll()
-			.loginProcessingUrl("/admin/proc-login")
-			.usernameParameter("emailAddr")
-			.passwordParameter("password");
 
-		http
-			.logout()
-			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-			.logoutSuccessUrl("/admin")
-			.invalidateHttpSession(true);
-		http
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			// 세션을 사용하지 않기 때문에 STATELESS로 설정
+			.sessionManagement(sessionManagement ->
+				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			)
+			// JWT필터 적용
+			.apply(new JwtSecurityConfig(tokenProvider))
+		;
 		return http.build();
 	}
 
@@ -135,6 +108,9 @@ public class SecurityConfig {
 	@Order(2)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 		http
+			.requestMatchers(requestMatchers -> requestMatchers
+				.antMatchers("/api/**")  // /api로 시작하는 요청을 처리
+			)
 			.csrf(csrf -> csrf.disable())
 
 			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)

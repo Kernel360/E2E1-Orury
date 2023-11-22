@@ -25,16 +25,6 @@ public class AdminBoardController {
 
 	private final BoardService boardService;
 
-	@GetMapping("/login")
-	public String login() {
-		return "pages-login";
-	}
-
-	@GetMapping
-	public String index() {
-		return "index";
-	}
-
 	@GetMapping("/board")
 	public String board(Model model) {
 		List<BoardDto> boardList = boardService.getBoardList();

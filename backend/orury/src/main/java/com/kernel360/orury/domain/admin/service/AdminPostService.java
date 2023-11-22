@@ -1,12 +1,5 @@
 package com.kernel360.orury.domain.admin.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
@@ -15,9 +8,15 @@ import com.kernel360.orury.domain.post.model.PostRequest;
 import com.kernel360.orury.domain.post.service.PostConverter;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
-
+import com.kernel360.orury.global.error.code.BoardErrorCode;
+import com.kernel360.orury.global.error.code.PostErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,7 +31,7 @@ public class AdminPostService {
 		PostRequest postRequest
 	) {
 		var boardEntity = boardRepository.findById(postRequest.getBoardId())
-			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage()));
+			.orElseThrow(() -> new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD));
 
 		var entity = PostEntity.builder()
 			.postTitle(postRequest.getPostTitle())
@@ -54,7 +53,7 @@ public class AdminPostService {
 	public PostDto getPost(Long id) {
 		Optional<PostEntity> postEntityOptional = postRepository.findById(id);
 		PostEntity post = postEntityOptional.orElseThrow(
-			() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + id));
+			() -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
 		return postConverter.toDto(post);
 	}
 
@@ -64,7 +63,7 @@ public class AdminPostService {
 		Long postId = postRequest.getId();
 		var postEntityOptional = postRepository.findById(postId);
 		var entity = postEntityOptional.orElseThrow(
-			() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + postId));
+			() -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
 		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());
 		dto.setPostContent(postRequest.getPostContent());

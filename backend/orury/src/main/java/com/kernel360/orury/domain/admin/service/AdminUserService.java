@@ -11,7 +11,6 @@ import com.kernel360.orury.domain.user.db.AuthorityRepository;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.domain.user.model.UserDto;
-import com.kernel360.orury.global.exception.NotFoundMemberException;
 
 import lombok.RequiredArgsConstructor;
 

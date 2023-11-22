@@ -2,9 +2,7 @@ package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
-import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.comment.model.CommentDto;
-import com.kernel360.orury.domain.comment.model.CommentLikeDto;
 import com.kernel360.orury.domain.comment.service.CommentConverter;
 import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostLikeEntity;
@@ -13,7 +11,9 @@ import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostLikeDto;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.BoardErrorCode;
+import com.kernel360.orury.global.error.code.UserErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +54,7 @@ public class PostConverter {
 
         // 게시글 작성자 userNickname 설정을 위한 entity
         UserEntity userEntity = userRepository.findById(postEntity.getUserId())
-            .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + postEntity.getUserId()));
+            .orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER));
 
         // 좋아요 수 및 유저 좋아요 세팅
         long loginId = getLoginId();
@@ -88,7 +88,7 @@ public class PostConverter {
     public PostEntity toEntity(PostDto postDto) {
         BoardEntity boardEntity = boardRepository.findById(postDto.getBoardId())
             .orElseThrow(
-                () -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + postDto.getBoardId())
+                () -> new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD)
             );
 
         return PostEntity.builder()
@@ -129,7 +129,7 @@ public class PostConverter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loginEmail = authentication.getName();
         UserEntity loginUser = userRepository.findByEmailAddr(loginEmail)
-            .orElseThrow(() -> new NoSuchElementException(ErrorMessages.THERE_IS_NO_USER.getMessage() + loginEmail));
+            .orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER));
         return loginUser.getId();
     }
 

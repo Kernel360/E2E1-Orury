@@ -2,7 +2,7 @@ package com.kernel360.orury.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kernel360.orury.global.common.ApiResponse;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.CertificationErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -20,7 +20,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         // 여기에 원하는 JSON 응답을 작성합니다.
         // 예시로는 ApiResponse를 사용했습니다.
-        ApiResponse apiResponse = ApiResponse.error(HttpStatus.UNAUTHORIZED, 401, ErrorMessages.EXPIRED_JWT.getMessage());
+        ApiResponse apiResponse = ApiResponse.error(HttpStatus.UNAUTHORIZED, 401, CertificationErrorCode.EXPIRED_ACCESS_JWT.getMessage());
         new ObjectMapper().writeValue(response.getWriter(), apiResponse);
     }
 }

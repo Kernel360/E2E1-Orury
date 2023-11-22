@@ -44,7 +44,7 @@ public class AdminAuthorizationFilter extends OncePerRequestFilter {
 			processAccessToken(accessToken.get(), response);
 		} else {
 			refreshToken.ifPresentOrElse(
-				presentRefreshToken -> processRefreshToken(presentRefreshToken, response),
+				presentRefreshToken -> processRefreshToken(accessToken.get(), presentRefreshToken, response),
 				() -> clearAuthenticationAndCookie(response)
 			);
 		}
@@ -60,10 +60,11 @@ public class AdminAuthorizationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private void processRefreshToken(String refreshToken, HttpServletResponse response) {
+	private void processRefreshToken(String accessToken, String refreshToken, HttpServletResponse response) {
 		if (!tokenProvider.isTokenExpired(refreshToken)) {
 			try {
-				String newAccessToken = tokenProvider.createAccessTokenByRefreshToken(refreshToken);
+				Authentication authentication = tokenProvider.getAuthentication(accessToken);
+				String newAccessToken = tokenProvider.createAccessToken(authentication);
 				addAuthenticationCookie(response, newAccessToken);
 				validateAndAuthenticateToken(response, newAccessToken);
 			} catch (Exception e) {

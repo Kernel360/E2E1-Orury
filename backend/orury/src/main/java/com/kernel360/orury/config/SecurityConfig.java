@@ -4,6 +4,7 @@ import com.kernel360.orury.config.jwt.*;
 import com.kernel360.orury.config.jwt.admin.AdminAuthenticationFilter;
 import com.kernel360.orury.config.jwt.admin.AdminAuthorizationFilter;
 import com.kernel360.orury.domain.user.db.UserRepository;
+import com.kernel360.orury.domain.user.service.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -48,9 +51,11 @@ public class SecurityConfig {
 	private final CorsFilter corsFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-	@Value("${token.cookie.name}")
+	private final CustomUserDetailsService customUserDetailsService;
+
+	@Value("${jwt.cookie-name}")
 	private String cookieName;
-	@Value("${token.cookie.refresh-name}")
+	@Value("${jwt.refresh-cookie-name}")
 	private String cookieRefreshName;
 	@Value("${jwt.access-validity}")
 	private String accessCookieMaxAge;
@@ -58,30 +63,43 @@ public class SecurityConfig {
 	private String refreshCookieMaxAge;
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
+	public AuthenticationManager authenticationManager(
+		HttpSecurity http,
+		BCryptPasswordEncoder passwordEncoder
+	) throws Exception {
+		return http.getSharedObject(AuthenticationManagerBuilder.class)
+			.userDetailsService(customUserDetailsService)
+			.passwordEncoder(passwordEncoder)
+			.and()
+			.build();
+	}
+
+	@Bean
 	@Order(1)
-	public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
-		AuthenticationManager authenticationManager = (AuthenticationManager)http.getSharedObjects();
+	public SecurityFilterChain adminFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws
+		Exception {
 		http
 			.requestMatchers(requestMatchers -> requestMatchers
 				.antMatchers("/admin/**")
 			)
 			.csrf().disable()
-			.httpBasic().disable()
-
-			.addFilterBefore(new AdminAuthenticationFilter(
-					authenticationManager,
-					tokenProvider,
-					cookieName,
-					cookieRefreshName,
-					accessCookieMaxAge,
-					refreshCookieMaxAge
-				),
-				UsernamePasswordAuthenticationFilter.class)
+			.httpBasic().disable();
+		// AdminAuthenticationFilter filter = new AdminAuthenticationFilter(
+		// 	tokenProvider,
+		// 	cookieName,
+		// 	cookieRefreshName,
+		// 	accessCookieMaxAge,
+		// 	refreshCookieMaxAge
+		// );
+		// filter.setAuthenticationManager(authenticationManager);
+		// filter.setFilterProcessesUrl("/admin/proc-login");
+		http
+			// .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(
 				new AdminAuthorizationFilter(
 					userRepository,
@@ -97,15 +115,19 @@ public class SecurityConfig {
 			)
 			.formLogin()
 			.loginPage("/admin/login")
+			.permitAll()
+			.loginProcessingUrl("/admin/proc-login")
 			.usernameParameter("emailAddr")
-			.passwordParameter("password")
-			.failureUrl("/admin/login")
-			.permitAll();
+			.passwordParameter("password");
+
 		http
 			.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 			.logoutSuccessUrl("/admin")
 			.invalidateHttpSession(true);
+		http
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		return http.build();
 	}
 
@@ -113,9 +135,6 @@ public class SecurityConfig {
 	@Order(2)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 		http
-			.requestMatchers(requestMatchers -> requestMatchers
-				.antMatchers("/api/**")
-			)
 			.csrf(csrf -> csrf.disable())
 
 			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)

@@ -33,5 +33,6 @@ jwt:
   #  secret: ENC(XNkGVBeK1sJZhLhri+zz7pJOhHCvfif265mvT8OUIbOGeQcOCtHNnG2s3qjsKNe2u+dLoNVQBzbF1bKUfDxi8Po5tL7jQbZMPA33Dg1QMQFQWV46IyrYnLykYXQQvpin/SNPXW04ECDoRLF3TNwcS22D8uWEwe8L2wtcauyHeO1z+J6lUQArPHy76O2pzC7FHlBjOTw3STd23e3dd1WBQtHAYVmOIvNuPreulzSaHXc=)
   access-validity: 20
   refresh-validity: 604800
-
+  cookie-name: access-token
+  refresh-cookie-name: refresh-token
 

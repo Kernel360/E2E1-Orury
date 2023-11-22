@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.ProviderManagerBuilder;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	private final AuthenticationManager authenticationManager;
 	private final TokenProvider tokenProvider;
 	private final String cookieName;
 	private final String cookieRefreshName;
@@ -39,7 +41,7 @@ public class AdminAuthenticationFilter extends UsernamePasswordAuthenticationFil
 			request.getParameter("password"),
 			new ArrayList<>()
 		);
-		return authenticationManager.authenticate(authenticationToken);
+		return getAuthenticationManager().authenticate(authenticationToken);
 	}
 
 	@Override
@@ -52,12 +54,7 @@ public class AdminAuthenticationFilter extends UsernamePasswordAuthenticationFil
 		addAuthenticationCookie(request, response, accessToken, true);
 		addAuthenticationCookie(request, response, refreshToken, false);
 
-		String preLoginUrl = request.getParameter("preLoginUrl");
-		if (preLoginUrl != null && !preLoginUrl.isBlank()) {
-			response.sendRedirect(preLoginUrl);
-		} else {
-			response.sendRedirect("/admin");
-		}
+		response.sendRedirect("/admin");
 	}
 
 	private void addAuthenticationCookie(HttpServletRequest request, HttpServletResponse response, String token,
@@ -75,7 +72,6 @@ public class AdminAuthenticationFilter extends UsernamePasswordAuthenticationFil
 		authCookie.setMaxAge(maxAge);
 		authCookie.setPath("/");
 		authCookie.setHttpOnly(true);
-		authCookie.setSecure(request.isSecure());
 		response.addCookie(authCookie);
 	}
 

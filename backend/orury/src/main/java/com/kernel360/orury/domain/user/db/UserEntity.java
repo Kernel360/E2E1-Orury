@@ -59,9 +59,7 @@ public class UserEntity extends BaseEntity {
 	private Boolean isWithdrawal;
 	private String withdrawalId;
 	private LocalDateTime withdrawalAt;
-	private String remark1;
-	private String remark2;
-	private String remark3;
+	private String remark;
 
 	@ManyToMany
 	@JoinTable(

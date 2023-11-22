@@ -9,16 +9,13 @@ import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.PostErrorCode;
+import com.kernel360.orury.global.error.code.UserErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +30,7 @@ public class CommentConverter {
         try {
             // 유저 닉네임 할당
             UserEntity userEntity = userRepository.findById(commentEntity.getUserId())
-                    .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + commentEntity.getUserId()));
+                    .orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER));
 
             // 로그인 유저 좋아요 여부 판단
             long loginId = getLoginId();
@@ -57,8 +54,7 @@ public class CommentConverter {
                     .build();
         } catch (Exception e) {
             // 예외가 발생한 경우 JSON 형식의 응답을 생성
-            String errorMessage = ErrorMessages.THERE_IS_NO_USER.getMessage();
-            throw new RuntimeException(errorMessage);
+            throw new BusinessException(UserErrorCode.THERE_IS_NO_USER);
         }
 
     }
@@ -66,7 +62,7 @@ public class CommentConverter {
     public CommentEntity toEntity(CommentDto commentdto) {
         PostEntity postEntity = postRepository.findById(commentdto.getPostId())
                 .orElseThrow(
-                        () -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + commentdto.getPostId())
+                        () -> new BusinessException(PostErrorCode.THERE_IS_NO_POST)
                 );
         return CommentEntity.builder()
                 .id(commentdto.getId())
@@ -100,7 +96,7 @@ public class CommentConverter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loginEmail = authentication.getName();
         UserEntity loginUser = userRepository.findByEmailAddr(loginEmail)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessages.THERE_IS_NO_USER.getMessage() + loginEmail));
+                .orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER));
         return loginUser.getId();
     }
 }

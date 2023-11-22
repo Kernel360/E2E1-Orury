@@ -1,22 +1,19 @@
 package com.kernel360.orury.domain.user.service;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-
 import com.kernel360.orury.domain.user.db.AuthorityEntity;
+import com.kernel360.orury.domain.user.db.UserEntity;
+import com.kernel360.orury.domain.user.db.UserRepository;
+import com.kernel360.orury.domain.user.model.UserDto;
+import com.kernel360.orury.global.common.SecurityUtil;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.kernel360.orury.global.error.code.UserErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kernel360.orury.domain.user.db.UserEntity;
-import com.kernel360.orury.domain.user.db.UserRepository;
-import com.kernel360.orury.global.exception.DuplicateMemberException;
-import com.kernel360.orury.global.exception.NotFoundMemberException;
-import com.kernel360.orury.domain.user.model.UserDto;
-import com.kernel360.orury.global.common.SecurityUtil;
+import java.time.LocalDateTime;
+import java.util.Collections;
 
 @Service
 public class UserService {
@@ -31,7 +28,7 @@ public class UserService {
 	@Transactional
 	public UserDto signup(UserDto userDto) {
 		if (userRepository.findOneWithAuthoritiesByEmailAddr(userDto.getEmailAddr()).orElse(null) != null) {
-			throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
+			throw new BusinessException(UserErrorCode.ALREADY_EXISTING_USER);
 		}
 
 		AuthorityEntity authority = AuthorityEntity.builder()
@@ -63,14 +60,14 @@ public class UserService {
 		return UserDto.from(
 			SecurityUtil.getCurrentUsername()
 				.flatMap(userRepository::findOneWithAuthoritiesByEmailAddr)
-				.orElseThrow(() -> new NotFoundMemberException("Member not found"))
+				.orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER))
 		);
 	}
 
 	@Transactional(readOnly = true)
 	public Long getUserIdByEmail(String email){
 		return userRepository.findByEmailAddr(email).orElseThrow(
-				() -> new UsernameNotFoundException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+				() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
 		).getId();
 
 	}

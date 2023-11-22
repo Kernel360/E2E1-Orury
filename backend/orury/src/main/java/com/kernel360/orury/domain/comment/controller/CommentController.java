@@ -5,10 +5,8 @@ import com.kernel360.orury.domain.comment.model.CommentLikeDto;
 import com.kernel360.orury.domain.comment.model.CommentLikeRequest;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
 import com.kernel360.orury.domain.comment.service.CommentService;
-import com.kernel360.orury.domain.post.model.PostLikeRequest;
-import com.kernel360.orury.global.common.ApiResponse;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.AuthorizationErrorCode;
 import com.kernel360.orury.global.message.info.InfoMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,7 +52,7 @@ public class CommentController {
             commentService.updateComment(commentRequest);
             return ResponseEntity.ok(InfoMessages.COMMENT_UPDATED.getMessage());
         } else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorMessages.THERE_IS_NO_AUTHORITY.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(AuthorizationErrorCode.THERE_IS_NO_AUTHORITY.getMessage());
     }
 
     // 댓글 삭제
@@ -74,7 +72,7 @@ public class CommentController {
             return ResponseEntity.ok(InfoMessages.COMMENT_DELETED.getMessage());
         }else{
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                    "댓글 삭제" + ErrorMessages.THERE_IS_NO_AUTHORITY.getMessage());
+                    "댓글 삭제" + AuthorizationErrorCode.THERE_IS_NO_AUTHORITY.getMessage());
         }
     }
 

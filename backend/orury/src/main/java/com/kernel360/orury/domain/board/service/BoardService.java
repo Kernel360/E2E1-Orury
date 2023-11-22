@@ -4,12 +4,12 @@ import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
 import com.kernel360.orury.domain.board.model.BoardDto;
 import com.kernel360.orury.domain.board.model.BoardRequest;
-import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.service.PostConverter;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.BoardErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +54,7 @@ public class BoardService {
 		BoardRequest boardRequest
 	) {
 		BoardEntity entity = boardRepository.findById(boardRequest.getId())
-			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + boardRequest.getId()));
+			.orElseThrow(() -> new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD));
 
 		BoardDto updatedDto = boardConverter.toDto(entity);
 		updatedDto.setBoardTitle(boardRequest.getBoardTitle());
@@ -72,7 +72,7 @@ public class BoardService {
 
 	public BoardDto getBoard(Long id) {
 		var entity = boardRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + id));
+			.orElseThrow(() -> new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD));
 
 		return boardConverter.toDto(entity);
 	}
@@ -80,7 +80,7 @@ public class BoardService {
 	public List<PostDto> getNoticeBoard(Long id) {
 		var noticeList = postRepository.findAllByBoardId(id);
 		if(noticeList.isEmpty()) {
-			new RuntimeException(ErrorMessages.THERE_IS_NO_BOARD.getMessage() + id);
+			throw new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD);
 		}
 
 		return noticeList.stream()

@@ -54,6 +54,14 @@ public class SecurityConfig {
 	private final AdminJwtAuthenticationEntryPoint adminJwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final CustomUserDetailsService customUserDetailsService;
+	@Value("${jwt.cookie-name}")
+	private String cookieName;
+	@Value("${jwt.refresh-cookie-name}")
+	private String cookieRefreshName;
+	@Value("${jwt.access-validity}")
+	private String accessCookieMaxAge;
+	@Value("${jwt.refresh-validity}")
+	private String refreshCookieMaxAge;
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -99,8 +107,8 @@ public class SecurityConfig {
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
 			// JWT필터 적용
-			.apply(new JwtSecurityConfig(tokenProvider))
-		;
+			.addFilterBefore(new AdminJwtFilter(tokenProvider, cookieName, cookieRefreshName, accessCookieMaxAge,
+				refreshCookieMaxAge), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

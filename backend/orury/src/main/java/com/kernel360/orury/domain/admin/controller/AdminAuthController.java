@@ -63,7 +63,7 @@ public class AdminAuthController {
 		Cookie refreshTokenCookie = new Cookie(cookieRefreshName, refreshToken);
 
 		accessTokenCookie.setHttpOnly(true);
-		accessTokenCookie.setMaxAge(Integer.parseInt(accessCookieMaxAge));
+		accessTokenCookie.setMaxAge(Integer.parseInt(accessCookieMaxAge) * 1000);
 		accessTokenCookie.setPath("/");
 		refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setMaxAge(Integer.parseInt(refreshCookieMaxAge));

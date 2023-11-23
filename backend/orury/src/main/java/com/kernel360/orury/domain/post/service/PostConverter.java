@@ -40,6 +40,8 @@ public class PostConverter {
             .map(commentConverter::toDto)
             .toList();
 
+        long commentCnt = commentList.size();
+
         // map으로 변환
         Map<String, List<CommentDto>> commentMap = new HashMap<>();
         for (CommentDto comment : commentList) {
@@ -73,7 +75,9 @@ public class PostConverter {
             .thumbnailUrl(postEntity.getThumbnailUrl())
             .imageList(postEntity.getImages() == null ? List.of() : Arrays.stream(postEntity.getImages().split(","))
                 .map(image -> getenv().get("IMGUR_URL") + image)
-                .collect(Collectors.toList()))
+                .collect(Collectors.toList())
+            )
+            .commentCnt(commentCnt)
             .commentList(commentList)
             .commentMap(commentMap)
             .isLike(isLike)

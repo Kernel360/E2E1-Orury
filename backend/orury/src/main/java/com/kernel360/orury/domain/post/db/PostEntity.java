@@ -41,8 +41,8 @@ public class PostEntity extends BaseEntity {
 	private int likeCnt;
 	private Long userId;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	@Builder.Default
-	@OrderBy(clause = "id asc")
-	private List<CommentEntity> commentList = List.of();
+//	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	@Builder.Default
+//	@OrderBy(clause = "id asc")
+//	private List<CommentEntity> commentList = List.of();
 }

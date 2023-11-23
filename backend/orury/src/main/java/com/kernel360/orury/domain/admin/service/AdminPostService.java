@@ -38,8 +38,6 @@ public class AdminPostService {
 			.postContent(postRequest.getPostContent())
 			.userId(1L)
 			.board(boardEntity)
-			// .thumbnailUrl(postRequest.getPostImageList().isEmpty() ? null : postRequest.getPostImageList().get(0))
-			// .images(postRequest.getPostImageList().isEmpty() ? null : String.join(",", postRequest.getPostImageList()))
 			.createdBy(Constant.ADMIN.getMessage())
 			.createdAt(LocalDateTime.now())
 			.updatedBy(Constant.ADMIN.getMessage())

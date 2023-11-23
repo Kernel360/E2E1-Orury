@@ -25,11 +25,11 @@ spring:
           mode:NONE
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: ${LOCAL_DB_URL} # configuration에서 설정 필요
+    #    url: ${LOCAL_DB_URL} # configuration에서 설정 필요
     url: ENC(4t9k8jNC5SIDd1hpsqRJiw5NgwtRAZ9l2cY42PcN3v6GNDC61KXk4X3nYwwUdW4+aC6g41zh14HyfWg+2fPmfuTXHg7aw+vTvL9Oomq1wEKM2r2ZHJbhmakdpmbeMVjVALC/MSk28Tp4a5sBhUFRWdpaFO2qQcpdUHUd9KsuJh0=)
-#    username: ${LOCAL_DB_USERNAME}
+    #    username: ${LOCAL_DB_USERNAME}
     username: ENC(2STroDy2TfWobkrTroFwbRcxLke05156ZFMrqwKmVssNcN4foSX4I6ax8YAgdW3R)
-#    password: ${LOCAL_DB_USER_PASSWORD}
+    #    password: ${LOCAL_DB_USER_PASSWORD}
     password: ENC(a8l7l/AYNz2x1HPYyu+urOBwVcBhQkeWgTi6Fvt+lQFq1QyHsL8yyi5+wr7lh26P)
   flyway:
     enabled: true
@@ -38,8 +38,10 @@ jwt:
   header: Authorization
   #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
   #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
-#  secret: ${LOCAL_JWT_SECRET_KEY}
+  #  secret: ${LOCAL_JWT_SECRET_KEY}
   secret: ENC(XNkGVBeK1sJZhLhri+zz7pJOhHCvfif265mvT8OUIbOGeQcOCtHNnG2s3qjsKNe2u+dLoNVQBzbF1bKUfDxi8Po5tL7jQbZMPA33Dg1QMQFQWV46IyrYnLykYXQQvpin/SNPXW04ECDoRLF3TNwcS22D8uWEwe8L2wtcauyHeO1z+J6lUQArPHy76O2pzC7FHlBjOTw3STd23e3dd1WBQtHAYVmOIvNuPreulzSaHXc=)
   access-validity: 1800
   refresh-validity: 7200
+  cookie-name: access-token
+  refresh-cookie-name: refresh-token
 

@@ -8,13 +8,15 @@ import com.kernel360.orury.domain.user.db.RefreshTokenRepository;
 import com.kernel360.orury.domain.user.db.UserEntity;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.exception.TokenExpiredException;
-import com.kernel360.orury.global.exception.TokenNotFoundException;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
-import io.jsonwebtoken.*;
+import com.kernel360.orury.global.error.code.CertificationErrorCode;
+import com.kernel360.orury.global.error.code.UserErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,7 +81,7 @@ public class TokenProvider implements InitializingBean {
 		long now = (new Date()).getTime();
 		Date validity = new Date(now + accessValidityMs);
 		UserEntity user = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
-				()-> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+				()-> new RuntimeException(UserErrorCode.THERE_IS_NO_USER.getMessage())
 		);
 
 		return Jwts.builder()
@@ -96,8 +98,8 @@ public class TokenProvider implements InitializingBean {
 
 		//
 		var userId = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
-				()-> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
-		).getId();
+				()-> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
+			).getId();
 
 		return Jwts.builder()
 				.claim( Constant.USERID.getMessage(), userId)
@@ -154,7 +156,7 @@ public class TokenProvider implements InitializingBean {
 		var userId = Long.parseLong(claims.get("userId").toString());
 
 		var user = userRepository.findById(userId).orElseThrow(
-				() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage())
+				() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
 		);
 
 		RefreshTokenEntity existingToken = refreshTokenRepository.findByUserId(userId).orElse(null);
@@ -173,12 +175,12 @@ public class TokenProvider implements InitializingBean {
 
 	public boolean validateRefreshToken(String refreshToken) {
 		var refreshTokenEntity = refreshTokenRepository.findByTokenValue(refreshToken).orElseThrow(
-				() -> new TokenNotFoundException(ErrorMessages.ILLEGAL_REFRESH_JWT.getMessage())
+				() -> new BusinessException(CertificationErrorCode.ILLEGAL_REFRESH_JWT)
 		);
 		var expireDate = refreshTokenEntity.getExpirationDate();
 
 		if (LocalDateTime.now().isAfter(expireDate)) {
-			throw new TokenExpiredException(ErrorMessages.EXPIRED_REFRESH_JWT.getMessage());
+			throw new BusinessException(CertificationErrorCode.EXPIRED_REFRESH_JWT);
 		}
 
 		return validateToken(refreshToken);

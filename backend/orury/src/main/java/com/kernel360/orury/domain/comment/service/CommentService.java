@@ -7,16 +7,15 @@ import com.kernel360.orury.domain.comment.model.CommentLikeRequest;
 import com.kernel360.orury.domain.comment.model.CommentRequest;
 import com.kernel360.orury.domain.notification.service.NotifyService;
 import com.kernel360.orury.domain.post.db.PostEntity;
-import com.kernel360.orury.domain.post.db.PostLikeEntity;
-import com.kernel360.orury.domain.post.db.PostLikePK;
 import com.kernel360.orury.domain.post.db.PostRepository;
-import com.kernel360.orury.domain.post.model.PostLikeRequest;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.CommentErrorCode;
+import com.kernel360.orury.global.error.code.PostErrorCode;
+import com.kernel360.orury.global.error.code.UserErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,9 +39,9 @@ public class CommentService {
 
     public CommentDto createComment(CommentRequest commentRequest, String userEmail) {
         PostEntity postEntity = postRepository.findById(commentRequest.getPostId())
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + commentRequest.getPostId()));
+                .orElseThrow(() -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
         var user = userRepository.findByEmailAddr(userEmail)
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail));
+                .orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER));
         Long userId = user.getId();
 
         CommentEntity commentEntity = CommentEntity.builder()
@@ -63,7 +62,7 @@ public class CommentService {
         Long notifyUserId = null;
         if( commentEntity.getPId() != null ) {
             notifyUserId = commentRepository.findById(commentEntity.getPId()).orElseThrow(
-                    () -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + commentEntity.getPId())
+                    () -> new BusinessException(CommentErrorCode.THERE_IS_NO_COMMENT)
             ).getUserId();
             if (!Objects.equals(notifyUserId, saveEntity.getUserId())) {
                 sendNotificationToPostAuthor(notifyUserId, postEntity.getPostTitle() + "의 댓글 답변 달림");
@@ -90,7 +89,7 @@ public class CommentService {
     ){
         Long id = commentRequest.getId();
         Optional<CommentEntity> entity = commentRepository.findById(id);
-        CommentEntity updateEntity = entity.orElseThrow(() -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + id));
+        CommentEntity updateEntity = entity.orElseThrow(() -> new BusinessException(CommentErrorCode.THERE_IS_NO_COMMENT));
         CommentDto updateDto = commentConverter.toDto(updateEntity);
         updateDto.setCommentContent(commentRequest.getCommentContent());
         updateDto.setUpdatedBy(Constant.ADMIN.getMessage());
@@ -114,10 +113,10 @@ public class CommentService {
 
     public boolean isWriter(String userEmail, Long id) {
         var comment = commentRepository.findById(id).orElseThrow(
-                () -> new RuntimeException(ErrorMessages.THERE_IS_NO_COMMENT.getMessage() + id)
+                () -> new BusinessException(CommentErrorCode.THERE_IS_NO_COMMENT)
         );
         var user = userRepository.findByEmailAddr(userEmail).orElseThrow(
-                () -> new RuntimeException(ErrorMessages.THERE_IS_NO_USER.getMessage() + userEmail)
+                () -> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
         );
         return Objects.equals(user.getId(), comment.getUserId());
     }

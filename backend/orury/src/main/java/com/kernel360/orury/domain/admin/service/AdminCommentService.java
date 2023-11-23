@@ -1,13 +1,5 @@
 package com.kernel360.orury.domain.admin.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.PushBuilder;
-
-import org.springframework.stereotype.Service;
-
 import com.kernel360.orury.domain.comment.db.CommentEntity;
 import com.kernel360.orury.domain.comment.db.CommentRepository;
 import com.kernel360.orury.domain.comment.model.CommentDto;
@@ -17,9 +9,13 @@ import com.kernel360.orury.domain.post.db.PostEntity;
 import com.kernel360.orury.domain.post.db.PostRepository;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
-
+import com.kernel360.orury.global.error.code.PostErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +28,8 @@ public class AdminCommentService {
 	public CommentDto createComment(CommentRequest commentRequest) {
 		PostEntity postEntity = postRepository.findById(commentRequest.getPostId())
 			.orElseThrow(
-				() -> new RuntimeException(ErrorMessages.THERE_IS_NO_POST.getMessage() + commentRequest.getPostId()));
+				() -> new BusinessException(PostErrorCode.THERE_IS_NO_POST)
+			);
 
 		CommentEntity commentEntity = CommentEntity.builder()
 			.userId(commentRequest.getUserId())

@@ -3,8 +3,8 @@ package com.kernel360.orury.config.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kernel360.orury.global.constants.Constant;
-import com.kernel360.orury.global.exception.RefreshExpiredJwtException;
-import com.kernel360.orury.global.message.errors.ErrorMessages;
+import com.kernel360.orury.global.error.code.CertificationErrorCode;
+import com.kernel360.orury.global.error.exception.BusinessException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,17 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 public class JwtFilter extends OncePerRequestFilter {
@@ -64,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), servletRequest.getRequestURI());
 			}catch(ExpiredJwtException e){
-				RefreshExpiredJwtException refreshExpiredJwtException = new RefreshExpiredJwtException("Refresh Expired Jwt Exception");
+				BusinessException refreshExpiredJwtException = new BusinessException(CertificationErrorCode.EXPIRED_REFRESH_JWT);
 				servletRequest.setAttribute("exception", refreshExpiredJwtException);
 			}catch(Exception e){
 				servletRequest.setAttribute("exception", e);
@@ -86,6 +81,9 @@ public class JwtFilter extends OncePerRequestFilter {
 				Authentication authentication = tokenProvider.getAuthentication(accessToken);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), servletRequest.getRequestURI());
+			}catch(ExpiredJwtException e){
+				BusinessException accessExpiredJwtException = new BusinessException(CertificationErrorCode.EXPIRED_ACCESS_JWT);
+				servletRequest.setAttribute("exception", accessExpiredJwtException);
 			}catch(Exception e){
 				servletRequest.setAttribute("exception", e);
 			}

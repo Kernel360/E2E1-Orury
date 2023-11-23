@@ -1,31 +1,24 @@
 package com.kernel360.orury.config;
 
 import com.kernel360.orury.config.jwt.*;
-import com.kernel360.orury.config.jwt.admin.AdminAuthenticationFilter;
-import com.kernel360.orury.config.jwt.admin.AdminAuthorizationFilter;
 import com.kernel360.orury.config.jwt.admin.AdminJwtAuthenticationEntryPoint;
 import com.kernel360.orury.domain.user.db.UserRepository;
 import com.kernel360.orury.domain.user.service.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;

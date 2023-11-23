@@ -2,24 +2,17 @@ package com.kernel360.orury.domain.admin.controller;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kernel360.orury.domain.admin.service.AdminPostService;
-import com.kernel360.orury.domain.board.model.BoardDto;
-import com.kernel360.orury.domain.board.model.BoardRequest;
-import com.kernel360.orury.domain.board.service.BoardService;
 import com.kernel360.orury.domain.post.model.PostDto;
 import com.kernel360.orury.domain.post.model.PostRequest;
-import com.kernel360.orury.domain.post.service.PostService;
 
 import lombok.RequiredArgsConstructor;
 

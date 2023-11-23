@@ -11,12 +11,14 @@ import com.kernel360.orury.global.constants.Constant;
 import com.kernel360.orury.global.error.code.CertificationErrorCode;
 import com.kernel360.orury.global.error.code.UserErrorCode;
 import com.kernel360.orury.global.error.exception.BusinessException;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,7 +58,7 @@ public class TokenProvider implements InitializingBean {
 		@Value("${jwt.secret}") String secret,
 		UserRepository userRepository,
 		RefreshTokenRepository tokenRepository
-		) {
+	) {
 		this.refreshValidityMs = refershValiditySec * 1000L;
 		this.accessValidityMs = accessValiditySec * 1000L;
 		this.secret = secret;
@@ -71,52 +73,51 @@ public class TokenProvider implements InitializingBean {
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
 
-
-
-	public String createAccessToken(Authentication authentication){
+	public String createAccessToken(Authentication authentication) {
 		String authorities = authentication.getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
-				.collect(Collectors.joining(","));
+			.map(GrantedAuthority::getAuthority)
+			.collect(Collectors.joining(","));
 
 		long now = (new Date()).getTime();
 		Date validity = new Date(now + accessValidityMs);
 		UserEntity user = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
-				()-> new RuntimeException(UserErrorCode.THERE_IS_NO_USER.getMessage())
+			() -> new RuntimeException(UserErrorCode.THERE_IS_NO_USER.getMessage())
 		);
 
 		return Jwts.builder()
-				.claim(Constant.USERID.getMessage(), user.getId())
-				.setSubject(authentication.getName())
-				.claim(AUTHORITIES_KEY, authorities)
-				.signWith(key, SignatureAlgorithm.HS512)
-				.setExpiration(validity)
-				.compact();
+			.claim(Constant.USERID.getMessage(), user.getId())
+			.setSubject(authentication.getName())
+			.claim(AUTHORITIES_KEY, authorities)
+			.signWith(key, SignatureAlgorithm.HS512)
+			.setExpiration(validity)
+			.compact();
 	}
-	public String createRefreshToken(Authentication authentication){
+
+	public String createRefreshToken(Authentication authentication) {
 		long now = (new Date()).getTime();
 		Date validity = new Date(now + this.refreshValidityMs);
 
 		//
 		var userId = userRepository.findByEmailAddr(authentication.getName()).orElseThrow(
-				()-> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
-			).getId();
+			() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
+		).getId();
 
 		return Jwts.builder()
-				.claim( Constant.USERID.getMessage(), userId)
-				.signWith(key, SignatureAlgorithm.HS512)
-				.setExpiration(validity)
-				.compact();
+			.claim(Constant.USERID.getMessage(), userId)
+			.signWith(key, SignatureAlgorithm.HS512)
+			.setExpiration(validity)
+			.compact();
 	}
 
 	// 토큰을 파라미터로 받아서 클레임을 만들고 이를 이용해 유저 객체를 만들고 Authentication 객체 리턴
 	public Authentication getAuthentication(String token) throws JsonProcessingException {
-//		Claims claims = Jwts
-//			.parserBuilder()
-//			.setSigningKey(key)
-//			.build()
-//			.parseClaimsJws(token)
-//			.getBody();
-		
+		//		Claims claims = Jwts
+		//			.parserBuilder()
+		//			.setSigningKey(key)
+		//			.build()
+		//			.parseClaimsJws(token)
+		//			.getBody();
+
 		String[] chunks = token.split("\\.");
 		String payload = new String(Base64.getUrlDecoder().decode(chunks[1]));
 
@@ -125,7 +126,7 @@ public class TokenProvider implements InitializingBean {
 		JsonNode jsonNode = objectMapper.readTree(payload);
 
 		// 필요한 정보 추출
-//		String userId = jsonNode.get("userId").asText();
+		//		String userId = jsonNode.get("userId").asText();
 		String sub = jsonNode.get("sub").asText();
 		String auth = jsonNode.get("auth").asText();
 
@@ -139,43 +140,42 @@ public class TokenProvider implements InitializingBean {
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
 
-
-	public boolean validateToken(String token ) throws ExpiredJwtException{
+	public boolean validateToken(String token) throws ExpiredJwtException {
 		Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 		return true;
 	}
 
-	public void storeToken(String token){
+	public void storeToken(String token) {
 		Claims claims = Jwts
-				.parserBuilder()
-				.setSigningKey(key)
-				.build()
-				.parseClaimsJws(token)
-				.getBody();
+			.parserBuilder()
+			.setSigningKey(key)
+			.build()
+			.parseClaimsJws(token)
+			.getBody();
 
 		var userId = Long.parseLong(claims.get("userId").toString());
 
 		var user = userRepository.findById(userId).orElseThrow(
-				() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
+			() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER)
 		);
 
 		RefreshTokenEntity existingToken = refreshTokenRepository.findByUserId(userId).orElse(null);
-		if(existingToken != null){
+		if (existingToken != null) {
 			refreshTokenRepository.delete(existingToken);
 		}
 
 		var expiredDate = claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		var refreshTokenEntity = RefreshTokenEntity.builder()
-				.tokenValue(token)
-				.user(user)
-				.expirationDate(expiredDate)
-				.build();
+			.tokenValue(token)
+			.user(user)
+			.expirationDate(expiredDate)
+			.build();
 		refreshTokenRepository.save(refreshTokenEntity);
 	}
 
 	public boolean validateRefreshToken(String refreshToken) {
 		var refreshTokenEntity = refreshTokenRepository.findByTokenValue(refreshToken).orElseThrow(
-				() -> new BusinessException(CertificationErrorCode.ILLEGAL_REFRESH_JWT)
+			() -> new BusinessException(CertificationErrorCode.ILLEGAL_REFRESH_JWT)
 		);
 		var expireDate = refreshTokenEntity.getExpirationDate();
 
@@ -186,5 +186,14 @@ public class TokenProvider implements InitializingBean {
 		return validateToken(refreshToken);
 	}
 
+	public boolean isTokenExpired(String token) {
+		Date expirationDate = Jwts.parserBuilder()
+			.setSigningKey(key)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.getExpiration();
+		return expirationDate.before(new Date());
+	}
 
 }

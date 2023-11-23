@@ -28,7 +28,7 @@
 ![system_architecture](https://github.com/Kernel360/E2E1-Orury/assets/44130863/22def7c2-e141-4592-a03d-3858e362dcc1)
 
 ## ERD
-![ERD](https://github.com/Kernel360/E2E1-Orury/assets/44130863/da70886f-04ce-4460-866f-af0f2e0eb0e0)
+![ERD](https://github.com/Kernel360/E2E1-Orury/assets/44130863/af21f3c1-4bd2-4703-a765-5a1a3534e3d7)
 
 ## 프로젝트 구조도
 > 📦orury  

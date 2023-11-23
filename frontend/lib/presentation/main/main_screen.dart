@@ -256,10 +256,7 @@ class _MainScreenState extends State<MainScreen> {
                                                   size: 15,
                                                 ),
                                                 // 댓글 아이콘
-                                                Text((post.commentMap['0']
-                                                            ?.length ??
-                                                        0)
-                                                    .toString()),
+                                                Text(post.commentCnt.toString()),
                                               ],
                                             )
                                           : null,

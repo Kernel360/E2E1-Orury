@@ -82,6 +82,7 @@ public class PostConverter {
             .commentMap(commentMap)
             .isLike(isLike)
             .likeCnt(likeCnt.intValue())
+            .commentCnt((long) commentList.size())
             .createdBy(postEntity.getCreatedBy())
             .createdAt(postEntity.getCreatedAt())
             .updatedBy(postEntity.getUpdatedBy())

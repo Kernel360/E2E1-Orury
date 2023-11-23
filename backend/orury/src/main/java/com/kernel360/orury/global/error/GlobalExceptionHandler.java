@@ -16,9 +16,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getErrorCode().getStatus()).body(ErrorResponse.of(e.getErrorCode()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse> handleException(Exception e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, ServerErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponse> handleException(Exception e){
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, ServerErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
+//    }
 
 }

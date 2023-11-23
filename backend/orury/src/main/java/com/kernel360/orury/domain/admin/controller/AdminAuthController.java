@@ -75,23 +75,21 @@ public class AdminAuthController {
 		return "redirect:/admin/board";
 	}
 
-	@PostMapping("/refreshToken")
-	public ResponseEntity<TokenDto> refreshAccessToken(
-		@RequestHeader("Refresh-Token") String refreshTokenHeader
-	) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		//서버 측에서 리프레시 토큰 검증
-		String refreshToken = refreshTokenHeader.replace("Bearer ", "");
-		if (tokenProvider.validateRefreshToken(refreshToken)) {
-			String newAccessToken = tokenProvider.createAccessToken(authentication);
-			var tokenDto = TokenDto.builder()
-				.accessToken(newAccessToken)
-				.refreshToken(refreshToken)
-				.build();
-			return ResponseEntity.ok(tokenDto);
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		}
+	@PostMapping("/logout")
+	public String logout(HttpServletResponse response) {
+		SecurityContextHolder.clearContext();
+		Cookie accessCookie = new Cookie(cookieName, null);
+		accessCookie.setPath("/");
+		accessCookie.setHttpOnly(true);
+		accessCookie.setMaxAge(0);
+		response.addCookie(accessCookie);
+		Cookie refreshCookie = new Cookie(cookieRefreshName, null);
+		refreshCookie.setPath("/");
+		refreshCookie.setHttpOnly(true);
+		refreshCookie.setMaxAge(0);
+		response.addCookie(refreshCookie);
+
+		return "redirect:/admin/login";
 	}
 }
 

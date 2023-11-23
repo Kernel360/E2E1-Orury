@@ -37,4 +37,6 @@ public class PostDto {
 	private Map<String, List<CommentDto>> commentMap = Map.of();
 	@JsonProperty("is_like")
 	private boolean isLike;
+
+	private Long commentCnt;
 }

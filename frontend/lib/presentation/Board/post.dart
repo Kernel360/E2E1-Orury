@@ -13,15 +13,10 @@ class Post {
   final List<dynamic> imageList;
   final int viewCnt;
   final int likeCnt;
+  final int commentCnt;
   final int userId;
-  final List<Comment> commentList;
   final Map<String, List<Comment>> commentMap;
-
   bool isLike; // 좋아요 상태를 나타내는 변수
-
-
-  // Post(this.id, this.boardId, this.postTitle, this.postContent,
-  //     this.userNickname, this.viewCnt, this.likeCnt, this.userId);
 
   Post({
       required this.id,
@@ -34,15 +29,13 @@ class Post {
       required this.viewCnt,
       required this.likeCnt,
       required this.userId,
-      required this.commentList,
+      required this.commentCnt,
       required this.commentMap,
       required this.isLike
   });
 
   //
   factory Post.fromJson(Map<String, dynamic> json) {
-    var commentList = json['comment_list'] as List;
-    List<Comment> commentObjects = commentList.map((comment) => Comment.fromJson(comment)).toList();
 
     final Map<String, List<Comment>> commentMap2 = {};
     var commentMapJson = json['comment_map'] as Map;
@@ -64,8 +57,8 @@ class Post {
         imageList: json['image_list'],
         viewCnt: json['view_cnt'],
         likeCnt: json['like_cnt'],
+        commentCnt: json['comment_cnt'],
         userId: json['user_id'],
-        commentList: commentObjects,
         commentMap: commentMap2,
         isLike: json['is_like']
     );

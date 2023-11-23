@@ -34,7 +34,7 @@ public class PostDto {
 	private String thumbnailUrl;
 	private List<String> imageList = List.of();
 	private Long commentCnt;
-	private List<CommentDto> commentList = List.of();
+//	private List<CommentDto> commentList = List.of();
 	private Map<String, List<CommentDto>> commentMap = Map.of();
 	@JsonProperty("is_like")
 	private boolean isLike;

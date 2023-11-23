@@ -2,6 +2,7 @@ package com.kernel360.orury.domain.post.service;
 
 import com.kernel360.orury.domain.board.db.BoardEntity;
 import com.kernel360.orury.domain.board.db.BoardRepository;
+import com.kernel360.orury.domain.comment.db.CommentRepository;
 import com.kernel360.orury.domain.comment.model.CommentDto;
 import com.kernel360.orury.domain.comment.service.CommentConverter;
 import com.kernel360.orury.domain.post.db.PostEntity;
@@ -31,28 +32,32 @@ public class PostConverter {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final CommentConverter commentConverter;
+    private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
 
-    public PostDto toDto(PostEntity postEntity) {
+    public PostDto toDto(PostEntity postEntity, boolean bool) {
+        Map<String, List<CommentDto>> commentMap = Map.of();
+        List<CommentDto> commentList = List.of();
+        if (bool) {
+            commentList = commentRepository.findAllByPostIdOrderByIdDesc(postEntity.getId())
+                .stream()
+                .map(commentConverter::toDto)
+                .toList();
 
-        var commentList = postEntity.getCommentList()
-            .stream()
-            .map(commentConverter::toDto)
-            .toList();
-
-        long commentCnt = commentList.size();
-
-        // map으로 변환
-        Map<String, List<CommentDto>> commentMap = new HashMap<>();
-        for (CommentDto comment : commentList) {
-            Long pid = comment.getPId();
-            if (pid == null) {
-                commentMap.computeIfAbsent("0", k -> new ArrayList<>()).add(comment);
-            } else {
-                // pid가 있는 경우
-                commentMap.computeIfAbsent(pid.toString(), k -> new ArrayList<>()).add(comment);
+            // map으로 변환
+            commentMap = new HashMap<>();
+            for (CommentDto comment : commentList) {
+                Long pid = comment.getPId();
+                if (pid == null) {
+                    commentMap.computeIfAbsent("0", k -> new ArrayList<>()).add(comment);
+                } else {
+                    // pid가 있는 경우
+                    commentMap.computeIfAbsent(pid.toString(), k -> new ArrayList<>()).add(comment);
+                }
             }
         }
+
+        Long commentCnt = commentRepository.countByPostId(postEntity.getId());
 
         // 게시글 작성자 userNickname 설정을 위한 entity
         UserEntity userEntity = userRepository.findById(postEntity.getUserId())
@@ -78,7 +83,6 @@ public class PostConverter {
                 .collect(Collectors.toList())
             )
             .commentCnt(commentCnt)
-            .commentList(commentList)
             .commentMap(commentMap)
             .isLike(isLike)
             .likeCnt(likeCnt.intValue())

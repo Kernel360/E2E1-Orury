@@ -141,6 +141,7 @@ class _PostCreateState extends State<PostCreate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('게시글 작성'),
       ),
       body: Padding(

@@ -57,14 +57,14 @@ public class PostService {
                 .build();
         var saveEntity = postRepository.save(entity);
 
-        return postConverter.toDto(saveEntity);
+        return postConverter.toDto(saveEntity, false);
     }
 
     public PostDto getPost(Long id) {
         Optional<PostEntity> postEntityOptional = postRepository.findById(id);
         PostEntity post = postEntityOptional.orElseThrow(
                 () -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
-        return postConverter.toDto(post);
+        return postConverter.toDto(post, true);
     }
 
     public PostDto updatePost(
@@ -74,7 +74,7 @@ public class PostService {
         var postEntityOptional = postRepository.findById(postId);
         var entity = postEntityOptional.orElseThrow(
                 () -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
-        var dto = postConverter.toDto(entity);
+        var dto = postConverter.toDto(entity, false);
         dto.setPostTitle(postRequest.getPostTitle());
         dto.setPostContent(postRequest.getPostContent());
         dto.setUpdatedBy(Constant.ADMIN.getMessage());
@@ -103,7 +103,7 @@ public class PostService {
                 .build();
 
         var dtoList = entityList.stream()
-                .map(postConverter::toDto)
+                .map((PostEntity postEntity) -> postConverter.toDto(postEntity, false))
                 .toList();
 
         return Api.<List<PostDto>>builder()

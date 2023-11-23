@@ -255,6 +255,7 @@ class _PostDetailState extends State<PostDetail> {
 
           return Scaffold(
             appBar: AppBar(
+              centerTitle: true,
               title: Text('게시물 상세보기'),
             ),
             body: Padding(
@@ -322,7 +323,31 @@ class _PostDetailState extends State<PostDetail> {
                                         );
                                       } else if (result == 'delete') {
                                         // 게시글 삭제 기능 구현
-                                        deletePost();
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('삭제 확인'),
+                                              content: Text('내용을 삭제하시겠습니까?'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: Text('취소'),
+                                                  onPressed: () {
+                                                    router.pop();  // Dialog를 닫습니다.
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('삭제'),
+                                                  onPressed: () {
+                                                    // 여기에 삭제 관련 코드를 작성합니다.
+                                                    deletePost();
+                                                    router.pop();  // Dialog를 닫습니다.
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       }
                                     },
                                     itemBuilder: (BuildContext context) =>

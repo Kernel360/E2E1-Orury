@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 LOCAL_LOG_URL_IS_UNDEFINED
 .DS_Store
+AWS_LOG_URL_IS_UNDEFINED/
 
 ### STS ###
 .apt_generated

@@ -49,8 +49,6 @@ class _PostDetailState extends State<PostDetail> {
 
     final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     final post = Post.fromJson(jsonData);
-    isCommentLikedList = List.generate(
-        post.commentList.length, (index) => post.commentList[index].isLike);
 
     return post;
   }
@@ -248,6 +246,13 @@ class _PostDetailState extends State<PostDetail> {
                 (commentMap[mainComment.id.toString()]?.length ?? 0);
           });
 
+          mainComments.forEach((mainComment) {
+            isCommentLikedList.add(mainComment.isLike);
+            post.commentMap[mainComment.id.toString()]?.forEach((reply) {
+              isCommentLikedList.add(reply.isLike);
+            });
+          });
+
           return Scaffold(
             appBar: AppBar(
               title: Text('게시물 상세보기'),
@@ -349,10 +354,7 @@ class _PostDetailState extends State<PostDetail> {
                     Comment? comment;
                     int commentIndex = index - 1;
                     for (var mainComment in mainComments) {
-                      if (commentIndex <
-                          1 +
-                              (commentMap[mainComment.id.toString()]?.length ??
-                                  0)) {
+                      if (commentIndex < 1 + (commentMap[mainComment.id.toString()]?.length ?? 0)) {
                         if (commentIndex == 0) {
                           comment = mainComment; // 본 댓글 출력
                         } else {

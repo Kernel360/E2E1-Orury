@@ -250,6 +250,6 @@ class BoardServiceTest {
         ResponseEntity<Void> response = ResponseEntity.noContent().build();
 
         // then
-        assertThat(response.getStatusCodeValue()).isEqualTo(204);
+        assertThat(response.getCodeCodeValue()).isEqualTo(204);
     }
 }

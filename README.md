@@ -1,22 +1,175 @@
 # Orury!
+![orury_mockup](https://github.com/Kernel360/E2E1-Orury/assets/44130863/41f0692c-2c24-4709-9f05-aa05827e66be)
 
-당신만의 클라이밍 커뮤니티, 오루리
+<div style="text-align: center;">
+당신만의 클라이밍 커뮤니티, 오루리! <br>
+내 클라이밍 라이프를 다른 클라이머들과 공유하고, 즐기세요!    
+</div>  
 
 
 ## 멤버
-|Backend|                                                            Backend                                                            |Backend|Backend|
-|:---:|:-----------------------------------------------------------------------------------------------------------------------------:|:---:|:---:|
-|<img src="https://github.com/Kernel360-4cell/algorithm-study/assets/44130863/eacb9aab-4a9b-4447-b516-9c5efe4484ce" width=100>| <img src="https://github.com/Kernel360/E2E1-Orury/assets/44130863/6fb7dacf-c5b6-4023-840f-96912da62910" width=100> |<img src="https://github.com/Kernel360-4cell/algorithm-study/assets/44130863/1ee6dd72-c060-4dab-996b-e9f9bc7048d2" width=100>|<img src="https://github.com/Kernel360-4cell/algorithm-study/assets/44130863/bef79d6c-5ec0-43c0-999c-906d42ad1e06" width=100>|
-|[형준](https://github.com/kkkapuq)|                                                [찬욱](https://github.com/mooncw)                                                |[종민](https://github.com/ShineCorine)|[무룡](https://github.com/aqrms)|
+|                                                            Backend                                                            |                                                      Backend                                                       |                                                            Backend                                                            |                                                            Backend                                                            |
+|:-----------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------:|
+| <img src="https://github.com/Kernel360-4cell/algorithm-study/assets/44130863/eacb9aab-4a9b-4447-b516-9c5efe4484ce" width=300> | <img src="https://github.com/Kernel360/E2E1-Orury/assets/44130863/6fb7dacf-c5b6-4023-840f-96912da62910" width=300> | <img src="https://github.com/Kernel360-4cell/algorithm-study/assets/44130863/1ee6dd72-c060-4dab-996b-e9f9bc7048d2" width=300> | <img src="https://github.com/Kernel360-4cell/algorithm-study/assets/44130863/bef79d6c-5ec0-43c0-999c-906d42ad1e06" width=300> |
+|                                               [형준](https://github.com/kkkapuq)                                                |                                          [찬욱](https://github.com/mooncw)                                           |                                             [종민](https://github.com/ShineCorine)                                              |                                                [무룡](https://github.com/aqrms)                                                 |
+|                                                         팀원들이 본<br>**형준**은                                                         |                                                   팀원들이 본<br>**찬욱**은                                                    |                                                       팀원들이 본<br>**종민**은                                                       |                                                       팀원들이 본<br>**무룡**은                                                       |
+|                                               중심을 잡아줘요<br>리더쉽이 강해요<br>솔선수범한 리더                                                |                                          다재다능 행동대장<br>뭐든지 꼼꼼해요<br>팀의 해결사                                           |                                           부딪히고 보는 진격의 개발자<br>꾸준하게 성장해요<br>실력이 쑥쑥자라요                                           |                                            끝까지 가면 내가이겨<br>어려운 일도 파고들어요<br>책임감이 강해요                                             |
 
 ## 기술 스택
-<img src="https://github.com/Kernel360/E2E1-Orury/assets/44130863/48959e1d-06d5-4b0a-be68-6d83ff143040" width=400, height=800>
+<img src="https://github.com/Kernel360/E2E1-Orury/assets/44130863/48959e1d-06d5-4b0a-be68-6d83ff143040" width=500, height=1000>
 
 ## 서비스 흐름도
-![image](https://github.com/Kernel360/E2E1-Orury/assets/44130863/ef0c31d3-623a-4ef8-b9a8-2a8fe0e5706b)
+![서비스 흐름도](https://github.com/Kernel360/E2E1-Orury/assets/44130863/20cd677f-370a-4312-a271-73a25436069d)
 
 ## CI/CD
-![image](https://github.com/Kernel360/E2E1-Orury/assets/44130863/23132200-f87c-4137-ad4b-6227a6174caa)
+![image](https://github.com/Kernel360/E2E1-Orury/assets/44130863/d928aeb7-02e3-4909-96da-1bf31734ef4f)
+
+## 시스템 아키텍처
+![system_architecture](https://github.com/Kernel360/E2E1-Orury/assets/44130863/22def7c2-e141-4592-a03d-3858e362dcc1)
+
+## ERD
+![ERD](https://github.com/Kernel360/E2E1-Orury/assets/44130863/af21f3c1-4bd2-4703-a765-5a1a3534e3d7)
+
+## 프로젝트 구조도
+> 📦orury  
+┣ 📂batch  
+┃ ┣ 📂job  
+┃ ┃ ┗ 📜DeleteExpiredTokenJobConfig.java  
+┃ ┗ 📂scheduler  
+┃ ┃ ┗ 📜BatchScheduler.java  
+┣ 📂config  
+┃ ┣ 📂jwt  
+┃ ┃ ┣ 📜CustomAuthenticationFailureHandler.java  
+┃ ┃ ┣ 📜JwtAccessDeniedHandler.java  
+┃ ┃ ┣ 📜JwtAuthenticationEntryPoint.java  
+┃ ┃ ┣ 📜JwtFilter.java  
+┃ ┃ ┣ 📜JwtSecurityConfig.java  
+┃ ┃ ┗ 📜TokenProvider.java  
+┃ ┣ 📜CorsConfig.java  
+┃ ┣ 📜JasyptConfig.java  
+┃ ┣ 📜SecurityConfig.java  
+┃ ┗ 📜SwaggerConfig.java  
+┣ 📂domain  
+┃ ┣ 📂admin  
+┃ ┃ ┣ 📂controller  
+┃ ┃ ┃ ┣ 📜AdminBoardController.java  
+┃ ┃ ┃ ┣ 📜AdminCommentController.java  
+┃ ┃ ┃ ┣ 📜AdminPostController.java  
+┃ ┃ ┃ ┗ 📜AdminUserController.java  
+┃ ┃ ┗ 📂service  
+┃ ┃ ┃ ┣ 📜AdminCommentService.java  
+┃ ┃ ┃ ┣ 📜AdminPostService.java  
+┃ ┃ ┃ ┗ 📜AdminUserService.java  
+┃ ┣ 📂board  
+┃ ┃ ┣ 📂controller  
+┃ ┃ ┃ ┗ 📜BoardController.java  
+┃ ┃ ┣ 📂db  
+┃ ┃ ┃ ┣ 📜BoardEntity.java  
+┃ ┃ ┃ ┗ 📜BoardRepository.java  
+┃ ┃ ┣ 📂model  
+┃ ┃ ┃ ┣ 📜BoardDto.java  
+┃ ┃ ┃ ┗ 📜BoardRequest.java  
+┃ ┃ ┗ 📂service  
+┃ ┃ ┃ ┣ 📜BoardConverter.java  
+┃ ┃ ┃ ┗ 📜BoardService.java  
+┃ ┣ 📂comment  
+┃ ┃ ┣ 📂controller  
+┃ ┃ ┃ ┗ 📜CommentController.java  
+┃ ┃ ┣ 📂db  
+┃ ┃ ┃ ┣ 📜CommentEntity.java  
+┃ ┃ ┃ ┣ 📜CommentLikeEntity.java  
+┃ ┃ ┃ ┣ 📜CommentLikePK.java  
+┃ ┃ ┃ ┣ 📜CommentLikeRepository.java  
+┃ ┃ ┃ ┗ 📜CommentRepository.java  
+┃ ┃ ┣ 📂model  
+┃ ┃ ┃ ┣ 📜CommentDto.java  
+┃ ┃ ┃ ┣ 📜CommentLikeDto.java  
+┃ ┃ ┃ ┣ 📜CommentLikeRequest.java  
+┃ ┃ ┃ ┗ 📜CommentRequest.java  
+┃ ┃ ┗ 📂service  
+┃ ┃ ┃ ┣ 📜CommentConverter.java  
+┃ ┃ ┃ ┗ 📜CommentService.java  
+┃ ┣ 📂config  
+┃ ┣ 📂notification  
+┃ ┃ ┣ 📂controller  
+┃ ┃ ┃ ┗ 📜NotifyController.java  
+┃ ┃ ┣ 📂db  
+┃ ┃ ┃ ┗ 📜EmitterRepository.java  
+┃ ┃ ┗ 📂service  
+┃ ┃ ┃ ┗ 📜NotifyService.java  
+┃ ┣ 📂post  
+┃ ┃ ┣ 📂controller  
+┃ ┃ ┃ ┗ 📜PostController.java  
+┃ ┃ ┣ 📂db  
+┃ ┃ ┃ ┣ 📜PostEntity.java  
+┃ ┃ ┃ ┣ 📜PostLikeEntity.java  
+┃ ┃ ┃ ┣ 📜PostLikePK.java  
+┃ ┃ ┃ ┣ 📜PostLikeRepository.java  
+┃ ┃ ┃ ┗ 📜PostRepository.java  
+┃ ┃ ┣ 📂model  
+┃ ┃ ┃ ┣ 📜PostDto.java  
+┃ ┃ ┃ ┣ 📜PostLikeDto.java  
+┃ ┃ ┃ ┣ 📜PostLikeRequest.java  
+┃ ┃ ┃ ┗ 📜PostRequest.java  
+┃ ┃ ┣ 📂repository  
+┃ ┃ ┗ 📂service  
+┃ ┃ ┃ ┣ 📜PostConverter.java  
+┃ ┃ ┃ ┗ 📜PostService.java  
+┃ ┗ 📂user  
+┃ ┃ ┣ 📂controller  
+┃ ┃ ┃ ┣ 📜AuthController.java  
+┃ ┃ ┃ ┗ 📜UserController.java  
+┃ ┃ ┣ 📂db  
+┃ ┃ ┃ ┣ 📜AuthorityEntity.java  
+┃ ┃ ┃ ┣ 📜AuthorityRepository.java  
+┃ ┃ ┃ ┣ 📜RefreshTokenEntity.java  
+┃ ┃ ┃ ┣ 📜RefreshTokenRepository.java  
+┃ ┃ ┃ ┣ 📜UserEntity.java  
+┃ ┃ ┃ ┗ 📜UserRepository.java  
+┃ ┃ ┣ 📂model  
+┃ ┃ ┃ ┣ 📜AuthorityDto.java  
+┃ ┃ ┃ ┣ 📜LoginDto.java  
+┃ ┃ ┃ ┣ 📜TokenDto.java  
+┃ ┃ ┃ ┣ 📜UserDto.java  
+┃ ┃ ┃ ┗ 📜UserResponseDto.java  
+┃ ┃ ┗ 📂service  
+┃ ┃ ┃ ┣ 📜CustomUserDetailsService.java  
+┃ ┃ ┃ ┗ 📜UserService.java  
+┣ 📂global  
+┃ ┣ 📂common  
+┃ ┃ ┣ 📜Api.java  
+┃ ┃ ┣ 📜ApiResponse.java  
+┃ ┃ ┣ 📜ApiStatus.java  
+┃ ┃ ┣ 📜BaseEntity.java  
+┃ ┃ ┣ 📜Listener.java  
+┃ ┃ ┣ 📜Pagination.java  
+┃ ┃ ┗ 📜SecurityUtil.java  
+┃ ┣ 📂config  
+┃ ┃ ┗ 📜JpaConfig.java  
+┃ ┣ 📂constants  
+┃ ┃ ┗ 📜Constant.java  
+┃ ┣ 📂controller  
+┃ ┣ 📂error  
+┃ ┃ ┣ 📂code  
+┃ ┃ ┃ ┣ 📜AuthorizationErrorCode.java  
+┃ ┃ ┃ ┣ 📜BoardErrorCode.java  
+┃ ┃ ┃ ┣ 📜CertificationErrorCode.java  
+┃ ┃ ┃ ┣ 📜CommentErrorCode.java  
+┃ ┃ ┃ ┣ 📜ErrorCode.java  
+┃ ┃ ┃ ┣ 📜PostErrorCode.java  
+┃ ┃ ┃ ┣ 📜ServerErrorCode.java  
+┃ ┃ ┃ ┗ 📜UserErrorCode.java  
+┃ ┃ ┣ 📂dto  
+┃ ┃ ┃ ┗ 📜ErrorResponse.java  
+┃ ┃ ┣ 📂exception  
+┃ ┃ ┃ ┗ 📜BusinessException.java  
+┃ ┃ ┗ 📜GlobalExceptionHandler.java  
+┃ ┗ 📂message  
+┃ ┃ ┣ 📂info  
+┃ ┃ ┃ ┗ 📜InfoMessages.java  
+┃ ┃ ┣ 📂success  
+┃ ┃ ┗ 📂validation  
+┗ 📜OruryApplication.java
 
 ## 사용법
 ### 1. apk를 다운받아서 사용하는 경우

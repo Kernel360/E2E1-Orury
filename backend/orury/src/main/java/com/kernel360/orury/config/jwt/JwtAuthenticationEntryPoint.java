@@ -24,7 +24,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		HttpServletResponse response,
 		AuthenticationException authException
 	) {
-		resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
+		// JwtFilter에서 처리한 밣생한 예외를 받는 부분
+		if(request.getAttribute("exception") != null) {
+			resolver.resolveException(request, response, null, (Exception) request.getAttribute("exception"));
+		}
+
+		// jwt token에서 정의한 에러 외 filter에서 발생한 예외를 global handler로 보냄
+		else {
+			resolver.resolveException(request, response, null, authException);
+		}
 		// 유효한 자격증명을 제공하지 않고 접근하려 할때 401
 //		response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 	}

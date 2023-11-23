@@ -1,4 +1,4 @@
-package com.kernel360.orury.config.jwt;
+package com.kernel360.orury.config.jwt.admin;
 
 import java.io.IOException;
 
@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.kernel360.orury.config.jwt.TokenProvider;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;

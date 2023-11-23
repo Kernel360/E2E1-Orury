@@ -24,6 +24,11 @@
 ## CI/CD
 ![image](https://github.com/Kernel360/E2E1-Orury/assets/44130863/d928aeb7-02e3-4909-96da-1bf31734ef4f)
 
+## 시스템 아키텍처
+![system_architecture](https://github.com/Kernel360/E2E1-Orury/assets/44130863/22def7c2-e141-4592-a03d-3858e362dcc1)
+
+## ERD
+![ERD](https://github.com/Kernel360/E2E1-Orury/assets/44130863/da70886f-04ce-4460-866f-af0f2e0eb0e0)
 
 ## 프로젝트 구조도
 > 📦orury  
@@ -164,13 +169,7 @@
 ┃ ┃ ┃ ┗ 📜InfoMessages.java  
 ┃ ┃ ┣ 📂success  
 ┃ ┃ ┗ 📂validation  
-┗ 📜OruryApplication.java  
-
-## 시스템 아키텍처
-![system_architecture](https://github.com/Kernel360/E2E1-Orury/assets/44130863/17b0e60b-44b5-46e2-8b69-259ea6d231bc)
-
-## ERD
-![ERD](https://github.com/Kernel360/E2E1-Orury/assets/44130863/da70886f-04ce-4460-866f-af0f2e0eb0e0)
+┗ 📜OruryApplication.java
 
 ## 사용법
 ### 1. apk를 다운받아서 사용하는 경우

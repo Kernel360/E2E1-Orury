@@ -28,8 +28,8 @@ public class BoardEntity extends BaseEntity {
 	private Long id;
 	private String boardTitle;
 
-	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-	@Builder.Default
-	@OrderBy(clause = "id desc")
-	private List<PostEntity> postList = List.of();
+//	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	@Builder.Default
+//	@OrderBy(clause = "id desc")
+//	private List<PostEntity> postList = List.of();
 }

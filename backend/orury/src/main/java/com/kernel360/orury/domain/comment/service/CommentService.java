@@ -104,12 +104,12 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    public List<CommentDto> findAllByPostId(Long postId) {
-        List<CommentEntity> commentEntityList = commentRepository.findAllByPostIdOrderByIdDesc(postId);
-        return commentEntityList.stream()
-                .map(commentConverter::toDto)
-                .toList();
-    }
+//    public List<CommentDto> findAllByPostId(Long postId) {
+//        List<CommentEntity> commentEntityList = commentRepository.findAllByPostId(postId);
+//        return commentEntityList.stream()
+//                .map(commentConverter::toDto)
+//                .toList();
+//    }
 
     public boolean isWriter(String userEmail, Long id) {
         var comment = commentRepository.findById(id).orElseThrow(

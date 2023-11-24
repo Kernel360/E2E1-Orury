@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -35,6 +37,7 @@ public class CommentEntity extends BaseEntity {
 
 	private Long userId;
 	@ManyToOne
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
 	@ToString.Exclude
 	private PostEntity post;

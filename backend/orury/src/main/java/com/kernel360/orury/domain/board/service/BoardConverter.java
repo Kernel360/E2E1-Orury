@@ -22,18 +22,12 @@ public class BoardConverter {
 	private final PostRepository postRepository;
 	private final PostConverter postConverter;
 
-	public BoardDto toDto(BoardEntity boardEntity, boolean bool) {
-		List<PostDto> postList = List.of();
-		if (bool) {
-			postList = postRepository.findAllByBoardIdOrderByIdDesc(boardEntity.getId())
-				.stream()
-				.map(postEntity -> {
-					PostDto postDto = postConverter.toDto(postEntity, !bool);
-//				postDto.setImageList(Collections.emptyList()); // 빈 리스트로 설정
-					return postDto;
-				})
-				.toList();
-		}
+	public BoardDto toDto(BoardEntity boardEntity) {
+		List<PostDto> postList = postRepository.findAllByBoardIdOrderByIdDesc(boardEntity.getId())
+			.stream()
+			.map(postConverter::toDtoOnlyPost)
+			.toList();
+
 
 		return BoardDto.builder()
 			.id(boardEntity.getId())
@@ -45,6 +39,19 @@ public class BoardConverter {
 			.postList(postList)
 			.build();
 	}
+
+	public BoardDto toDtoOnlyBoard(BoardEntity boardEntity) {
+		return BoardDto.builder()
+			.id(boardEntity.getId())
+			.boardTitle(boardEntity.getBoardTitle())
+			.createdBy(boardEntity.getCreatedBy())
+			.createdAt(boardEntity.getCreatedAt())
+			.updatedBy(boardEntity.getUpdatedBy())
+			.updatedAt(boardEntity.getUpdatedAt())
+			.postList(List.of())
+			.build();
+	}
+
 
 	public BoardEntity toEntity(BoardDto boardDto) {
 		return BoardEntity.builder()

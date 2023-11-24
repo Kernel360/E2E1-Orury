@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     initSharedPreferences();
     connectToServer();
-    loadBoards();
+    // loadBoards();
   }
 
   @override
@@ -81,10 +81,11 @@ class _MainScreenState extends State<MainScreen> {
       // Uri.http(dotenv.env['API_URL']!, '/api/board'),
       Uri.http(dotenv.env['AWS_API_URL']!, '/api/board'),
     );
-
+    print('함수명 : getBoards');
     final jsonData = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     final boards =
         jsonData.map((boardJson) => Boards.fromJson(boardJson)).toList();
+    print(boards[0].boardTitle);
     return boards;
   }
 
@@ -100,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
       // Uri.http(dotenv.env['API_URL']!, '/api/board/1'),
       Uri.http(dotenv.env['AWS_API_URL']!, '/api/board/$boardId'),
     );
-
+    print('함수명 : fetchPosts');
     final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     final board = Board.fromJson(jsonData);
     return board.postList;

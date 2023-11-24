@@ -7,6 +7,8 @@ import com.kernel360.orury.global.common.BaseEntity;
 import com.kernel360.orury.global.common.Listener;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.OrderBy;
 
 import javax.persistence.*;
@@ -26,6 +28,7 @@ public class PostEntity extends BaseEntity {
 	private Long id;
 
 	@ManyToOne
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
 	@ToString.Exclude
 	private BoardEntity board;
@@ -41,8 +44,4 @@ public class PostEntity extends BaseEntity {
 	private int likeCnt;
 	private Long userId;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	@Builder.Default
-	@OrderBy(clause = "id asc")
-	private List<CommentEntity> commentList = List.of();
 }

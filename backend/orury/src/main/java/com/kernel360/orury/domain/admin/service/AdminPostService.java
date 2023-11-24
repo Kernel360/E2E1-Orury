@@ -45,14 +45,14 @@ public class AdminPostService {
 			.build();
 		var saveEntity = postRepository.save(entity);
 
-		return postConverter.toDto(saveEntity, false);
+		return postConverter.toDto(saveEntity);
 	}
 
 	public PostDto getPost(Long id) {
 		Optional<PostEntity> postEntityOptional = postRepository.findById(id);
 		PostEntity post = postEntityOptional.orElseThrow(
 			() -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
-		return postConverter.toDto(post, false);
+		return postConverter.toDto(post);
 	}
 
 	public PostDto updatePost(
@@ -62,7 +62,7 @@ public class AdminPostService {
 		var postEntityOptional = postRepository.findById(postId);
 		var entity = postEntityOptional.orElseThrow(
 			() -> new BusinessException(PostErrorCode.THERE_IS_NO_POST));
-		var dto = postConverter.toDto(entity, false);
+		var dto = postConverter.toDto(entity);
 		dto.setPostTitle(postRequest.getPostTitle());
 		dto.setPostContent(postRequest.getPostContent());
 		dto.setUpdatedBy(Constant.ADMIN.getMessage());
@@ -83,7 +83,7 @@ public class AdminPostService {
 		var entityList = postRepository.findAll();
 
 		return entityList.stream()
-			.map((PostEntity postEntity) -> postConverter.toDto(postEntity, false))
+			.map(postConverter::toDto)
 			.toList();
 	}
 }

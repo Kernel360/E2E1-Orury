@@ -35,27 +35,25 @@ public class PostConverter {
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
 
-    public PostDto toDto(PostEntity postEntity, boolean bool) {
-        Map<String, List<CommentDto>> commentMap = Map.of();
-        List<CommentDto> commentList = List.of();
-        if (bool) {
-            commentList = commentRepository.findAllByPostIdOrderByIdDesc(postEntity.getId())
-                .stream()
-                .map(commentConverter::toDto)
-                .toList();
+    public PostDto toDto(PostEntity postEntity) {
 
-            // map으로 변환
-            commentMap = new HashMap<>();
-            for (CommentDto comment : commentList) {
-                Long pid = comment.getPId();
-                if (pid == null) {
-                    commentMap.computeIfAbsent("0", k -> new ArrayList<>()).add(comment);
-                } else {
-                    // pid가 있는 경우
-                    commentMap.computeIfAbsent(pid.toString(), k -> new ArrayList<>()).add(comment);
-                }
+        List<CommentDto> commentList = commentRepository.findAllByPostId(postEntity.getId())
+            .stream()
+            .map(commentConverter::toDto)
+            .toList();
+
+        // map으로 변환
+        Map<String, List<CommentDto>> commentMap = new HashMap<>();
+        for (CommentDto comment : commentList) {
+            Long pid = comment.getPId();
+            if (pid == null) {
+                commentMap.computeIfAbsent("0", k -> new ArrayList<>()).add(comment);
+            } else {
+                // pid가 있는 경우
+                commentMap.computeIfAbsent(pid.toString(), k -> new ArrayList<>()).add(comment);
             }
         }
+
 
         Long commentCnt = commentRepository.countByPostId(postEntity.getId());
 
@@ -84,6 +82,43 @@ public class PostConverter {
             )
             .commentCnt(commentCnt)
             .commentMap(commentMap)
+            .isLike(isLike)
+            .likeCnt(likeCnt.intValue())
+            .createdBy(postEntity.getCreatedBy())
+            .createdAt(postEntity.getCreatedAt())
+            .updatedBy(postEntity.getUpdatedBy())
+            .updatedAt(postEntity.getUpdatedAt())
+            .build();
+    }
+
+    public PostDto toDtoOnlyPost(PostEntity postEntity) {
+        Long commentCnt = commentRepository.countByPostId(postEntity.getId());
+
+        // 게시글 작성자 userNickname 설정을 위한 entity
+        UserEntity userEntity = userRepository.findById(postEntity.getUserId())
+            .orElseThrow(() -> new BusinessException(UserErrorCode.THERE_IS_NO_USER));
+
+        // 좋아요 수 및 유저 좋아요 세팅
+        long loginId = getLoginId();
+        boolean isLike = getPostLike(loginId, postEntity.getId());
+        Long likeCnt = postLikeRepository.countByPostLikePKPostId(postEntity.getId());
+
+        return PostDto.builder()
+            .id(postEntity.getId())
+            .boardId(postEntity.getBoard().getId())
+            .postTitle(postEntity.getPostTitle())
+            .postContent(postEntity.getPostContent())
+            .userNickname(userEntity.getNickname())
+            .viewCnt(postEntity.getViewCnt())
+            .likeCnt(postEntity.getLikeCnt())
+            .userId(postEntity.getUserId())
+            .thumbnailUrl(postEntity.getThumbnailUrl())
+            .imageList(postEntity.getImages() == null ? List.of() : Arrays.stream(postEntity.getImages().split(","))
+                .map(image -> getenv().get("IMGUR_URL") + image)
+                .collect(Collectors.toList())
+            )
+            .commentCnt(commentCnt)
+            .commentMap(Map.of())
             .isLike(isLike)
             .likeCnt(likeCnt.intValue())
             .createdBy(postEntity.getCreatedBy())

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<CommentEntity, Long>{
     // select * from comment where post_id = ?
-    List<CommentEntity> findAllByPostIdOrderByIdDesc(Long postId);
+    List<CommentEntity> findAllByPostId(Long postId);
 
     Long countByPostId(Long postId);
 }

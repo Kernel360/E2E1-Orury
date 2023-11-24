@@ -38,14 +38,14 @@ public class BoardService {
 
 		var saveEntity = boardRepository.save(entity);
 
-		return boardConverter.toDto(saveEntity, false);
+		return boardConverter.toDtoOnlyBoard(saveEntity);
 	}
 
 	// 게시판 조회
 	public List<BoardDto> getBoardList() {
 		List<BoardEntity> boardEntityList = boardRepository.findAll();
 		return boardEntityList.stream()
-			.map((BoardEntity boardEntity) -> boardConverter.toDto(boardEntity, false))
+			.map(boardConverter::toDtoOnlyBoard)
 			.toList();
 	}
 
@@ -56,7 +56,7 @@ public class BoardService {
 		BoardEntity entity = boardRepository.findById(boardRequest.getId())
 			.orElseThrow(() -> new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD));
 
-		BoardDto updatedDto = boardConverter.toDto(entity, false);
+		BoardDto updatedDto = boardConverter.toDtoOnlyBoard(entity);
 		updatedDto.setBoardTitle(boardRequest.getBoardTitle());
 		updatedDto.setUpdatedBy(Constant.ADMIN.getMessage());
 		updatedDto.setUpdatedAt(LocalDateTime.now());
@@ -74,7 +74,7 @@ public class BoardService {
 		var entity = boardRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(BoardErrorCode.THERE_IS_NO_BOARD));
 
-		return boardConverter.toDto(entity, true);
+		return boardConverter.toDto(entity);
 	}
 
 	public List<PostDto> getNoticeBoard(Long id) {
